@@ -11,6 +11,9 @@
 		5544F1FF1E8076BF00FD44E0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5544F1FE1E8076BF00FD44E0 /* Assets.xcassets */; };
 		5544F2021E8076BF00FD44E0 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5544F2001E8076BF00FD44E0 /* MainMenu.xib */; };
 		5544F20C1E8295F600FD44E0 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 5544F20B1E8295F600FD44E0 /* .gitignore */; };
+		556CC2B71E88B90D00BA6746 /* WsdlExt.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556CC2B61E88B90D00BA6746 /* WsdlExt.swift */; };
+		55C028D91E8613B800B583EF /* WsdlEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55C028D81E8613B800B583EF /* WsdlEnums.swift */; };
+		55DE43071E840B7B00947E8D /* RateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55DE43061E840B7B00947E8D /* RateService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -20,6 +23,9 @@
 		5544F2011E8076BF00FD44E0 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/MainMenu.xib; sourceTree = "<group>"; };
 		5544F2031E8076BF00FD44E0 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5544F20B1E8295F600FD44E0 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
+		556CC2B61E88B90D00BA6746 /* WsdlExt.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WsdlExt.swift; sourceTree = "<group>"; };
+		55C028D81E8613B800B583EF /* WsdlEnums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WsdlEnums.swift; sourceTree = "<group>"; };
+		55DE43061E840B7B00947E8D /* RateService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RateService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -54,9 +60,12 @@
 			isa = PBXGroup;
 			children = (
 				5544F1FC1E8076BF00FD44E0 /* AppDelegate.swift */,
+				55DE43061E840B7B00947E8D /* RateService.swift */,
 				5544F1FE1E8076BF00FD44E0 /* Assets.xcassets */,
 				5544F2001E8076BF00FD44E0 /* MainMenu.xib */,
 				5544F2031E8076BF00FD44E0 /* Info.plist */,
+				55C028D81E8613B800B583EF /* WsdlEnums.swift */,
+				556CC2B61E88B90D00BA6746 /* WsdlExt.swift */,
 			);
 			path = FXR;
 			sourceTree = "<group>";
@@ -135,6 +144,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				5544F1FD1E8076BF00FD44E0 /* AppDelegate.swift in Sources */,
+				556CC2B71E88B90D00BA6746 /* WsdlExt.swift in Sources */,
+				55C028D91E8613B800B583EF /* WsdlEnums.swift in Sources */,
+				55DE43071E840B7B00947E8D /* RateService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -291,6 +303,7 @@
 				5544F2081E8076BF00FD44E0 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
