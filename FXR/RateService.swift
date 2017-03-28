@@ -67,12 +67,12 @@ struct RateRequest : CustomStringConvertible
 struct RateReply : CustomStringConvertible
 {
 	internal let _highestSeverity: NotificationSeverityType
-	internal let _notifications: fNotification
+	internal let _notifications: [fNotification]
 	internal let _transactionDetail: TransactionDetail?
 	internal let _version: VersionId
-	internal let _rateReplyDetails: RateReplyDetail?
+	internal let _rateReplyDetails: [RateReplyDetail]?
 	
-	var description: String { return "RateReply" }
+	var description: String { return "\(_highestSeverity)\n\(_notifications)\n\(_transactionDetail)\n\(_version)\n\(_rateReplyDetails)\n" }
 	
 //	init(highestSeverity: NotificationSeverityType, notifications: fNotification, transactionDetail: TransactionDetail?, version: VersionId, rateReplyDetails: RateReplyDetail?)
 //	{
@@ -84,10 +84,89 @@ struct RateReply : CustomStringConvertible
 //	}
 	
 	func highestSeverity() -> NotificationSeverityType { return _highestSeverity }
-	func notifications() -> fNotification { return _notifications }
+	func notifications() -> [fNotification] { return _notifications }
 	func transactionDetail() -> TransactionDetail { return _transactionDetail! }
 	func version() -> VersionId { return _version }
-	func rateReplyDetails() -> RateReplyDetail { return _rateReplyDetails! }
+	func rateReplyDetails() -> [RateReplyDetail] { return _rateReplyDetails! }
+}
+
+struct RateReplyDetail : CustomStringConvertible
+{
+	fileprivate let _serviceType: ServiceType?
+	fileprivate let _packagingType: PackagingType?
+	fileprivate let _appliedOptions: [ServiceOptionType?]
+	fileprivate let _appliedSubOptions: ServiceSubOptionDetail?
+	fileprivate let _deliveryStation: String?
+	fileprivate let _deliveryDayOfWeek: DayOfWeekType?
+	fileprivate let _deliveryTimestamp: Date?
+	fileprivate let _commitDetails: [CommitDetail?]
+	fileprivate let _destinationAirportId: String?
+	fileprivate let _ineligibleForMoneyBackGuarantee: Bool?
+	fileprivate let _originServiceArea: String?
+	fileprivate let _destinationServiceArea: String?
+	fileprivate let _transitTime: TransitTimeType?
+	fileprivate let _maximumTransitTime: TransitTimeType?
+	fileprivate let _signatureOption: SignatureOptionType?
+	fileprivate let _actualRateType: ReturnedRateType?
+	fileprivate let _ratedShipmentDetails: [RatedShipmentDetail?]
+	
+	var description: String { return "RateReplyDetail" }
+	
+	init(serviceType: ServiceType?,
+	     packagingType: PackagingType?,
+	     appliedOptions: [ServiceOptionType?],
+	     appliedSubOptions: ServiceSubOptionDetail?,
+	     deliveryStation: String?,
+	     deliveryDayOfWeek: DayOfWeekType?,
+	     deliveryTimestamp: Date?,
+	     commitDetails: [CommitDetail?],
+	     destinationAirportId: String?,
+	     ineligibleForMoneyBackGuarantee: Bool?,
+	     originServiceArea: String?,
+	     destinationServiceArea: String?,
+	     transitTime: TransitTimeType?,
+	     maximumTransitTime: TransitTimeType?,
+	     signatureOption: SignatureOptionType?,
+	     actualRateType: ReturnedRateType?,
+	     ratedShipmentDetails: [RatedShipmentDetail?])
+	{
+		
+		_serviceType = serviceType
+		_packagingType = packagingType
+		_appliedOptions = appliedOptions
+		_appliedSubOptions = appliedSubOptions
+		_deliveryStation = deliveryStation
+		_deliveryDayOfWeek = deliveryDayOfWeek
+		_deliveryTimestamp = deliveryTimestamp
+		_commitDetails = commitDetails
+		_destinationAirportId = destinationAirportId
+		_ineligibleForMoneyBackGuarantee = ineligibleForMoneyBackGuarantee
+		_originServiceArea = originServiceArea
+		_destinationServiceArea = destinationServiceArea
+		_transitTime = transitTime
+		_maximumTransitTime = maximumTransitTime
+		_signatureOption = signatureOption
+		_actualRateType = actualRateType
+		_ratedShipmentDetails = ratedShipmentDetails
+	}
+	
+	func serviceType() -> ServiceType { return _serviceType! }
+	func packagingType() -> PackagingType { return _packagingType! }
+	func appliedOptions() -> [ServiceOptionType] { return _appliedOptions as! [ServiceOptionType] }
+	func appliedSubOptions() -> ServiceSubOptionDetail { return _appliedSubOptions! }
+	func deliveryStation() -> String { return _deliveryStation! }
+	func deliveryDayOfWeek() -> DayOfWeekType { return _deliveryDayOfWeek! }
+	func deliveryTimestamp() -> Date { return _deliveryTimestamp! }
+	func commitDetails() -> [CommitDetail] { return _commitDetails as! [CommitDetail] }
+	func destinationAirportId() -> String { return _destinationAirportId! }
+	func ineligibleForMoneyBackGuarantee() -> Bool { return _ineligibleForMoneyBackGuarantee! }
+	func originServiceArea() -> String { return _originServiceArea! }
+	func destinationServiceArea() -> String { return _destinationServiceArea! }
+	func transitTime() -> TransitTimeType { return _transitTime! }
+	func maximumTransitTime() -> TransitTimeType { return _maximumTransitTime! }
+	func signatureOption() -> SignatureOptionType { return _signatureOption! }
+	func actualRateType() -> ReturnedRateType { return _actualRateType! }
+	func ratedShipmentDetails() -> [RatedShipmentDetail] { return _ratedShipmentDetails as! [RatedShipmentDetail] }
 }
 
 struct WebAuthenticationDetail : CustomStringConvertible
@@ -174,11 +253,11 @@ struct fNotification : CustomStringConvertible
 	fileprivate let _code: String?
 	fileprivate let _message: String?
 	fileprivate let _localizedMessage: String?
-	fileprivate let _messageParameters: NotificationParameter?
+	fileprivate let _messageParameters: [NotificationParameter]?
 	
 	var description: String { return "\(severity())\(source())\(code())\(message())\(localizedMessage())\(messageParameters())" }
 	
-	init(severity: NotificationSeverityType?, source: String?, code: String?, message: String?, localizedMessage: String?, messageParameters: NotificationParameter?)
+	init(severity: NotificationSeverityType?, source: String?, code: String?, message: String?, localizedMessage: String?, messageParameters: [NotificationParameter]?)
 	{
 		_severity = severity
 		_source = source
@@ -188,12 +267,12 @@ struct fNotification : CustomStringConvertible
 		_messageParameters = messageParameters
 	}
 	
-	func severity() -> String { return "<Severity>\(_severity!)</Severity>" }
-	func source() -> String { return "<Source>\(_source!)</Source>" }
-	func code() -> String { return "<Code>\(_code!)</Code>" }
-	func message() -> String { return "<Message>\(_message!)</Message>" }
-	func localizedMessage() -> String { return "<LocalizedMessage>\(_localizedMessage!)</LocalizedMessage>" }
-	func messageParameters() -> String { return "<MessageParameters>\(_messageParameters!)</MessageParameters>" }
+	func severity() -> (name: String, value: String) { return (_severity == nil ? (name: "severity", value: "") : (name: "severity", value: "\(_severity!)")) }
+	func source() -> (name: String, value: String) { return (_source == nil ? (name: "source", value: "") : (name: "source", value: "\(_source!)")) }
+	func code() -> (name: String, value: String) { return (_code == nil ? (name: "code", value: "") : (name: "code", value: "\(_code!)")) }
+	func message() -> (name: String, value: String) { return (_message == nil ? (name: "message", value: "") : (name: "message", value: "\(_message!)")) }
+	func localizedMessage() -> (name: String, value: String) { return (_localizedMessage == nil ? (name: "localized message", value: "") : (name: "localized message", value: "\(_localizedMessage!)")) }
+	func messageParameters() -> String { return (_messageParameters == nil ? "" : "<MessageParameters>\(_messageParameters!)</MessageParameters>") }
 }
 
 struct NotificationParameter : CustomStringConvertible
@@ -249,11 +328,11 @@ struct ConsolidationKey : CustomStringConvertible
 {
 	fileprivate let _type: ConsolidationType?
 	fileprivate let _index: String?
-	fileprivate let _date: NSDate?
+	fileprivate let _date: Date?
 
 	var description: String { return "<\(type(of: self))>\(type())\(index())\(date())</\(type(of: self))>" }
 	
-	init(type: ConsolidationType?, index: String?, date: NSDate?)
+	init(type: ConsolidationType?, index: String?, date: Date?)
 	{
 		_type = type
 		_index = index
@@ -267,7 +346,7 @@ struct ConsolidationKey : CustomStringConvertible
 
 struct RequestedShipment : CustomStringConvertible
 {
-	fileprivate let _shipTimestamp: NSDate?
+	fileprivate let _shipTimestamp: Date?
 	fileprivate let _dropoffType: DropoffType?
 	fileprivate let _serviceType: ServiceType?
 	fileprivate let _packagingType: PackagingType?
@@ -302,7 +381,7 @@ struct RequestedShipment : CustomStringConvertible
 
 	var description: String { return "\(shipTimestamp())\(dropoffType())\(serviceType())\(packagingType())\(variationOptions())\(totalWeight())\(totalInsuredValue())\(preferredCurrency())\(shipmentAuthorizationDetail())\(shipper())\(recipient())\(recipientLocationNumber())\(origin())\(soldTo())\(shippingChargesPayment())\(specialServicesRequested())\(expressFreightDetail())\(freightShipmentDetail())\(deliveryInstructions())\(variableHandlingChargeDetail())\(customsClearanceDetail())\(pickupDetail())\(smartPostDetail())\(blockInsightVisibility())\(labelSpecification())\(shippingDocumentSpecification())\(rateRequestTypes())\(edtRequestType())\(packageCount())\(shipmentOnlyFields())\(configurationData())\(requestedPackageLineItems())" }
 	
-	init(shipTimestamp: NSDate?, dropoffType: DropoffType?, serviceType: ServiceType?, packagingType: PackagingType?, variationOptions: ShipmentVariationOptionDetail?, totalWeight: Weight?, totalInsuredValue: Money?, preferredCurrency: String?, shipmentAuthorizationDetail: ShipmentAuthorizationDetail?, shipper: Party?, recipient: Party?, recipientLocationNumber: String?, origin: ContactAndAddress?, soldTo: Party?, shippingChargesPayment: Payment?, specialServicesRequested: ShipmentSpecialServicesRequested?, expressFreightDetail: ExpressFreightDetail?, freightShipmentDetail: FreightShipmentDetail?, deliveryInstructions: String?, variableHandlingChargeDetail: VariableHandlingChargeDetail?, customsClearanceDetail: CustomsClearanceDetail?, pickupDetail: PickupDetail?, smartPostDetail: SmartPostShipmentDetail?, blockInsightVisibility: Bool?, labelSpecification: LabelSpecification?, shippingDocumentSpecification: ShippingDocumentSpecification?, rateRequestTypes: RateRequestType?, edtRequestType: EdtRequestType?, packageCount: UInt?, shipmentOnlyFields: ShipmentOnlyFieldsType?, configurationData: ShipmentConfigurationData?, requestedPackageLineItems: RequestedPackageLineItem?)
+	init(shipTimestamp: Date?, dropoffType: DropoffType?, serviceType: ServiceType?, packagingType: PackagingType?, variationOptions: ShipmentVariationOptionDetail?, totalWeight: Weight?, totalInsuredValue: Money?, preferredCurrency: String?, shipmentAuthorizationDetail: ShipmentAuthorizationDetail?, shipper: Party?, recipient: Party?, recipientLocationNumber: String?, origin: ContactAndAddress?, soldTo: Party?, shippingChargesPayment: Payment?, specialServicesRequested: ShipmentSpecialServicesRequested?, expressFreightDetail: ExpressFreightDetail?, freightShipmentDetail: FreightShipmentDetail?, deliveryInstructions: String?, variableHandlingChargeDetail: VariableHandlingChargeDetail?, customsClearanceDetail: CustomsClearanceDetail?, pickupDetail: PickupDetail?, smartPostDetail: SmartPostShipmentDetail?, blockInsightVisibility: Bool?, labelSpecification: LabelSpecification?, shippingDocumentSpecification: ShippingDocumentSpecification?, rateRequestTypes: RateRequestType?, edtRequestType: EdtRequestType?, packageCount: UInt?, shipmentOnlyFields: ShipmentOnlyFieldsType?, configurationData: ShipmentConfigurationData?, requestedPackageLineItems: RequestedPackageLineItem?)
 	{
 		_shipTimestamp = shipTimestamp
 		_dropoffType = dropoffType
@@ -458,12 +537,12 @@ struct TaxpayerIdentification : CustomStringConvertible
 	fileprivate let _tinType: TinType?
 	fileprivate let _number: String?
 	fileprivate let _usage: String?
-	fileprivate let _effectiveDate: NSDate?
-	fileprivate let _expirationDate: NSDate?
+	fileprivate let _effectiveDate: Date?
+	fileprivate let _expirationDate: Date?
 	
 	var description: String { return "\(tinType())\(number())\(usage())\(effectiveDate())\(expirationDate())" }
 	
-	init(tinType: TinType?, number: String?, usage: String?, effectiveDate: NSDate?, expirationDate: NSDate?)
+	init(tinType: TinType?, number: String?, usage: String?, effectiveDate: Date?, expirationDate: Date?)
 	{
 		_tinType = tinType
 		_number = number
@@ -876,11 +955,11 @@ struct ReturnEMailDetail : CustomStringConvertible
 struct ReturnAssociationDetail : CustomStringConvertible
 {
 	fileprivate let _trackingNumber: String?
-	fileprivate let _shipDate: NSDate?
+	fileprivate let _shipDate: Date?
 	
 	var description: String { return "\(trackingNumber())\(shipDate())" }
 	
-	init(trackingNumber: String, shipDate: NSDate)
+	init(trackingNumber: String, shipDate: Date)
 	{
 		_trackingNumber = trackingNumber
 		_shipDate = shipDate
@@ -893,13 +972,13 @@ struct ReturnAssociationDetail : CustomStringConvertible
 struct PendingShipmentDetail : CustomStringConvertible
 {
 	fileprivate let _type: PendingShipmentType?
-	fileprivate let _expirationDate: NSDate?
+	fileprivate let _expirationDate: Date?
 	fileprivate let _processingOptions: PendingShipmentProcessingOptionsRequested?
 	fileprivate let _recommendedDocumentSpecification: RecommendedDocumentSpecification?
 	
 	var description: String { return "\(type())\(expirationDate())\(processingOptions())\(recommendedDocumentSpecification())" }
 	
-	init(type: PendingShipmentType, expirationDate: NSDate, processingOptions: PendingShipmentProcessingOptionsRequested, recommendedDocumentSpecification: RecommendedDocumentSpecification)
+	init(type: PendingShipmentType, expirationDate: Date, processingOptions: PendingShipmentProcessingOptionsRequested, recommendedDocumentSpecification: RecommendedDocumentSpecification)
 	{
 		_type = type
 		_expirationDate = expirationDate
@@ -947,11 +1026,11 @@ struct InternationalControlledExportDetail : CustomStringConvertible
 	fileprivate let _foreignTradeZoneCode: String?
 	fileprivate let _entryNumber: String?
 	fileprivate let _licenseOrPermitNumber: String?
-	fileprivate let _licenseOrPermitExpirationDate: NSDate?
+	fileprivate let _licenseOrPermitExpirationDate: Date?
 	
 	var description: String { return "\(type())\(foreignTradeZoneCode())\(entryNumber())\(licenseOrPermitNumber())\(licenseOrPermitExpirationDate())" }
 	
-	init(type: InternationalControlledExportType, foreignTradeZoneCode: String, entryNumber: String, licenseOrPermitNumber: String, licenseOrPermitExpirationDate: NSDate)
+	init(type: InternationalControlledExportType, foreignTradeZoneCode: String, entryNumber: String, licenseOrPermitNumber: String, licenseOrPermitExpirationDate: Date)
 	{
 		_type = type
 		_foreignTradeZoneCode = foreignTradeZoneCode
@@ -1018,12 +1097,12 @@ struct ShipmentDryIceProcessingOptionsRequested : CustomStringConvertible
 struct HomeDeliveryPremiumDetail : CustomStringConvertible
 {
 	fileprivate let _homeDeliveryPremiumType: HomeDeliveryPremiumType?
-	fileprivate let _date: NSDate?
+	fileprivate let _date: Date?
 	fileprivate let _phoneNumber: String?
 	
 	var description: String { return "\(homeDeliveryPremiumType())\(date())\(phoneNumber())" }
 	
-	init(homeDeliveryPremiumType: HomeDeliveryPremiumType, date: NSDate, phoneNumber: String)
+	init(homeDeliveryPremiumType: HomeDeliveryPremiumType, date: Date, phoneNumber: String)
 	{
 		_homeDeliveryPremiumType = homeDeliveryPremiumType
 		_date = date
@@ -1052,11 +1131,11 @@ struct FlatbedTrailerDetail : CustomStringConvertible
 struct FreightGuaranteeDetail : CustomStringConvertible
 {
 	fileprivate let _type: FreightGuaranteeType?
-	fileprivate let _date: NSDate?
+	fileprivate let _date: Date?
 	
 	var description: String { return "\(type())\(date())" }
 	
-	init(type: FreightGuaranteeType, date: NSDate)
+	init(type: FreightGuaranteeType, date: Date)
 	{
 		_type = type
 		_date = date
@@ -1118,13 +1197,13 @@ struct UploadDocumentReferenceDetail : CustomStringConvertible
 struct CustomDeliveryWindowDetail : CustomStringConvertible
 {
 	fileprivate let _type: CustomDeliveryWindowType?
-	fileprivate let _requestTime: NSDate?
+	fileprivate let _requestTime: Date?
 	fileprivate let _requestRange: DateRange?
-	fileprivate let _requestDate: NSDate?
+	fileprivate let _requestDate: Date?
 	
 	var description: String { return "\(type())\(requestTime())\(requestRange())\(requestDate())" }
 	
-	init(type: CustomDeliveryWindowType, requestTime: NSDate, requestRange: DateRange, requestDate: NSDate)
+	init(type: CustomDeliveryWindowType, requestTime: Date, requestRange: DateRange, requestDate: Date)
 	{
 		_type = type
 		_requestTime = requestTime
@@ -1140,12 +1219,12 @@ struct CustomDeliveryWindowDetail : CustomStringConvertible
 
 struct DateRange : CustomStringConvertible
 {
-	fileprivate let _begins: NSDate?
-	fileprivate let _ends: NSDate?
+	fileprivate let _begins: Date?
+	fileprivate let _ends: Date?
 	
 	var description: String { return "\(begins())\(ends())" }
 	
-	init(begins: NSDate, ends: NSDate)
+	init(begins: Date, ends: Date)
 	{
 		_begins = begins
 		_ends = ends
@@ -1539,14 +1618,14 @@ struct Commodity : CustomStringConvertible
 	fileprivate let _customsValue: Money?
 	fileprivate let _exciseConditions: EdtExciseCondition?
 	fileprivate let _exportLicenseNumber: String?
-	fileprivate let _exportLicenseExpirationDate: NSDate?
+	fileprivate let _exportLicenseExpirationDate: Date?
 	fileprivate let _cIMarksAndNumbers: String?
 	fileprivate let _partNumber: String?
 	fileprivate let _naftaDetail: NaftaCommodityDetail?
 	
 	var description: String { return "\(name())\(numberOfPieces())\(description_())\(purpose())\(countryOfManufacture())\(harmonizedCode())\(weight())\(quantity())\(quantityUnits())\(additionalMeasures())\(unitPrice())\(customsValue())\(exciseConditions())\(exportLicenseNumber())\(exportLicenseExpirationDate())\(cIMarksAndNumbers())\(partNumber())\(naftaDetail())" }
 	
-	init(name: String, numberOfPieces: UInt, description: String, purpose: CommodityPurposeType, countryOfManufacture: String, harmonizedCode: String, weight: Weight, quantity: NSDecimalNumber, quantityUnits: String, additionalMeasures: Measure, unitPrice: Money, customsValue: Money, exciseConditions: EdtExciseCondition, exportLicenseNumber: String, exportLicenseExpirationDate: NSDate, cIMarksAndNumbers: String, partNumber: String, naftaDetail: NaftaCommodityDetail)
+	init(name: String, numberOfPieces: UInt, description: String, purpose: CommodityPurposeType, countryOfManufacture: String, harmonizedCode: String, weight: Weight, quantity: NSDecimalNumber, quantityUnits: String, additionalMeasures: Measure, unitPrice: Money, customsValue: Money, exciseConditions: EdtExciseCondition, exportLicenseNumber: String, exportLicenseExpirationDate: Date, cIMarksAndNumbers: String, partNumber: String, naftaDetail: NaftaCommodityDetail)
 	{
 		_name = name
 		_numberOfPieces = numberOfPieces
@@ -1693,15 +1772,15 @@ struct DestinationControlDetail : CustomStringConvertible
 
 struct PickupDetail : CustomStringConvertible
 {
-	fileprivate let _readyDateTime: NSDate?
-	fileprivate let _latestPickupDateTime: NSDate?
+	fileprivate let _readyDateTime: Date?
+	fileprivate let _latestPickupDateTime: Date?
 	fileprivate let _courierInstructions: String?
 	fileprivate let _requestType: PickupRequestType?
 	fileprivate let _requestSource: PickupRequestSourceType?
 	
 	var description: String { return "\(readyDateTime())\(latestPickupDateTime())\(courierInstructions())\(requestType())\(requestSource())" }
 	
-	init(readyDateTime: NSDate, latestPickupDateTime: NSDate, courierInstructions: String, requestType: PickupRequestType, requestSource: PickupRequestSourceType)
+	init(readyDateTime: Date, latestPickupDateTime: Date, courierInstructions: String, requestType: PickupRequestType, requestSource: PickupRequestSourceType)
 	{
 		_readyDateTime = readyDateTime
 		_latestPickupDateTime = latestPickupDateTime
@@ -3134,85 +3213,6 @@ struct ContentRecord : CustomStringConvertible
 	func receivedQuantity() -> String { return (_receivedQuantity == nil ? "" : "<ReceivedQuantity>\(_receivedQuantity!)</ReceivedQuantity>") }
 }
 
-struct RateReplyDetail : CustomStringConvertible
-{
-	fileprivate let _serviceType: [ServiceType?]
-	fileprivate let _packagingType: [PackagingType?]
-	fileprivate let _appliedOptions: [ServiceOptionType?]
-	fileprivate let _appliedSubOptions: [ServiceSubOptionDetail?]
-	fileprivate let _deliveryStation: [String?]
-	fileprivate let _deliveryDayOfWeek: [DayOfWeekType?]
-	fileprivate let _deliveryTimestamp: [NSDate?]
-	fileprivate let _commitDetails: [CommitDetail?]
-	fileprivate let _destinationAirportId: [String?]
-	fileprivate let _ineligibleForMoneyBackGuarantee: [Bool?]
-	fileprivate let _originServiceArea: [String?]
-	fileprivate let _destinationServiceArea: [String?]
-	fileprivate let _transitTime: [TransitTimeType?]
-	fileprivate let _maximumTransitTime: [TransitTimeType?]
-	fileprivate let _signatureOption: [SignatureOptionType?]
-	fileprivate let _actualRateType: [ReturnedRateType?]
-	fileprivate let _ratedShipmentDetails: [RatedShipmentDetail?]
-	
-	var description: String { return "RateReplyDetail" }
-	
-	init(serviceType: [ServiceType?],
-	     packagingType: [PackagingType?],
-	     appliedOptions: [ServiceOptionType?],
-	     appliedSubOptions: [ServiceSubOptionDetail?],
-	     deliveryStation: [String?],
-	     deliveryDayOfWeek: [DayOfWeekType?],
-	     deliveryTimestamp: [NSDate?],
-	     commitDetails: [CommitDetail?],
-	     destinationAirportId: [String?],
-	     ineligibleForMoneyBackGuarantee: [Bool?],
-	     originServiceArea: [String?],
-	     destinationServiceArea: [String?],
-	     transitTime: [TransitTimeType?],
-	     maximumTransitTime: [TransitTimeType?],
-	     signatureOption: [SignatureOptionType?],
-	     actualRateType: [ReturnedRateType?],
-	     ratedShipmentDetails: [RatedShipmentDetail?])
-	{
-		
-		_serviceType = serviceType
-		_packagingType = packagingType
-		_appliedOptions = appliedOptions
-		_appliedSubOptions = appliedSubOptions
-		_deliveryStation = deliveryStation
-		_deliveryDayOfWeek = deliveryDayOfWeek
-		_deliveryTimestamp = deliveryTimestamp
-		_commitDetails = commitDetails
-		_destinationAirportId = destinationAirportId
-		_ineligibleForMoneyBackGuarantee = ineligibleForMoneyBackGuarantee
-		_originServiceArea = originServiceArea
-		_destinationServiceArea = destinationServiceArea
-		_transitTime = transitTime
-		_maximumTransitTime = maximumTransitTime
-		_signatureOption = signatureOption
-		_actualRateType = actualRateType
-		_ratedShipmentDetails = ratedShipmentDetails
-	}
-	
-	func serviceType() -> [ServiceType] { return _serviceType as! [ServiceType] }
-	func packagingType() -> [PackagingType] { return _packagingType as! [PackagingType] }
-	func appliedOptions() -> [ServiceOptionType] { return _appliedOptions as! [ServiceOptionType] }
-	func appliedSubOptions() -> [ServiceSubOptionDetail] { return _appliedSubOptions as! [ServiceSubOptionDetail] }
-	func deliveryStation() -> [String] { return _deliveryStation as! [String] }
-	func deliveryDayOfWeek() -> [DayOfWeekType] { return _deliveryDayOfWeek as! [DayOfWeekType] }
-	func deliveryTimestamp() -> [NSDate] { return _deliveryTimestamp as! [NSDate] }
-	func commitDetails() -> [CommitDetail] { return _commitDetails as! [CommitDetail] }
-	func destinationAirportId() -> [String] { return _destinationAirportId as! [String] }
-	func ineligibleForMoneyBackGuarantee() -> [Bool] { return _ineligibleForMoneyBackGuarantee as! [Bool] }
-	func originServiceArea() -> [String] { return _originServiceArea as! [String] }
-	func destinationServiceArea() -> [String] { return _destinationServiceArea as! [String] }
-	func transitTime() -> [TransitTimeType] { return _transitTime as! [TransitTimeType] }
-	func maximumTransitTime() -> [TransitTimeType] { return _maximumTransitTime as! [TransitTimeType] }
-	func signatureOption() -> [SignatureOptionType] { return _signatureOption as! [SignatureOptionType] }
-	func actualRateType() -> [ReturnedRateType] { return _actualRateType as! [ReturnedRateType] }
-	func ratedShipmentDetails() -> [RatedShipmentDetail] { return _ratedShipmentDetails as! [RatedShipmentDetail] }
-}
-
 struct ServiceSubOptionDetail : CustomStringConvertible
 {
 	fileprivate let _freightGuarantee: FreightGuaranteeType?
@@ -3236,7 +3236,7 @@ struct ServiceSubOptionDetail : CustomStringConvertible
 struct CommitDetail : CustomStringConvertible
 {
 	fileprivate let _serviceType: ServiceType?
-	fileprivate let _commitTimeStamp: NSDate?
+	fileprivate let _commitTimeStamp: Date?
 	fileprivate let _dayOfWeek: String?
 	fileprivate let _destinationServiceArea: String?
 	fileprivate let _brokerToDestinationDays: Int?
@@ -3244,7 +3244,7 @@ struct CommitDetail : CustomStringConvertible
 	
 	var description: String { return "\(serviceType())\(commitTimeStamp())\(dayOfWeek())\(destinationServiceArea())\(brokerToDestinationDays())\(documentContent())" }
 	
-	init(serviceType: ServiceType, commitTimeStamp: NSDate, dayOfWeek: String, destinationServiceArea: String, brokerToDestinationDays: Int, documentContent: InternationalDocumentContentType)
+	init(serviceType: ServiceType, commitTimeStamp: Date, dayOfWeek: String, destinationServiceArea: String, brokerToDestinationDays: Int, documentContent: InternationalDocumentContentType)
 	{
 		_serviceType = serviceType
 		_commitTimeStamp = commitTimeStamp
@@ -3773,7 +3773,7 @@ struct EdtCommodityTax : CustomStringConvertible
 struct EdtTaxDetail : CustomStringConvertible
 {
 	fileprivate let _taxType: EdtTaxType?
-	fileprivate let _effectiveDate: NSDate?
+	fileprivate let _effectiveDate: Date?
 	fileprivate let _name: String?
 	fileprivate let _taxableValue: Money?
 	fileprivate let _description: String?
@@ -3782,7 +3782,7 @@ struct EdtTaxDetail : CustomStringConvertible
 	
 	var description: String { return "\(taxType())\(effectiveDate())\(name())\(taxableValue())\(description_())\(formula())\(amount())" }
 	
-	init(taxType: EdtTaxType, effectiveDate: NSDate, name: String, taxableValue: Money, description: String, formula: String, amount: Money)
+	init(taxType: EdtTaxType, effectiveDate: Date, name: String, taxableValue: Money, description: String, formula: String, amount: Money)
 	{
 		_taxType = taxType
 		_effectiveDate = effectiveDate
@@ -3950,7 +3950,7 @@ struct Weight : CustomStringConvertible
 	func value() -> String { return (_value == nil ? "" : "<Value>\(_value!)</Value>") }
 }
 
-func formatDate(_ date: NSDate) -> String
+func formatDate(_ date: Date) -> String
 {
 	let dateFormatter = DateFormatter()
 	

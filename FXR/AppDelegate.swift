@@ -30,7 +30,7 @@ extension Stack {
 	}
 	
 	var xpath: Element? {
-		return items.isEmpty ? nil : items.map{ String(describing: $0) }.joined(separator: ":") as? Element
+		return items.isEmpty ? nil : items.map{ String(describing: $0) }.joined(separator: "|") as? Element
 	}
 	
 	func find(_ search: String) -> [Element] {
@@ -57,6 +57,7 @@ class AppDelegate: NSObject
 	@IBOutlet weak var recipientZip: NSTextField!
 	@IBOutlet weak var packageWeight: NSTextField!
 	@IBOutlet weak var httpResponseLabel: NSTextField!
+	@IBOutlet weak var showRawXml: NSButton!
 	
 	//var rateRequest: RateRequest
 	var xmlParser = XMLParser()
@@ -118,12 +119,12 @@ class AppDelegate: NSObject
 			variableOptions: nil,
 			consolidationKey: nil,
 			requestedShipment: RequestedShipment(
-				shipTimestamp: NSDate(),
+				shipTimestamp: Date().addingTimeInterval(-(86400*2)),
 				dropoffType: DropoffType.REGULAR_PICKUP,
 				serviceType: nil,
 				packagingType: PackagingType.YOUR_PACKAGING,
 				variationOptions: nil,
-				totalWeight: Weight(units: WeightUnits.LB, value: 1.0),
+				totalWeight: Weight(units: WeightUnits.LB, value: 200.0),
 				totalInsuredValue: nil,
 				preferredCurrency: nil,
 				shipmentAuthorizationDetail: nil,
@@ -231,10 +232,10 @@ class AppDelegate: NSObject
 			return
 		}
 		
-//		if (showRawData.state == NSOnState)
-//		{
-		//print(NSString(data: data2!, encoding: String.Encoding.utf8.rawValue) ?? "")
-//		}
+		if (showRawXml.state == NSOnState)
+		{
+			print(NSString(data: data2!, encoding: String.Encoding.utf8.rawValue) ?? "")
+		}
 		
 		let httpResponse = response as? HTTPURLResponse
 		
@@ -322,7 +323,10 @@ extension AppDelegate: XMLParserDelegate
 			self.detailsTable.reloadData()
 		})
 		
-		//print(RateReply(stack: valueStack).rateReplyDetails().serviceType())
+		if (RateReply(stack: valueStack).highestSeverity() != NotificationSeverityType.SUCCESS)
+		{
+			print(valueStack.find("SOAP-ENV:Envelope|SOAP-ENV:Body|RateReply|Notifications"))
+		}
 	}
 }
 
@@ -336,7 +340,7 @@ extension AppDelegate: NSTableViewDataSource
 		}
 		else
 		{
-			return RateReply(stack: valueStack).rateReplyDetails().serviceType().count
+			return RateReply(stack: valueStack).notifications().count // .rateReplyDetails(). count
 		}
 	}
 }
@@ -346,8 +350,8 @@ extension AppDelegate: NSTableViewDelegate
 	func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any?
 	{
 		// get record to display
-		let nameItem = RateReply(stack: valueStack).rateReplyDetails().serviceType()[row].rawValue
-		//let valueItem = valueStack.find("TotalNetChargeWithDutiesAndTaxes:Amount").map{ $0.components(separatedBy: ":").last! }[row]
+		let nameItem = RateReply(stack: valueStack).notifications()[row].severity().name
+		let valueItem = RateReply(stack: valueStack).notifications()[row].severity().value
 		
 		if (tableColumn?.identifier == "NameCol")
 		{
@@ -355,7 +359,7 @@ extension AppDelegate: NSTableViewDelegate
 		}
 		else if (tableColumn?.identifier == "ValueCol")
 		{
-			//return valueItem
+			return valueItem
 		}
 		
 		return nil
