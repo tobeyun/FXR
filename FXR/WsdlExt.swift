@@ -13,13 +13,28 @@ extension RateReply
 	init(stack: Stack<String>)
 	{
 		let dateFormatter = DateFormatter(); dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
-		
+
 		_highestSeverity = NotificationSeverityType(rawValue: stack.find("SOAP-ENV:Envelope|SOAP-ENV:Body|RateReply|HighestSeverity|").map{ $0.components(separatedBy: "|").last! }[safe: 0]!)!
 		
-		_notifications = stack.find("SOAP-ENV:Envelope|SOAP-ENV:Body|RateReply|Notifications|Severity|").map{ fNotification(severity: NotificationSeverityType(rawValue: $0.components(separatedBy: "|").last!), source: nil, code: nil, message: nil, localizedMessage: nil, messageParameters: nil) }
-		
-		// notification array has been created, now fill
-		//_notifications = _notifications.map{ _ in }
+		_notifications = stack.find("SOAP-ENV:Envelope|SOAP-ENV:Body|RateReply|Notifications|Severity|").enumerated().map{ (index, element) -> fNotification in
+			let notification = fNotification(
+				severity: NotificationSeverityType(rawValue: element.components(separatedBy: "|").last!),
+				source: stack.find("SOAP-ENV:Envelope|SOAP-ENV:Body|RateReply|Notifications|Source|")[safe: index]!.components(separatedBy: "|").last!,
+				code: stack.find("SOAP-ENV:Envelope|SOAP-ENV:Body|RateReply|Notifications|Code|")[safe: index]!.components(separatedBy: "|").last!,
+				message: stack.find("SOAP-ENV:Envelope|SOAP-ENV:Body|RateReply|Notifications|Message|")[safe: index]!.components(separatedBy: "|").last!,
+				localizedMessage: stack.find("SOAP-ENV:Envelope|SOAP-ENV:Body|RateReply|Notifications|LocalizedMessage|")[safe: index]!.components(separatedBy: "|").last!,
+				messageParameters: stack.find("SOAP-ENV:Envelope|SOAP-ENV:Body|RateReply|Notifications|MessageParameters|").enumerated().map{ (i, e) -> NotificationParameter in
+					let parameter = NotificationParameter(
+						id: stack.find("SOAP-ENV:Envelope|SOAP-ENV:Body|RateReply|Notifications|MessageParameters|")[safe: i]!.components(separatedBy: "|").last!,
+						value: stack.find("SOAP-ENV:Envelope|SOAP-ENV:Body|RateReply|Notifications|MessageParameters|")[safe: i]!.components(separatedBy: "|").last!
+					)
+					
+					return parameter
+				}
+			)
+			
+			return notification
+		}
 		
 		_transactionDetail = TransactionDetail(
 			customerTransactionId: stack.find("SOAP-ENV:Envelope|SOAP-ENV:Body|RateReply|TransactionDetail|CustomerTransactionId|").map{ $0.components(separatedBy: "|").last! }[safe: 0],

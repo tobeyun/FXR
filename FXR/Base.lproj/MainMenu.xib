@@ -691,10 +691,10 @@
         <window title="FXR" allowsToolTipsWhenApplicationIsInactive="NO" autorecalculatesKeyViewLoop="NO" releasedWhenClosed="NO" animationBehavior="default" id="QvC-M9-y7g">
             <windowStyleMask key="styleMask" titled="YES" closable="YES" miniaturizable="YES" resizable="YES"/>
             <windowPositionMask key="initialPositionMask" leftStrut="YES" rightStrut="YES" topStrut="YES" bottomStrut="YES"/>
-            <rect key="contentRect" x="335" y="390" width="405" height="360"/>
+            <rect key="contentRect" x="335" y="390" width="634" height="360"/>
             <rect key="screenRect" x="0.0" y="0.0" width="1280" height="777"/>
             <view key="contentView" wantsLayer="YES" id="EiT-Mj-1SZ">
-                <rect key="frame" x="0.0" y="0.0" width="405" height="360"/>
+                <rect key="frame" x="0.0" y="0.0" width="634" height="360"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
                     <button identifier="quickRateButton" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="dpZ-ID-co7">
@@ -782,20 +782,20 @@
                         </buttonCell>
                     </button>
                     <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1o9-fa-Mhd">
-                        <rect key="frame" x="20" y="74" width="365" height="195"/>
+                        <rect key="frame" x="20" y="74" width="594" height="195"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <clipView key="contentView" ambiguous="YES" id="Ivh-ew-Vsc">
-                            <rect key="frame" x="1" y="0.0" width="363" height="194"/>
+                            <rect key="frame" x="1" y="0.0" width="592" height="194"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" headerView="Bv7-GI-SXJ" id="Jrm-lU-End">
-                                    <rect key="frame" x="0.0" y="0.0" width="363" height="171"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="592" height="171"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <size key="intercellSpacing" width="3" height="2"/>
                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                     <tableColumns>
-                                        <tableColumn identifier="NameCol" editable="NO" width="143" minWidth="40" maxWidth="1000" id="X7N-eO-tHM">
+                                        <tableColumn identifier="NameCol" editable="NO" width="266" minWidth="40" maxWidth="1000" id="X7N-eO-tHM">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Name">
                                                 <font key="font" metaFont="smallSystem"/>
                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -808,7 +808,7 @@
                                             </textFieldCell>
                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES" userResizable="YES"/>
                                         </tableColumn>
-                                        <tableColumn identifier="ValueCol" editable="NO" width="214" minWidth="40" maxWidth="1000" id="65K-8I-L2b">
+                                        <tableColumn identifier="ValueCol" editable="NO" width="320" minWidth="40" maxWidth="1000" id="65K-8I-L2b">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Value">
                                                 <font key="font" metaFont="smallSystem"/>
                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -829,8 +829,8 @@
                                 </tableView>
                             </subviews>
                         </clipView>
-                        <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="jSF-vz-lCz">
-                            <rect key="frame" x="1" y="-16" width="0.0" height="16"/>
+                        <scroller key="horizontalScroller" verticalHuggingPriority="750" horizontal="YES" id="jSF-vz-lCz">
+                            <rect key="frame" x="1" y="178" width="592" height="16"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                         <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="Hdo-AD-bcE">
@@ -838,7 +838,7 @@
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                         <tableHeaderView key="headerView" id="Bv7-GI-SXJ">
-                            <rect key="frame" x="0.0" y="0.0" width="363" height="23"/>
+                            <rect key="frame" x="0.0" y="0.0" width="592" height="23"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </tableHeaderView>
                     </scrollView>
@@ -861,7 +861,7 @@
                     </button>
                 </subviews>
             </view>
-            <point key="canvasLocation" x="101.5" y="161"/>
+            <point key="canvasLocation" x="216" y="161"/>
         </window>
     </objects>
 </document>

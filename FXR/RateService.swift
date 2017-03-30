@@ -267,12 +267,12 @@ struct fNotification : CustomStringConvertible
 		_messageParameters = messageParameters
 	}
 	
-	func severity() -> (name: String, value: String) { return (_severity == nil ? (name: "severity", value: "") : (name: "severity", value: "\(_severity!)")) }
-	func source() -> (name: String, value: String) { return (_source == nil ? (name: "source", value: "") : (name: "source", value: "\(_source!)")) }
-	func code() -> (name: String, value: String) { return (_code == nil ? (name: "code", value: "") : (name: "code", value: "\(_code!)")) }
-	func message() -> (name: String, value: String) { return (_message == nil ? (name: "message", value: "") : (name: "message", value: "\(_message!)")) }
-	func localizedMessage() -> (name: String, value: String) { return (_localizedMessage == nil ? (name: "localized message", value: "") : (name: "localized message", value: "\(_localizedMessage!)")) }
-	func messageParameters() -> String { return (_messageParameters == nil ? "" : "<MessageParameters>\(_messageParameters!)</MessageParameters>") }
+	func severity() -> (name: String, value: String) { return (_severity == nil ? (name: "Severity", value: "") : (name: "Severity", value: "\(_severity!)")) }
+	func source() -> (name: String, value: String) { return (_source == nil ? (name: "Source", value: "") : (name: "Source", value: "\(_source!)")) }
+	func code() -> (name: String, value: String) { return (_code == nil ? (name: "Code", value: "") : (name: "Code", value: "\(_code!)")) }
+	func message() -> (name: String, value: String) { return (_message == nil ? (name: "Message", value: "") : (name: "Message", value: "\(_message!)")) }
+	func localizedMessage() -> (name: String, value: String) { return (_localizedMessage == nil ? (name: "Localized Message", value: "") : (name: "Localized Message", value: "\(_localizedMessage!)")) }
+	func messageParameters() -> (name: String, value: String) { return (_messageParameters == nil ? (name: "Message Parameters", value: "") : (name: "message Parameters", value: "\(_messageParameters!)")) }
 }
 
 struct NotificationParameter : CustomStringConvertible

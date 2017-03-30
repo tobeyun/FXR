@@ -36,6 +36,16 @@ extension Stack {
 	func find(_ search: String) -> [Element] {
 		return items.filter{ String(describing: $0).contains(search) }
 	}
+	
+	func indexOf(search: String, start: Int) -> Int {
+		if let i = items.index(where: { String(describing: $0).contains(search) && items.index(after: start) >= start }) {
+			return i
+		}
+		else
+		{
+			return -1
+		}
+	}
 }
 
 extension Collection where Indices.Iterator.Element == Index {
@@ -213,7 +223,9 @@ class AppDelegate: NSObject
 	
 	func callDataTask(body: String)
 	{
-		progressIndicator.startAnimation(self)
+		DispatchQueue.main.async(execute: { () -> Void in
+			self.progressIndicator.startAnimation(self)
+		})
 		
 		let task = URLSession.shared.dataTask(with: getUrlRequest(body: body), completionHandler: completionCallback)
 		
@@ -315,7 +327,9 @@ extension AppDelegate: XMLParserDelegate
 	
 	func parserDidEndDocument(_ parser: XMLParser)
 	{
-		progressIndicator.stopAnimation(self)
+		DispatchQueue.main.async(execute: { () -> Void in
+			self.progressIndicator.stopAnimation(self)
+		})
 		
 		detailsTable.reloadData()
 		
@@ -340,7 +354,7 @@ extension AppDelegate: NSTableViewDataSource
 		}
 		else
 		{
-			return RateReply(stack: valueStack).notifications().count // .rateReplyDetails(). count
+			return 1 //RateReply(stack: valueStack).transactionDetail().count
 		}
 	}
 }
@@ -350,17 +364,39 @@ extension AppDelegate: NSTableViewDelegate
 	func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any?
 	{
 		// get record to display
-		let nameItem = RateReply(stack: valueStack).notifications()[row].severity().name
-		let valueItem = RateReply(stack: valueStack).notifications()[row].severity().value
+		//let nameItem = RateReply(stack: valueStack).notifications()[row].source().name
+		//let valueItem = RateReply(stack: valueStack).notifications()[row].source().value
 		
-		if (tableColumn?.identifier == "NameCol")
+		if (row == 0)
 		{
-			return nameItem
+			if (tableColumn?.identifier == "NameCol") { return "Transaction ID" }
+			else if (tableColumn?.identifier == "ValueCol") { return RateReply(stack: valueStack).transactionDetail().customerTransactionId() }
 		}
-		else if (tableColumn?.identifier == "ValueCol")
-		{
-			return valueItem
-		}
+//		else if (row == 1)
+//		{
+//			if (tableColumn?.identifier == "NameCol") { return RateReply(stack: valueStack).notifications()[0].source().name }
+//			else if (tableColumn?.identifier == "ValueCol") { return RateReply(stack: valueStack).notifications()[0].source().value }
+//		}
+//		else if (row == 2)
+//		{
+//			if (tableColumn?.identifier == "NameCol") { return RateReply(stack: valueStack).notifications()[0].code().name }
+//			else if (tableColumn?.identifier == "ValueCol") { return RateReply(stack: valueStack).notifications()[0].code().value }
+//		}
+//		else if (row == 3)
+//		{
+//			if (tableColumn?.identifier == "NameCol") { return RateReply(stack: valueStack).notifications()[0].message().name }
+//			else if (tableColumn?.identifier == "ValueCol") { return RateReply(stack: valueStack).notifications()[0].message().value }
+//		}
+//		else if (row == 4)
+//		{
+//			if (tableColumn?.identifier == "NameCol") { return RateReply(stack: valueStack).notifications()[0].localizedMessage().name }
+//			else if (tableColumn?.identifier == "ValueCol") { return RateReply(stack: valueStack).notifications()[0].localizedMessage().value }
+//		}
+//		else if (row == 5)
+//		{
+//			if (tableColumn?.identifier == "NameCol") { return RateReply(stack: valueStack).notifications()[0].messageParameters().name }
+//			else if (tableColumn?.identifier == "ValueCol") { return RateReply(stack: valueStack).notifications()[0].messageParameters().value }
+//		}
 		
 		return nil
 	}
