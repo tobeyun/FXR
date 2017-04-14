@@ -8,6 +8,14 @@
 
 import Foundation
 
+extension RawRepresentable {
+	init?(rawValue optionalRawValue: RawValue?) {
+		guard let rawValue = optionalRawValue, let value = Self(rawValue: rawValue) else { return nil }
+		
+		self = value
+	}
+}
+
 enum NotificationSeverityType: String
 {
 	case ERROR
@@ -78,6 +86,64 @@ enum AncillaryFeeAndTaxType: String
 	case GOODS_AND_SERVICES_TAX
 	case HARMONIZED_SALES_TAX
 	case OTHER
+}
+
+enum RequiredShippingDocumentType: String
+{
+	case CANADIAN_B13A
+	case CERTIFICATE_OF_ORIGIN
+	case COMMERCIAL_INVOICE
+	case INTERNATIONAL_AIRWAY_BILL
+	case MAIL_SERVICE_AIRWAY_BILL
+	case SHIPPERS_EXPORT_DECLARATION
+}
+
+enum DelayLevelType: String
+{
+	case CITY
+	case COUNTRY
+	case LOCATION
+	case POSTAL_CODE
+	case SERVICE_AREA
+	case SERVICE_AREA_SPECIAL_SERVICE
+	case SPECIAL_SERVICE
+}
+
+enum DelayPointType: String
+{
+	case BROKER
+	case DESTINATION
+	case ORIGIN
+	case ORIGIN_DESTINATION_PAIR
+	case PROOF_OF_DELIVERY_POINT
+}
+
+enum DistanceUnits: String
+{
+	case KM
+	case MI
+}
+
+enum CommitmentDelayType: String
+{
+	case HOLIDAY
+	case NON_WORKDAY
+	case NO_CITY_DELIVERY
+	case NO_HOLD_AT_LOCATION
+	case NO_LOCATION_DELIVERY
+	case NO_SERVICE_AREA_DELIVERY
+	case NO_SERVICE_AREA_SPECIAL_SERVICE_DELIVERY
+	case NO_SPECIAL_SERVICE_DELIVERY
+	case NO_ZIP_DELIVERY
+	case WEEKEND
+	case WEEKEND_SPECIAL
+}
+
+enum FreightServiceSchedulingType: String
+{
+	case LIMITED
+	case STANDARD
+	case WILL_CALL
 }
 
 enum TrackingIdType: String
