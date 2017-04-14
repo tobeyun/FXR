@@ -8,6 +8,11 @@
 
 import Foundation
 
+protocol HasChildren
+{
+	var children: [(name: String, value: Any?)] {get}
+}
+
 struct SoapMessage : CustomStringConvertible
 {
 	fileprivate let _message: RateRequest
@@ -64,109 +69,117 @@ struct RateRequest : CustomStringConvertible
 	func requestedShipment() -> String { return (_requestedShipment == nil ? "" : "<RequestedShipment>\(_requestedShipment!)</RequestedShipment>") }
 }
 
-struct RateReply : CustomStringConvertible
-{
-	internal let _highestSeverity: NotificationSeverityType
-	internal let _notifications: [fNotification]
-	internal let _transactionDetail: TransactionDetail?
-	internal let _version: VersionId
-	internal let _rateReplyDetails: [RateReplyDetail]?
+struct RateReply
+{	
+	fileprivate let _stack: Stack<ValuePath>
 	
-	var description: String { return "\(_highestSeverity)\n\(_notifications)\n\(_transactionDetail)\n\(_version)\n\(_rateReplyDetails)\n" }
+	init(_ stack: Stack<ValuePath>)
+	{
+		_stack = stack
+	}
+
+	func highestSeverity() -> NotificationSeverityType { return NotificationSeverityType(rawValue: _stack.find("RateReply|HighestSeverity")[0].value)! }
 	
-//	init(highestSeverity: NotificationSeverityType, notifications: fNotification, transactionDetail: TransactionDetail?, version: VersionId, rateReplyDetails: RateReplyDetail?)
-//	{
-//		_highestSeverity = highestSeverity
-//		_notifications = notifications
-//		_transactionDetail = transactionDetail
-//		_version = version
-//		_rateReplyDetails = rateReplyDetails
-//	}
+	func notifications() -> [fNotification] { return _stack.find("RateReply|Notifications|Severity").enumerated().map{ (index, element) -> fNotification in
+			return fNotification(
+				severity: NotificationSeverityType(rawValue: element.value),
+				source: _stack.find("RateReply|Notifications|Source")[safe: index]?.value ?? "",
+				code: _stack.find("RateReply|Notifications|Code")[safe: index]?.value ?? "",
+				message: _stack.find("RateReply|Notifications|Message")[safe: index]?.value ?? "",
+				localizedMessage: _stack.find("RateReply|Notifications|LocalizedMessage")[safe: index]?.value ?? "",
+				messageParameters: _stack.find("RateReply|Notifications|MessageParameters").enumerated().map{ (i, e) -> NotificationParameter in
+					return NotificationParameter(
+						id: _stack.find("RateReply|Notifications|MessageParameters")[safe: i]!.value,
+						value: _stack.find("RateReply|Notifications|MessageParameters")[safe: i]!.value
+					)
+				}
+			)
+		}
+	}
 	
-	func highestSeverity() -> NotificationSeverityType { return _highestSeverity }
-	func notifications() -> [fNotification] { return _notifications }
-	func transactionDetail() -> TransactionDetail { return _transactionDetail! }
-	func version() -> VersionId { return _version }
-	func rateReplyDetails() -> [RateReplyDetail] { return _rateReplyDetails! }
+	func transactionDetail() -> TransactionDetail? { return TransactionDetail(
+			customerTransactionId: _stack.find("RateReply|TransactionDetail|CustomerTransactionId").map{ $0.value! }[safe: 0],
+			localization: Localization(
+				languageCode: (_stack.find("RateReply|TransactionDetail|Localization|LanguageCode").map{ $0.value }[safe: 0] ?? "")!,
+				localeCode: _stack.find("RateReply|TransactionDetail|Localization|LocaleCode").map{ $0.value }[safe: 0] ?? ""
+			)
+		)
+	}
+		
+	func version() -> VersionId { return VersionId() }
+		
+	func rateReplyDetails() -> [RateReplyDetail]?
+	{
+		if (highestSeverity() == NotificationSeverityType.FAILURE)
+		{
+			return nil
+		}
+		else
+		{
+			return _stack.find("RateReply|RateReplyDetails|ServiceType").enumerated().map{ (index, element) -> RateReplyDetail in
+				return RateReplyDetail(index, _stack)
+			}
+		}
+	}
 }
 
 struct RateReplyDetail : CustomStringConvertible
 {
-	fileprivate let _serviceType: ServiceType?
-	fileprivate let _packagingType: PackagingType?
-	fileprivate let _appliedOptions: [ServiceOptionType?]
-	fileprivate let _appliedSubOptions: ServiceSubOptionDetail?
-	fileprivate let _deliveryStation: String?
-	fileprivate let _deliveryDayOfWeek: DayOfWeekType?
-	fileprivate let _deliveryTimestamp: Date?
-	fileprivate let _commitDetails: [CommitDetail?]
-	fileprivate let _destinationAirportId: String?
-	fileprivate let _ineligibleForMoneyBackGuarantee: Bool?
-	fileprivate let _originServiceArea: String?
-	fileprivate let _destinationServiceArea: String?
-	fileprivate let _transitTime: TransitTimeType?
-	fileprivate let _maximumTransitTime: TransitTimeType?
-	fileprivate let _signatureOption: SignatureOptionType?
-	fileprivate let _actualRateType: ReturnedRateType?
-	fileprivate let _ratedShipmentDetails: [RatedShipmentDetail?]
+	fileprivate let _index: Int
+	fileprivate let _stack: Stack<ValuePath>
 	
-	var description: String { return "RateReplyDetail" }
+	var description: String { return "Rate Reply Detail" }
 	
-	init(serviceType: ServiceType?,
-	     packagingType: PackagingType?,
-	     appliedOptions: [ServiceOptionType?],
-	     appliedSubOptions: ServiceSubOptionDetail?,
-	     deliveryStation: String?,
-	     deliveryDayOfWeek: DayOfWeekType?,
-	     deliveryTimestamp: Date?,
-	     commitDetails: [CommitDetail?],
-	     destinationAirportId: String?,
-	     ineligibleForMoneyBackGuarantee: Bool?,
-	     originServiceArea: String?,
-	     destinationServiceArea: String?,
-	     transitTime: TransitTimeType?,
-	     maximumTransitTime: TransitTimeType?,
-	     signatureOption: SignatureOptionType?,
-	     actualRateType: ReturnedRateType?,
-	     ratedShipmentDetails: [RatedShipmentDetail?])
+	init(_ index: Int, _ stack: Stack<ValuePath>)
 	{
-		
-		_serviceType = serviceType
-		_packagingType = packagingType
-		_appliedOptions = appliedOptions
-		_appliedSubOptions = appliedSubOptions
-		_deliveryStation = deliveryStation
-		_deliveryDayOfWeek = deliveryDayOfWeek
-		_deliveryTimestamp = deliveryTimestamp
-		_commitDetails = commitDetails
-		_destinationAirportId = destinationAirportId
-		_ineligibleForMoneyBackGuarantee = ineligibleForMoneyBackGuarantee
-		_originServiceArea = originServiceArea
-		_destinationServiceArea = destinationServiceArea
-		_transitTime = transitTime
-		_maximumTransitTime = maximumTransitTime
-		_signatureOption = signatureOption
-		_actualRateType = actualRateType
-		_ratedShipmentDetails = ratedShipmentDetails
+		_index = index
+		_stack = stack
 	}
 	
-	func serviceType() -> ServiceType { return _serviceType! }
-	func packagingType() -> PackagingType { return _packagingType! }
-	func appliedOptions() -> [ServiceOptionType] { return _appliedOptions as! [ServiceOptionType] }
-	func appliedSubOptions() -> ServiceSubOptionDetail { return _appliedSubOptions! }
-	func deliveryStation() -> String { return _deliveryStation! }
-	func deliveryDayOfWeek() -> DayOfWeekType { return _deliveryDayOfWeek! }
-	func deliveryTimestamp() -> Date { return _deliveryTimestamp! }
-	func commitDetails() -> [CommitDetail] { return _commitDetails as! [CommitDetail] }
-	func destinationAirportId() -> String { return _destinationAirportId! }
-	func ineligibleForMoneyBackGuarantee() -> Bool { return _ineligibleForMoneyBackGuarantee! }
-	func originServiceArea() -> String { return _originServiceArea! }
-	func destinationServiceArea() -> String { return _destinationServiceArea! }
-	func transitTime() -> TransitTimeType { return _transitTime! }
-	func maximumTransitTime() -> TransitTimeType { return _maximumTransitTime! }
-	func signatureOption() -> SignatureOptionType { return _signatureOption! }
-	func actualRateType() -> ReturnedRateType { return _actualRateType! }
-	func ratedShipmentDetails() -> [RatedShipmentDetail] { return _ratedShipmentDetails as! [RatedShipmentDetail] }
+	func serviceType() -> ServiceType? { return ServiceType(rawValue: _stack.find("RateReply|RateReplyDetails|ServiceType")[_index].value)! }
+	func packagingType() -> PackagingType? { return PackagingType(rawValue: _stack.find("RateReply|RateReplyDetails|PackagingType")[_index].value)! }
+	
+	func appliedOptions() -> [ServiceOptionType]?
+	{
+		return _stack.find("RateReply|RateReplyDetails|AppliedOptions").enumerated().map{ (i, e) -> ServiceOptionType in
+					return ServiceOptionType(rawValue: e.value)!
+				}
+	}
+	
+	func appliedSubOptions() -> ServiceSubOptionDetail?
+	{
+		return ServiceSubOptionDetail(
+			freightGuarantee: FreightGuaranteeType(rawValue: _stack.find("RateReply|RateReplyDetails|AppliedSubOptions|FreightGuarantee")[safe: _index]?.value),
+			smartPostHubId: _stack.find("RateReply|RateReplyDetails|AppliedSubOptions|SmartPostHubId")[safe: _index]?.value,
+			smartPostIndicia: SmartPostIndiciaType(rawValue: _stack.find("RateReply|RateReplyDetails|AppliedSubOptions|SmartPostIndicia")[safe: _index]?.value)
+		)
+	}
+	
+	func deliveryStation() -> String? { return _stack.find("RateReply|RateReplyDetails|DeliveryStation")[safe: _index]?.value }
+	func deliveryDayOfWeek() -> DayOfWeekType? { return DayOfWeekType(rawValue: _stack.find("RateReply|RateReplyDetails|DeliveryDayOfWeek")[safe: _index]?.value) }
+	func deliveryTimestamp() -> Date? { return _stack.find("RateReply|RateReplyDetails|DeliveryTimestamp")[safe: _index]?.value?.toDate() }
+	
+	func commitDetails() -> [CommitDetail]?
+	{
+		return _stack.find("RateReply|RateReplyDetails|CommitDetails|ServiceType").enumerated().map{ (i, e) -> CommitDetail in
+					return CommitDetail(i, _stack)
+				}
+	}
+	
+	func destinationAirportId() -> String? { return _stack.find("RateReply|RateReplyDetails|DestinationAirportId")[safe: _index]?.value }
+	func ineligibleForMoneyBackGuarantee() -> Bool? { return _stack.find("RateReply|RateReplyDetails|IneligibleForMoneyBackGuarantee")[safe: _index]?.value == "TRUE" }
+	func originServiceArea() -> String? { return _stack.find("RateReply|RateReplyDetails|OriginServiceArea")[safe: _index]?.value }
+	func destinationServiceArea() -> String? { return _stack.find("RateReply|RateReplyDetails|DestinationServiceArea")[safe: _index]?.value }
+	func transitTime() -> TransitTimeType? { return TransitTimeType(rawValue: _stack.find("RateReply|RateReplyDetails|TransitTime")[safe: _index]?.value) }
+	func maximumTransitTime() -> TransitTimeType? { return TransitTimeType(rawValue: _stack.find("RateReply|RateReplyDetails|MaximumTransitTime")[safe: _index]?.value) }
+	func signatureOption() -> SignatureOptionType? { return SignatureOptionType(rawValue: _stack.find("RateReply|RateReplyDetails|SignatureOption")[safe: _index]?.value) }
+	func actualRateType() -> ReturnedRateType? { return ReturnedRateType(rawValue: _stack.find("RateReply|RateReplyDetails|ActualRateType")[safe: _index]?.value) }
+	func ratedShipmentDetails() -> [RatedShipmentDetail]?
+	{
+		return _stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|ShipmentRateDetail|RateType").enumerated().map{ (i, e) -> RatedShipmentDetail in
+			return RatedShipmentDetail(i, _stack)
+		}
+	}
 }
 
 struct WebAuthenticationDetail : CustomStringConvertible
@@ -267,12 +280,12 @@ struct fNotification : CustomStringConvertible
 		_messageParameters = messageParameters
 	}
 	
-	func severity() -> (name: String, value: String) { return (_severity == nil ? (name: "Severity", value: "") : (name: "Severity", value: "\(_severity!)")) }
-	func source() -> (name: String, value: String) { return (_source == nil ? (name: "Source", value: "") : (name: "Source", value: "\(_source!)")) }
-	func code() -> (name: String, value: String) { return (_code == nil ? (name: "Code", value: "") : (name: "Code", value: "\(_code!)")) }
-	func message() -> (name: String, value: String) { return (_message == nil ? (name: "Message", value: "") : (name: "Message", value: "\(_message!)")) }
-	func localizedMessage() -> (name: String, value: String) { return (_localizedMessage == nil ? (name: "Localized Message", value: "") : (name: "Localized Message", value: "\(_localizedMessage!)")) }
-	func messageParameters() -> (name: String, value: String) { return (_messageParameters == nil ? (name: "Message Parameters", value: "") : (name: "message Parameters", value: "\(_messageParameters!)")) }
+	func severity() -> (name: String, value: NotificationSeverityType?) { return (_severity == nil ? (name: "Severity", value: nil) : (name: "Severity", value: _severity!)) }
+	func source() -> (name: String, value: String) { return (_source == nil ? (name: "Source", value: "") : (name: "Source", value: _source!)) }
+	func code() -> (name: String, value: String) { return (_code == nil ? (name: "Code", value: "") : (name: "Code", value: _code!)) }
+	func message() -> (name: String, value: String) { return (_message == nil ? (name: "Message", value: "") : (name: "Message", value: _message!)) }
+	func localizedMessage() -> (name: String, value: String) { return (_localizedMessage == nil ? (name: "Localized Message", value: "") : (name: "Localized Message", value: _localizedMessage!)) }
+	func messageParameters() -> (name: String, value: [NotificationParameter]?) { return (_messageParameters == nil ? (name: "Message Parameters", value: nil) : (name: "Message Parameters", value: _messageParameters!)) }
 }
 
 struct NotificationParameter : CustomStringConvertible
@@ -280,7 +293,7 @@ struct NotificationParameter : CustomStringConvertible
 	fileprivate let _id: String?
 	fileprivate let _value: String?
 	
-	var description: String { return "\(id())\(value())" }
+	var description: String { return "Notification Paramenter" }
 	
 	init(id: String?, value: String?)
 	{
@@ -288,8 +301,8 @@ struct NotificationParameter : CustomStringConvertible
 		_value = value
 	}
 	
-	func id() -> String { return "<Id>\(_id!)</Id>" }
-	func value() -> String { return "<Value>\(_value!)</Value>" }
+	func id() -> (name: String, value: String) { return (_id == nil ? (name: "Id", value: "") : (name: "Id", value: _id!)) }
+	func value() -> (name: String, value: String) { return (_value == nil ? (name: "Value", value: "") : (name: "Value", value: _value!)) }
 }
 
 struct Localization : CustomStringConvertible
@@ -3097,7 +3110,7 @@ struct SignatureOptionDetail : CustomStringConvertible
 	
 	var description: String { return "\(optionType())\(signatureReleaseNumber())" }
 	
-	init(optionType: SignatureOptionType, signatureReleaseNumber: String)
+	init(optionType: SignatureOptionType?, signatureReleaseNumber: String?)
 	{
 		_optionType = optionType
 		_signatureReleaseNumber = signatureReleaseNumber
@@ -3120,7 +3133,7 @@ struct CodDetail : CustomStringConvertible
 	
 	var description: String { return "\(codCollectionAmount())\(addTransportationChargesDetail())\(collectionType())\(codRecipient())\(financialInstitutionContactAndAddress())\(remitToName())\(referenceIndicator())\(returnTrackingId())" }
 	
-	init(codCollectionAmount: Money, addTransportationChargesDetail: CodAddTransportationChargesDetail, collectionType: CodCollectionType, codRecipient: Party, financialInstitutionContactAndAddress: ContactAndAddress, remitToName: String, referenceIndicator: CodReturnReferenceIndicatorType, returnTrackingId: TrackingId)
+	init(codCollectionAmount: Money?, addTransportationChargesDetail: CodAddTransportationChargesDetail, collectionType: CodCollectionType, codRecipient: Party, financialInstitutionContactAndAddress: ContactAndAddress, remitToName: String, referenceIndicator: CodReturnReferenceIndicatorType, returnTrackingId: TrackingId)
 	{
 		_codCollectionAmount = codCollectionAmount
 		_addTransportationChargesDetail = addTransportationChargesDetail
@@ -3221,7 +3234,7 @@ struct ServiceSubOptionDetail : CustomStringConvertible
 	
 	var description: String { return "\(freightGuarantee())\(smartPostHubId())\(smartPostIndicia())" }
 	
-	init(freightGuarantee: FreightGuaranteeType, smartPostHubId: String, smartPostIndicia: SmartPostIndiciaType)
+	init(freightGuarantee: FreightGuaranteeType?, smartPostHubId: String?, smartPostIndicia: SmartPostIndiciaType?)
 	{
 		_freightGuarantee = freightGuarantee
 		_smartPostHubId = smartPostHubId
@@ -3233,33 +3246,158 @@ struct ServiceSubOptionDetail : CustomStringConvertible
 	func smartPostIndicia() -> String { return (_smartPostIndicia == nil ? "" : "<SmartPostIndicia>\(_smartPostIndicia!)</SmartPostIndicia>") }
 }
 
+struct CleansedAddressAndLocationDetail
+{
+	fileprivate let _countryCode: String?
+	fileprivate let _stateOrProvinceCode: String?
+	fileprivate let _postalCode: String?
+	fileprivate let _serviceArea: String?
+	fileprivate let _locationId: String?
+	fileprivate let _locationNumber: String?
+	fileprivate let _airportId: String?
+	
+	init(countryCode: String?, stateOrProvinceCode: String?, postalCode: String?, serviceArea: String?, locationId: String?, locationNumber: String?, airportId: String?)
+	{
+		_countryCode = countryCode
+		_stateOrProvinceCode = stateOrProvinceCode
+		_postalCode = postalCode
+		_serviceArea = serviceArea
+		_locationId = locationId
+		_locationNumber = locationNumber
+		_airportId = airportId
+	}
+}
+
 struct CommitDetail : CustomStringConvertible
 {
-	fileprivate let _serviceType: ServiceType?
-	fileprivate let _commitTimeStamp: Date?
-	fileprivate let _dayOfWeek: String?
-	fileprivate let _destinationServiceArea: String?
-	fileprivate let _brokerToDestinationDays: Int?
-	fileprivate let _documentContent: InternationalDocumentContentType?
+	fileprivate let _index: Int
+	fileprivate let _stack: Stack<ValuePath>
 	
-	var description: String { return "\(serviceType())\(commitTimeStamp())\(dayOfWeek())\(destinationServiceArea())\(brokerToDestinationDays())\(documentContent())" }
+	var description: String { return "Commit Detail" }
 	
-	init(serviceType: ServiceType, commitTimeStamp: Date, dayOfWeek: String, destinationServiceArea: String, brokerToDestinationDays: Int, documentContent: InternationalDocumentContentType)
+	init(_ index: Int, _ stack: Stack<ValuePath>)
 	{
-		_serviceType = serviceType
-		_commitTimeStamp = commitTimeStamp
-		_dayOfWeek = dayOfWeek
-		_destinationServiceArea = destinationServiceArea
-		_brokerToDestinationDays = brokerToDestinationDays
-		_documentContent = documentContent
+		_index = index
+		_stack = stack
 	}
 	
-	func serviceType() -> String { return (_serviceType == nil ? "" : "<ServiceType>\(_serviceType!)</ServiceType>") }
-	func commitTimeStamp() -> String { return (_commitTimeStamp == nil ? "" : "<CommitTimeStamp>\(_commitTimeStamp!)</CommitTimeStamp>") }
-	func dayOfWeek() -> String { return (_dayOfWeek == nil ? "" : "<DayOfWeek>\(_dayOfWeek!)</DayOfWeek>") }
-	func destinationServiceArea() -> String { return (_destinationServiceArea == nil ? "" : "<DestinationServiceArea>\(_destinationServiceArea!)</DestinationServiceArea>") }
-	func brokerToDestinationDays() -> String { return (_brokerToDestinationDays == nil ? "" : "<BrokerToDestinationDays>\(_brokerToDestinationDays!)</BrokerToDestinationDays>") }
-	func documentContent() -> String { return (_documentContent == nil ? "" : "<DocumentContent>\(_documentContent!)</DocumentContent>") }
+	func commodityName() -> String? { return _stack.find("RateReply|RateReplyDetails|CommitDetails").getValue(service: (serviceType()?.rawValue)!, value: "CommodityName") }
+	func serviceType() -> ServiceType? { return ServiceType(rawValue: _stack.find("RateReply|RateReplyDetails|CommitDetails|ServiceType")[safe: _index]?.value) }
+	func appliedOptions() -> ServiceOptionType? { return ServiceOptionType(rawValue: _stack.find("RateReply|RateReplyDetails|CommitDetails").getValue(service: (serviceType()?.rawValue)!, value: "AppliedOptions")) }
+	func appliedSubOptions() -> ServiceSubOptionDetail?
+	{
+		return ServiceSubOptionDetail(
+			freightGuarantee: FreightGuaranteeType(rawValue: _stack.find("RateReply|RateReplyDetails|CommitDetails|AppliedSubOptions").getValue(service: (serviceType()?.rawValue)!, value: "FreightGuarantee")),
+			smartPostHubId: _stack.find("RateReply|RateReplyDetails|CommitDetails|AppliedSubOptions").getValue(service: (serviceType()?.rawValue)!, value: "SmartPostHubId"),
+			smartPostIndicia: SmartPostIndiciaType(rawValue: _stack.find("RateReply|RateReplyDetails|CommitDetails|AppliedSubOptions").getValue(service: (serviceType()?.rawValue)!, value: "SmartPostIndicia"))
+		)
+	}
+	func derivedShipmentSignatureOption() -> SignatureOptionDetail?
+	{
+		return SignatureOptionDetail(
+			optionType: SignatureOptionType(rawValue: _stack.find("RateReply|RateReplyDetails|CommitDetails|DerivedShipmentSignatureOption|OptionType")[safe: _index]?.value),
+			signatureReleaseNumber: _stack.find("RateReply|RateReplyDetails|CommitDetails|DerivedShipmentSignatureOption|SignatureReleaseNumber")[safe: _index]?.value
+		)
+	}
+	func derivedPackageSignatureOptions() -> SignatureOptionDetail?
+	{
+		return SignatureOptionDetail(
+			optionType: SignatureOptionType(rawValue: _stack.find("RateReply|RateReplyDetails|CommitDetails|DerivedPackageSignatureOptions|OptionType")[safe: _index]?.value),
+			signatureReleaseNumber: _stack.find("RateReply|RateReplyDetails|CommitDetails|DerivedPackageSignatureOptions|SignatureReleaseNumber")[safe: _index]?.value
+		)
+	}
+	func derivedOriginDetail() -> CleansedAddressAndLocationDetail?
+	{
+		return CleansedAddressAndLocationDetail(
+			countryCode: _stack.find("RateReply|RateReplyDetails|CommitDetails|DerivedOriginDetail").getValue(service: (serviceType()?.rawValue)!, value: "CountryCode"),
+			stateOrProvinceCode: _stack.find("RateReply|RateReplyDetails|CommitDetails|DerivedOriginDetail").getValue(service: (serviceType()?.rawValue)!, value: "StateOrProvinceCode"),
+			postalCode: _stack.find("RateReply|RateReplyDetails|CommitDetails|DerivedOriginDetail").getValue(service: (serviceType()?.rawValue)!, value: "PostalCode"),
+			serviceArea: _stack.find("RateReply|RateReplyDetails|CommitDetails|DerivedOriginDetail").getValue(service: (serviceType()?.rawValue)!, value: "ServiceArea"),
+			locationId: _stack.find("RateReply|RateReplyDetails|CommitDetails|DerivedOriginDetail").getValue(service: (serviceType()?.rawValue)!, value: "LocationId"),
+			locationNumber: _stack.find("RateReply|RateReplyDetails|CommitDetails|DerivedOriginDetail").getValue(service: (serviceType()?.rawValue)!, value: "LocationNumber"),
+			airportId: _stack.find("RateReply|RateReplyDetails|CommitDetails|DerivedOriginDetail").getValue(service: (serviceType()?.rawValue)!, value: "AirportId")
+		)
+	}
+	func derivedDestinationDetail() -> CleansedAddressAndLocationDetail?
+	{
+		return CleansedAddressAndLocationDetail(
+			countryCode: _stack.find("RateReply|RateReplyDetails|CommitDetails|DerivedDestinationDetail").getValue(service: (serviceType()?.rawValue)!, value: "CountryCode"),
+			stateOrProvinceCode: _stack.find("RateReply|RateReplyDetails|CommitDetails|DerivedDestinationDetail").getValue(service: (serviceType()?.rawValue)!, value: "StateOrProvinceCode"),
+			postalCode: _stack.find("RateReply|RateReplyDetails|CommitDetails|DerivedDestinationDetail").getValue(service: (serviceType()?.rawValue)!, value: "PostalCode"),
+			serviceArea: _stack.find("RateReply|RateReplyDetails|CommitDetails|DerivedDestinationDetail").getValue(service: (serviceType()?.rawValue)!, value: "ServiceArea"),
+			locationId: _stack.find("RateReply|RateReplyDetails|CommitDetails|DerivedDestinationDetail").getValue(service: (serviceType()?.rawValue)!, value: "LcationId"),
+			locationNumber: _stack.find("RateReply|RateReplyDetails|CommitDetails|DerivedDestinationDetail").getValue(service: (serviceType()?.rawValue)!, value: "LocationNumber"),
+			airportId: _stack.find("RateReply|RateReplyDetails|CommitDetails|DerivedDestinationDetail").getValue(service: (serviceType()?.rawValue)!, value: "AirportId")
+		)
+	}
+	func commitTimestamp() -> Date? { return _stack.find("RateReply|RateReplyDetails|CommitDetails").getValue(service: (serviceType()?.rawValue)!, value: "CommitTimestamp")?.toDate() }
+	func dayOfWeek() -> DayOfWeekType? { return DayOfWeekType(rawValue: _stack.find("RateReply|RateReplyDetails|CommitDetails").getValue(service: (serviceType()?.rawValue)!, value: "DayOfWeek")) }
+	func transitTime() -> TransitTimeType? { return TransitTimeType(rawValue: _stack.find("RateReply|RateReplyDetails|CommitDetails").getValue(service: (serviceType()?.rawValue)!, value: "TransitTime")) }
+	func maximumTransitTime() -> TransitTimeType? { return TransitTimeType(rawValue: _stack.find("RateReply|RateReplyDetails|CommitDetails").getValue(service: (serviceType()?.rawValue)!, value: "MaximumTransitTime")) }
+	func destinationServiceArea() -> String? { return _stack.find("RateReply|RateReplyDetails|CommitDetails").getValue(service: (serviceType()?.rawValue)!, value: "DestinationServiceArea") }
+	func brokerAddress() -> Address?
+	{
+		return Address(
+			streetLines: _stack.find("RateReply|RateReplyDetails|CommitDetails|BrokerAddress|StreetLines")[safe: _index]?.value,
+			city: _stack.find("RateReply|RateReplyDetails|CommitDetails|BrokerAddress|City")[safe: _index]?.value,
+			stateOrProvinceCode: _stack.find("RateReply|RateReplyDetails|CommitDetails|BrokerAddress|StateOrProvinceCode")[safe: _index]?.value,
+			postalCode: _stack.find("RateReply|RateReplyDetails|CommitDetails|BrokerAddress|PostalCode")[safe: _index]?.value,
+			urbanizationCode: _stack.find("RateReply|RateReplyDetails|CommitDetails|BrokerAddress|UrbanizationCode")[safe: _index]?.value,
+			countryCode: _stack.find("RateReply|RateReplyDetails|CommitDetails|BrokerAddress|CountryCode")[safe: _index]?.value,
+			countryName: _stack.find("RateReply|RateReplyDetails|CommitDetails|BrokerAddress|CountryName")[safe: _index]?.value,
+			residential: _stack.find("RateReply|RateReplyDetails|CommitDetails|BrokerAddress|Residential")[safe: _index]?.value == ""
+		)
+	}
+	func brokerLocationId() -> String? { return _stack.find("RateReply|RateReplyDetails|CommitDetails|BrokerLocationId")[safe: _index]?.value }
+	func brokerCommitTimestamp() -> Date? { return nil } //_stack.find("RateReply|RateReplyDetails|CommitDetails|BrokerCommitTimestamp")[safe: _index]?.value
+	func brokerCommitDayOfWeek() -> DayOfWeekType? { return nil } //DayOfWeekType(rawValue: (_stack.find("RateReply|RateReplyDetails|CommitDetails|BrokerCommitDayOfWeek")[safe: _index]?.value)!)
+	func brokerToDestinationDays() -> Int? { return nil } //Int((_stack.find("RateReply|RateReplyDetails|CommitDetails|BrokerToDestinationDays")[safe: _index]?.value)!),
+	func proofOfDeliveryDate() -> Date? { return nil }
+	func proofOfDeliveryDayOfWeek() -> DayOfWeekType? { return nil }
+	func commitMessages() -> fNotification? { return nil }
+	func deliveryMessages() -> String? { return nil}
+	func delayDetails() -> DelayDetail? { return nil }
+	func documentContent() -> InternationalDocumentContentType? { return InternationalDocumentContentType(rawValue: (_stack.find("RateReply|RateReplyDetails|CommitDetails|DocumentContent")[safe: _index]?.value)!) }
+	func requiredDocuments() -> RequiredShippingDocumentType? { return nil }
+	func freightCommitDetail() -> FreightCommitDetail? { return nil }
+}
+
+struct DelayDetail
+{
+	fileprivate let _date: Date?
+	fileprivate let _dayOfWeek: DayOfWeekType
+	fileprivate let _level: DelayLevelType
+	fileprivate let _point: DelayPointType
+	fileprivate let _type: CommitmentDelayType
+	fileprivate let _description: String?
+}
+
+struct FreightCommitDetail
+{
+	fileprivate let _originDetail: FreightServiceCenterDetail
+	fileprivate let _destinationDetail: FreightServiceCenterDetail
+	fileprivate let _totalDistance: Distance
+}
+
+struct FreightServiceCenterDetail
+{
+	fileprivate let _interlineCarrierCode: String?
+	fileprivate let _interlineCarrierName: String?
+	fileprivate let _additionalDays: Int?
+	fileprivate let _localService: ServiceType?
+	fileprivate let _localDistance: Distance?
+	fileprivate let _localDuration: String?
+	fileprivate let _localServiceScheduling: FreightServiceSchedulingType?
+	fileprivate let _limitedServiceDays: DayOfWeekType?
+	fileprivate let _gatewayLocationId: String?
+	fileprivate let _location: String?
+	fileprivate let _contactAndAddress: ContactAndAddress?
+}
+
+struct Distance
+{
+	fileprivate let _value: Decimal?
+	fileprivate let _units: DistanceUnits?
 }
 
 struct Money : CustomStringConvertible
@@ -3269,7 +3407,7 @@ struct Money : CustomStringConvertible
 	
 	var description: String { return "\(currency())\(amount())" }
 	
-	init(currency: String, amount: NSDecimalNumber)
+	init(currency: String?, amount: NSDecimalNumber?)
 	{
 		_currency = currency
 		_amount = amount
@@ -3281,25 +3419,33 @@ struct Money : CustomStringConvertible
 
 struct RatedShipmentDetail : CustomStringConvertible
 {
-	fileprivate let _effectiveNetDiscount: Money?
-	fileprivate let _adjustedCodCollectionAmount: Money?
-	fileprivate let _shipmentRateDetail: ShipmentRateDetail?
-	fileprivate let _ratedPackages: RatedPackageDetail?
+	fileprivate let _index: Int
+	fileprivate let _stack: Stack<ValuePath>
 	
-	var description: String { return "RatedShipmentDetail" }
+	var description: String { return "Rated Shipment Detail" }
 	
-//	init(effectiveNetDiscount: Money, adjustedCodCollectionAmount: Money, shipmentRateDetail: ShipmentRateDetail, ratedPackages: RatedPackageDetail)
-//	{
-//		_effectiveNetDiscount = effectiveNetDiscount
-//		_adjustedCodCollectionAmount = adjustedCodCollectionAmount
-//		_shipmentRateDetail = shipmentRateDetail
-//		_ratedPackages = ratedPackages
-//	}
+	init(_ index: Int, _ stack: Stack<ValuePath>)
+	{
+		_index = index
+		_stack = stack
+	}
 	
-	func effectiveNetDiscount() -> Money { return _effectiveNetDiscount! }
-	func adjustedCodCollectionAmount() -> Money { return _adjustedCodCollectionAmount! }
-	func shipmentRateDetail() -> ShipmentRateDetail { return _shipmentRateDetail! }
-	func ratedPackages() -> RatedPackageDetail { return _ratedPackages! }
+	func effectiveNetDiscount() -> Money?
+	{
+		return Money(
+			currency: _stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|EffectiveNetDiscount|Currency")[safe: _index]?.value,
+			amount: NSDecimalNumber(string: _stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|EffectiveNetDiscount|Amount")[safe: _index]?.value)
+		)
+	}
+	func adjustedCodCollectionAmount() -> Money?
+	{
+		return Money(
+			currency: _stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|AdjustedCodCollectionAmount|Currency")[safe: _index]?.value,
+			amount: NSDecimalNumber(string: _stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|AdjustedCodCollectionAmount|Amount")[safe: _index]?.value)
+		)
+	}
+	func shipmentRateDetail() -> ShipmentRateDetail? { return nil }
+	func ratedPackages() -> RatedPackageDetail? { return nil }
 }
 
 struct RatedPackageDetail : CustomStringConvertible
