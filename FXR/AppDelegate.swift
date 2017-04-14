@@ -8,6 +8,8 @@
 
 import Cocoa
 
+typealias ValuePath = (path: String, tag: String?, value: String?)
+
 struct Stack<Element> {
 	var items = [Element]()
 	
@@ -34,7 +36,7 @@ extension Stack {
 	}
 	
 	func find(_ search: String) -> [Element] {
-		return items.filter{ String(describing: $0).contains(search) }
+		return items.filter{ ($0 is String) ? String(describing: $0).contains(search) : ($0 as! ValuePath).path.contains(search) }
 	}
 	
 	func indexOf(search: String, start: Int) -> Int {
@@ -48,11 +50,27 @@ extension Stack {
 	}
 }
 
+extension Array where Element == ValuePath
+{
+	func getValue(service: String, value: String) -> String?
+	{
+		return filter { $0.tag == service && $0.path.contains(value) }.last?.value
+	}
+}
+
 extension Collection where Indices.Iterator.Element == Index {
 	
-	/// Returns the element at the specified index iff it is within bounds, otherwise nil.
+	/// Returns the element at the specified index if it is within bounds, otherwise nil.
 	subscript (safe index: Index) -> Generator.Element? {
 		return indices.contains(index) ? self[index] : nil
+	}
+}
+
+extension String {
+	func toDate() -> Date? {
+		let df = DateFormatter(); df.dateFormat = "yyyy-MM-dd'T'HH:mm:ss"
+		
+		return df.date(from: self) ?? nil
 	}
 }
 
@@ -68,12 +86,21 @@ class AppDelegate: NSObject
 	@IBOutlet weak var packageWeight: NSTextField!
 	@IBOutlet weak var httpResponseLabel: NSTextField!
 	@IBOutlet weak var showRawXml: NSButton!
+	@IBOutlet weak var detailsView: NSOutlineView!
 	
 	//var rateRequest: RateRequest
 	var xmlParser = XMLParser()
 	var pathStack = Stack<String>()
-	var valueStack = Stack<String>()
-
+	var valueStack = Stack<ValuePath>()
+	var rateReply: RateReply
+	var service: String
+	
+	override init()
+	{
+		rateReply = RateReply(valueStack)
+		service = String()
+	}
+	
 	@IBAction func quickTrack(_ sender: Any)
 	{
 //		let soapMessage = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:v12=\"http://fedex.com/ws/track/v12\"><soapenv:Header> </soapenv:Header>" +
@@ -129,12 +156,12 @@ class AppDelegate: NSObject
 			variableOptions: nil,
 			consolidationKey: nil,
 			requestedShipment: RequestedShipment(
-				shipTimestamp: Date().addingTimeInterval(-(86400*2)),
+				shipTimestamp: Date().addingTimeInterval(86400*2),
 				dropoffType: DropoffType.REGULAR_PICKUP,
-				serviceType: nil,
+				serviceType: nil, //ServiceType.FEDEX_GROUND,
 				packagingType: PackagingType.YOUR_PACKAGING,
 				variationOptions: nil,
-				totalWeight: Weight(units: WeightUnits.LB, value: 200.0),
+				totalWeight: Weight(units: WeightUnits.LB, value: 20.0),
 				totalInsuredValue: nil,
 				preferredCurrency: nil,
 				shipmentAuthorizationDetail: nil,
@@ -193,7 +220,7 @@ class AppDelegate: NSObject
 					groupPackageCount: 1,
 					variableHandlingChargeDetail: nil,
 					insuredValue: nil,
-					weight: nil,
+					weight: Weight(units: WeightUnits.LB, value: 20.0),
 					dimensions: nil,
 					physicalPackaging: PhysicalPackagingType.BOX,
 					itemDescription: nil,
@@ -204,10 +231,8 @@ class AppDelegate: NSObject
 				)
 			)
 		)
-
-		let soapMessage = SoapMessage(message: web)
-
-		callDataTask(body: soapMessage.description)
+		
+		callDataTask(body: SoapMessage(message: web).description)
 	}
 	
 	func getUrlRequest(body: String) -> URLRequest
@@ -257,9 +282,11 @@ class AppDelegate: NSObject
 		
 		if (httpResponse?.statusCode == 200)
 		{
+			// reset stack vars
 			pathStack = Stack<String>()
-			valueStack = Stack<String>()
+			valueStack = Stack<ValuePath>()
 			
+			// init parser
 			self.xmlParser = XMLParser(data: data2!)
 			self.xmlParser.delegate = self
 			self.xmlParser.parse()
@@ -276,6 +303,10 @@ extension AppDelegate: NSApplicationDelegate
 		detailsTable.delegate = self
 		detailsTable.dataSource = self
 		detailsTable.reloadData()
+		
+		detailsView.delegate = self
+		detailsView.dataSource = self
+		detailsView.reloadData()
 		
 		progressIndicator.isDisplayedWhenStopped = false
 	}
@@ -295,27 +326,30 @@ extension AppDelegate: XMLParserDelegate
 {
 	func parser(_ parser: XMLParser, didStartElement elementName: String, namespaceURI: String?, qualifiedName qName: String?, attributes attributeDict: [String : String])
 	{
+		// ignore SOAP headers
+		if (elementName.contains("SOAP-ENV")) { return }
+		
+		// set flag for grouping/identification
+		if (elementName == "ServiceType") { service = "SET" }
+		
+		// store opening tag
 		pathStack.push(elementName)
 	}
 	
 	func parser(_ parser: XMLParser, foundCharacters string: String)
 	{
-		// add value to path
-		pathStack.push(string)
+		if (service == "SET") { service = string }
 		
-		// store full path
-		valueStack.push(pathStack.xpath!)
-		
-		// remove value from stack to retain path integrity; ignore return
-		let _  = pathStack.pop()
+		// store full path and value
+		valueStack.push((path: pathStack.xpath!, tag: service, value: string))
 	}
 	
 	func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?)
 	{
-		// remove closing tag from stack to retain path integrity
+		// remove value from stack to retain path integrity
 		if (pathStack.peek == elementName)
 		{
-			// ignore return
+			// pop and ignore return
 			let _ = pathStack.pop()
 		}
 	}
@@ -328,19 +362,29 @@ extension AppDelegate: XMLParserDelegate
 	func parserDidEndDocument(_ parser: XMLParser)
 	{
 		DispatchQueue.main.async(execute: { () -> Void in
+			self.rateReply = RateReply(self.valueStack)
+			
+			if (self.showRawXml.state == NSOnState)
+			{
+				print("\(self.rateReply)")
+			}
+			
+			// print non-SUCCESS messages
+			if (self.rateReply.highestSeverity() != NotificationSeverityType.SUCCESS)
+			{
+				print(self.rateReply.notifications().filter{ $0.severity().value == self.rateReply.highestSeverity() } )
+			}
+		})
+		
+		DispatchQueue.main.async(execute: { () -> Void in
 			self.progressIndicator.stopAnimation(self)
 		})
 		
-		detailsTable.reloadData()
-		
 		DispatchQueue.main.async(execute: { () -> Void in
 			self.detailsTable.reloadData()
+			self.detailsView.reloadData()
+			self.httpResponseLabel.stringValue = "Status: Parsing Complete"
 		})
-		
-		if (RateReply(stack: valueStack).highestSeverity() != NotificationSeverityType.SUCCESS)
-		{
-			print(valueStack.find("SOAP-ENV:Envelope|SOAP-ENV:Body|RateReply|Notifications"))
-		}
 	}
 }
 
@@ -352,9 +396,13 @@ extension AppDelegate: NSTableViewDataSource
 		{
 			return 0
 		}
+		else if (self.rateReply.highestSeverity() == NotificationSeverityType.FAILURE)
+		{
+			return self.rateReply.notifications().count
+		}
 		else
 		{
-			return 1 //RateReply(stack: valueStack).transactionDetail().count
+			return (rateReply.rateReplyDetails()?.count)! // valueStack.find("RateReply|RateReplyDetails|ServiceType|").count
 		}
 	}
 }
@@ -364,40 +412,78 @@ extension AppDelegate: NSTableViewDelegate
 	func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any?
 	{
 		// get record to display
-		//let nameItem = RateReply(stack: valueStack).notifications()[row].source().name
-		//let valueItem = RateReply(stack: valueStack).notifications()[row].source().value
+		let svc = rateReply.rateReplyDetails()?[row].serviceType()?.rawValue
 		
-		if (row == 0)
-		{
-			if (tableColumn?.identifier == "NameCol") { return "Transaction ID" }
-			else if (tableColumn?.identifier == "ValueCol") { return RateReply(stack: valueStack).transactionDetail().customerTransactionId() }
-		}
-//		else if (row == 1)
-//		{
-//			if (tableColumn?.identifier == "NameCol") { return RateReply(stack: valueStack).notifications()[0].source().name }
-//			else if (tableColumn?.identifier == "ValueCol") { return RateReply(stack: valueStack).notifications()[0].source().value }
-//		}
-//		else if (row == 2)
-//		{
-//			if (tableColumn?.identifier == "NameCol") { return RateReply(stack: valueStack).notifications()[0].code().name }
-//			else if (tableColumn?.identifier == "ValueCol") { return RateReply(stack: valueStack).notifications()[0].code().value }
-//		}
-//		else if (row == 3)
-//		{
-//			if (tableColumn?.identifier == "NameCol") { return RateReply(stack: valueStack).notifications()[0].message().name }
-//			else if (tableColumn?.identifier == "ValueCol") { return RateReply(stack: valueStack).notifications()[0].message().value }
-//		}
-//		else if (row == 4)
-//		{
-//			if (tableColumn?.identifier == "NameCol") { return RateReply(stack: valueStack).notifications()[0].localizedMessage().name }
-//			else if (tableColumn?.identifier == "ValueCol") { return RateReply(stack: valueStack).notifications()[0].localizedMessage().value }
-//		}
-//		else if (row == 5)
-//		{
-//			if (tableColumn?.identifier == "NameCol") { return RateReply(stack: valueStack).notifications()[0].messageParameters().name }
-//			else if (tableColumn?.identifier == "ValueCol") { return RateReply(stack: valueStack).notifications()[0].messageParameters().value }
-//		}
+		if (tableColumn?.identifier == "NameCol") { return "Service" }
+		else if (tableColumn?.identifier == "ValueCol") { return svc }
 		
 		return nil
+	}
+}
+
+extension AppDelegate: NSOutlineViewDelegate
+{
+	func outlineView(_ outlineView: NSOutlineView, objectValueFor tableColumn: NSTableColumn?, byItem item: Any?) -> Any?
+	{
+		if let feed = item as? (Any, Any?)
+		{
+			if (tableColumn?.identifier == "NameColumn") {
+				return feed.0
+			} else {
+				if let _ = feed.1 as? CommitDetail { return "" }
+				
+				return "\(feed.1 ?? "")"
+			}
+		}
+		
+		return nil
+	}
+}
+
+extension AppDelegate: NSOutlineViewDataSource
+{
+	func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: Any) -> Bool
+	{
+		if let _ = item as? (Int, ServiceType) { return true }
+		if let _ = item as? (String, CommitDetail) { return true }
+		if let _ = item as? (String, fNotification) { return true }
+		else { return false }
+	}
+	
+	func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int
+	{
+		if (valueStack.items.count == 0) { return 0 }
+		if (rateReply.highestSeverity() == NotificationSeverityType.FAILURE) { return rateReply.notifications().count }
+		
+		if let _ = item as? (Int, ServiceType) { return 3 }
+		if let _ = item as? (String, CommitDetail) { return 3 }
+		else { return rateReply.rateReplyDetails()!.count }
+	}
+	
+	func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: Any?) -> Any
+	{
+		if ((item as? (Int, Any?)) != nil) {	// child
+			guard let i = item as? (Int, ServiceType) else { return "" }
+			
+			if (index == 0) { return (name: "Packaging Type", value: rateReply.rateReplyDetails()![i.0].packagingType()?.rawValue) }
+			if (index == 1) { return (name: "Actual Rate Type", value: rateReply.rateReplyDetails()![i.0].actualRateType()?.rawValue) }
+			else { return (name: "Commit Details", value: rateReply.rateReplyDetails()![i.0].commitDetails()?[i.0]) }
+		}
+		
+		if let _item = item as? (String, CommitDetail) {	// child
+			if (index == 0) { return (name: "Commit Timestamp", value: _item.1.commitTimestamp()) }
+			if (index == 1) { return (name: "Day Of Week", value: _item.1.dayOfWeek()?.rawValue) }
+			else { return (name: "Transit Time", value: _item.1.transitTime()?.rawValue) }
+		}
+		
+		if ((item as? fNotification)) != nil {
+			return rateReply.notifications()[index].message().value
+		}
+		
+		if (rateReply.highestSeverity() == NotificationSeverityType.FAILURE) {
+			return (name: rateReply.notifications().filter{ $0.severity().value == NotificationSeverityType.FAILURE }[0].message().name, value: rateReply.notifications().filter{ $0.severity().value == NotificationSeverityType.FAILURE }[0].message().value)
+		}
+		
+		return (name: index, value: rateReply.rateReplyDetails()![index].serviceType())
 	}
 }
