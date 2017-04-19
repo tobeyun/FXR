@@ -69,13 +69,31 @@ struct RateRequest : CustomStringConvertible
 	func requestedShipment() -> String { return (_requestedShipment == nil ? "" : "<RequestedShipment>\(_requestedShipment!)</RequestedShipment>") }
 }
 
-struct RateReply
-{	
+struct RateReply : CustomStringConvertible
+{
+	enum Funcs
+	{
+		case HighestSeverity ( (Void) -> NotificationSeverityType )
+		case Notifications ( (Void) -> [fNotification] )
+		case TransactionDetail ( (Void) -> TransactionDetail? )
+		case Version ( (Void) -> VersionId )
+		case RateReplyDetails ( (Void) -> [RateReplyDetail]? )
+	}
+	
 	fileprivate let _stack: Stack<ValuePath>
+	
+	var description: String { return "RateReply" }
+	var funcs = Array<Funcs>()
 	
 	init(_ stack: Stack<ValuePath>)
 	{
 		_stack = stack
+		
+		funcs.append(Funcs.HighestSeverity(highestSeverity))
+		funcs.append(Funcs.Notifications(notifications))
+		funcs.append(Funcs.TransactionDetail(transactionDetail))
+		funcs.append(Funcs.Version(version))
+		funcs.append(Funcs.RateReplyDetails(rateReplyDetails))
 	}
 
 	func highestSeverity() -> NotificationSeverityType { return NotificationSeverityType(rawValue: _stack.find("RateReply|HighestSeverity")[0].value)! }
@@ -128,7 +146,7 @@ struct RateReplyDetail : CustomStringConvertible
 	fileprivate let _index: Int
 	fileprivate let _stack: Stack<ValuePath>
 	
-	var description: String { return "Rate Reply Detail" }
+	var description: String { return "RateReply|RateReplyDetails" }
 	
 	init(_ index: Int, _ stack: Stack<ValuePath>)
 	{
@@ -293,7 +311,7 @@ struct NotificationParameter : CustomStringConvertible
 	fileprivate let _id: String?
 	fileprivate let _value: String?
 	
-	var description: String { return "Notification Paramenter" }
+	var description: String { return "Notification Parameter" }
 	
 	init(id: String?, value: String?)
 	{
@@ -1305,7 +1323,7 @@ struct FreightShipmentDetail : CustomStringConvertible
 	fileprivate let _liabilityCoverageDetail: LiabilityCoverageDetail?
 	fileprivate let _coupons: String?
 	fileprivate let _totalHandlingUnits: UInt?
-	fileprivate let _clientDiscountPercent: NSDecimalNumber?
+	fileprivate let _clientDiscountPercent: Decimal?
 	fileprivate let _palletWeight: Weight?
 	fileprivate let _shipmentDimensions: Dimensions?
 	fileprivate let _comment: String?
@@ -1315,7 +1333,7 @@ struct FreightShipmentDetail : CustomStringConvertible
 	
 	var description: String { return "\(fedExFreightAccountNumber())\(fedExFreightBillingContactAndAddress())\(alternateBilling())\(role())\(collectTermsType())\(declaredValuePerUnit())\(declaredValueUnits())\(liabilityCoverageDetail())\(coupons())\(totalHandlingUnits())\(clientDiscountPercent())\(palletWeight())\(shipmentDimensions())\(comment())\(specialServicePayments())\(hazardousMaterialsOfferor())\(lineItems())" }
 	
-	init(fedExFreightAccountNumber: String, fedExFreightBillingContactAndAddress: ContactAndAddress, alternateBilling: Party, role: FreightShipmentRoleType, collectTermsType: FreightCollectTermsType, declaredValuePerUnit: Money, declaredValueUnits: String, liabilityCoverageDetail: LiabilityCoverageDetail, coupons: String, totalHandlingUnits: UInt, clientDiscountPercent: NSDecimalNumber, palletWeight: Weight, shipmentDimensions: Dimensions, comment: String, specialServicePayments: FreightSpecialServicePayment, hazardousMaterialsOfferor: String, lineItems: FreightShipmentLineItem)
+	init(fedExFreightAccountNumber: String, fedExFreightBillingContactAndAddress: ContactAndAddress, alternateBilling: Party, role: FreightShipmentRoleType, collectTermsType: FreightCollectTermsType, declaredValuePerUnit: Money, declaredValueUnits: String, liabilityCoverageDetail: LiabilityCoverageDetail, coupons: String, totalHandlingUnits: UInt, clientDiscountPercent: Decimal, palletWeight: Weight, shipmentDimensions: Dimensions, comment: String, specialServicePayments: FreightSpecialServicePayment, hazardousMaterialsOfferor: String, lineItems: FreightShipmentLineItem)
 	{
 		_fedExFreightAccountNumber = fedExFreightAccountNumber
 		_fedExFreightBillingContactAndAddress = fedExFreightBillingContactAndAddress
@@ -1424,11 +1442,11 @@ struct FreightShipmentLineItem : CustomStringConvertible
 struct Volume : CustomStringConvertible
 {
 	fileprivate let _units: VolumeUnits?
-	fileprivate let _value: NSDecimalNumber?
+	fileprivate let _value: Decimal?
 	
 	var description: String { return "\(units())\(value())" }
 	
-	init(units: VolumeUnits, value: NSDecimalNumber)
+	init(units: VolumeUnits, value: Decimal)
 	{
 		_units = units
 		_value = value
@@ -1441,13 +1459,13 @@ struct Volume : CustomStringConvertible
 struct VariableHandlingChargeDetail : CustomStringConvertible
 {
 	fileprivate let _fixedValue: Money?
-	fileprivate let _percentValue: NSDecimalNumber?
+	fileprivate let _percentValue: Decimal?
 	fileprivate let _rateElementBasis: RateElementBasisType?
 	fileprivate let _rateTypeBasis: RateTypeBasisType?
 	
 	var description: String { return "\(fixedValue())\(percentValue())\(rateElementBasis())\(rateTypeBasis())" }
 	
-	init(fixedValue: Money, percentValue: NSDecimalNumber, rateElementBasis: RateElementBasisType, rateTypeBasis: RateTypeBasisType)
+	init(fixedValue: Money, percentValue: Decimal, rateElementBasis: RateElementBasisType, rateTypeBasis: RateTypeBasisType)
 	{
 		_fixedValue = fixedValue
 		_percentValue = percentValue
@@ -1624,7 +1642,7 @@ struct Commodity : CustomStringConvertible
 	fileprivate let _countryOfManufacture: String?
 	fileprivate let _harmonizedCode: String?
 	fileprivate let _weight: Weight?
-	fileprivate let _quantity: NSDecimalNumber?
+	fileprivate let _quantity: Decimal?
 	fileprivate let _quantityUnits: String?
 	fileprivate let _additionalMeasures: Measure?
 	fileprivate let _unitPrice: Money?
@@ -1638,7 +1656,7 @@ struct Commodity : CustomStringConvertible
 	
 	var description: String { return "\(name())\(numberOfPieces())\(description_())\(purpose())\(countryOfManufacture())\(harmonizedCode())\(weight())\(quantity())\(quantityUnits())\(additionalMeasures())\(unitPrice())\(customsValue())\(exciseConditions())\(exportLicenseNumber())\(exportLicenseExpirationDate())\(cIMarksAndNumbers())\(partNumber())\(naftaDetail())" }
 	
-	init(name: String, numberOfPieces: UInt, description: String, purpose: CommodityPurposeType, countryOfManufacture: String, harmonizedCode: String, weight: Weight, quantity: NSDecimalNumber, quantityUnits: String, additionalMeasures: Measure, unitPrice: Money, customsValue: Money, exciseConditions: EdtExciseCondition, exportLicenseNumber: String, exportLicenseExpirationDate: Date, cIMarksAndNumbers: String, partNumber: String, naftaDetail: NaftaCommodityDetail)
+	init(name: String, numberOfPieces: UInt, description: String, purpose: CommodityPurposeType, countryOfManufacture: String, harmonizedCode: String, weight: Weight, quantity: Decimal, quantityUnits: String, additionalMeasures: Measure, unitPrice: Money, customsValue: Money, exciseConditions: EdtExciseCondition, exportLicenseNumber: String, exportLicenseExpirationDate: Date, cIMarksAndNumbers: String, partNumber: String, naftaDetail: NaftaCommodityDetail)
 	{
 		_name = name
 		_numberOfPieces = numberOfPieces
@@ -1682,12 +1700,12 @@ struct Commodity : CustomStringConvertible
 
 struct Measure : CustomStringConvertible
 {
-	fileprivate let _quantity: NSDecimalNumber?
+	fileprivate let _quantity: Decimal?
 	fileprivate let _units: String?
 	
 	var description: String { return "\(quantity())\(units())" }
 	
-	init(quantity: NSDecimalNumber, units: String)
+	init(quantity: Decimal, units: String)
 	{
 		_quantity = quantity
 		_units = units
@@ -2056,12 +2074,12 @@ struct ShippingDocumentPrintDetail : CustomStringConvertible
 
 struct LinearMeasure : CustomStringConvertible
 {
-	fileprivate let _value: NSDecimalNumber?
+	fileprivate let _value: Decimal?
 	fileprivate let _units: LinearUnits?
 	
 	var description: String { return "\(value())\(units())" }
 	
-	init(value: NSDecimalNumber, units: LinearUnits)
+	init(value: Decimal, units: LinearUnits)
 	{
 		_value = value
 		_units = units
@@ -2799,7 +2817,7 @@ struct HazardousCommodityDescription : CustomStringConvertible
 	fileprivate let _reportableQuantity: Bool?
 	fileprivate let _properShippingName: String?
 	fileprivate let _technicalName: String?
-	fileprivate let _percentage: NSDecimalNumber?
+	fileprivate let _percentage: Decimal?
 	fileprivate let _hazardClass: String?
 	fileprivate let _subsidiaryClasses: String?
 	fileprivate let _labelText: String?
@@ -2808,7 +2826,7 @@ struct HazardousCommodityDescription : CustomStringConvertible
 	
 	var description: String { return "\(id())\(sequenceNumber())\(packingGroup())\(packingDetails())\(reportableQuantity())\(properShippingName())\(technicalName())\(percentage())\(hazardClass())\(subsidiaryClasses())\(labelText())\(processingOptions())\(authorization())" }
 	
-	init(id: String, sequenceNumber: UInt, packingGroup: HazardousCommodityPackingGroupType, packingDetails: HazardousCommodityPackingDetail, reportableQuantity: Bool, properShippingName: String, technicalName: String, percentage: NSDecimalNumber, hazardClass: String, subsidiaryClasses: String, labelText: String, processingOptions: HazardousCommodityDescriptionProcessingOptionType, authorization: String)
+	init(id: String, sequenceNumber: UInt, packingGroup: HazardousCommodityPackingGroupType, packingDetails: HazardousCommodityPackingDetail, reportableQuantity: Bool, properShippingName: String, technicalName: String, percentage: Decimal, hazardClass: String, subsidiaryClasses: String, labelText: String, processingOptions: HazardousCommodityDescriptionProcessingOptionType, authorization: String)
 	{
 		_id = id
 		_sequenceNumber = sequenceNumber
@@ -2859,13 +2877,13 @@ struct HazardousCommodityPackingDetail : CustomStringConvertible
 
 struct HazardousCommodityQuantityDetail : CustomStringConvertible
 {
-	fileprivate let _amount: NSDecimalNumber?
+	fileprivate let _amount: Decimal?
 	fileprivate let _units: String?
 	fileprivate let _quantityType : HazardousCommodityQuantityType?
 	
 	var description: String { return "\(amount())\(units())\(quantityType ())" }
 	
-	init(amount: NSDecimalNumber, units: String, quantityType : HazardousCommodityQuantityType)
+	init(amount: Decimal, units: String, quantityType : HazardousCommodityQuantityType)
 	{
 		_amount = amount
 		_units = units
@@ -2936,12 +2954,12 @@ struct RadionuclideDetail : CustomStringConvertible
 
 struct RadionuclideActivity : CustomStringConvertible
 {
-	fileprivate let _value: NSDecimalNumber?
+	fileprivate let _value: Decimal?
 	fileprivate let _unitOfMeasure: RadioactivityUnitOfMeasure?
 	
 	var description: String { return "\(value())\(unitOfMeasure())" }
 	
-	init(value: NSDecimalNumber, unitOfMeasure: RadioactivityUnitOfMeasure)
+	init(value: Decimal, unitOfMeasure: RadioactivityUnitOfMeasure)
 	{
 		_value = value
 		_unitOfMeasure = unitOfMeasure
@@ -2954,12 +2972,12 @@ struct RadionuclideActivity : CustomStringConvertible
 struct NetExplosiveDetail : CustomStringConvertible
 {
 	fileprivate let _type: NetExplosiveClassificationType?
-	fileprivate let _amount: NSDecimalNumber?
+	fileprivate let _amount: Decimal?
 	fileprivate let _units: String?
 	
 	var description: String { return "\(type())\(amount())\(units())" }
 	
-	init(type: NetExplosiveClassificationType, amount: NSDecimalNumber, units: String)
+	init(type: NetExplosiveClassificationType, amount: Decimal, units: String)
 	{
 		_type = type
 		_amount = amount
@@ -3010,14 +3028,14 @@ struct DangerousGoodsSignatory : CustomStringConvertible
 
 struct RadioactivityDetail : CustomStringConvertible
 {
-	fileprivate let _transportIndex: NSDecimalNumber?
-	fileprivate let _surfaceReading: NSDecimalNumber?
-	fileprivate let _criticalitySafetyIndex: NSDecimalNumber?
+	fileprivate let _transportIndex: Decimal?
+	fileprivate let _surfaceReading: Decimal?
+	fileprivate let _criticalitySafetyIndex: Decimal?
 	fileprivate let _dimensions: Dimensions?
 	
 	var description: String { return "\(transportIndex())\(surfaceReading())\(criticalitySafetyIndex())\(dimensions())" }
 	
-	init(transportIndex: NSDecimalNumber, surfaceReading: NSDecimalNumber, criticalitySafetyIndex: NSDecimalNumber, dimensions: Dimensions)
+	init(transportIndex: Decimal, surfaceReading: Decimal, criticalitySafetyIndex: Decimal, dimensions: Dimensions)
 	{
 		_transportIndex = transportIndex
 		_surfaceReading = surfaceReading
@@ -3273,7 +3291,7 @@ struct CommitDetail : CustomStringConvertible
 	fileprivate let _index: Int
 	fileprivate let _stack: Stack<ValuePath>
 	
-	var description: String { return "Commit Detail" }
+	var description: String { return "RateReply|RatReplyDetails|CommitDetails" }
 	
 	init(_ index: Int, _ stack: Stack<ValuePath>)
 	{
@@ -3403,11 +3421,11 @@ struct Distance
 struct Money : CustomStringConvertible
 {
 	fileprivate let _currency: String?
-	fileprivate let _amount: NSDecimalNumber?
+	fileprivate let _amount: Decimal?
 	
 	var description: String { return "\(currency())\(amount())" }
 	
-	init(currency: String?, amount: NSDecimalNumber?)
+	init(currency: String?, amount: Decimal?)
 	{
 		_currency = currency
 		_amount = amount
@@ -3422,7 +3440,7 @@ struct RatedShipmentDetail : CustomStringConvertible
 	fileprivate let _index: Int
 	fileprivate let _stack: Stack<ValuePath>
 	
-	var description: String { return "Rated Shipment Detail" }
+	var description: String { return "RateReply|RateReplyDetails|RatedShipmentDetails" }
 	
 	init(_ index: Int, _ stack: Stack<ValuePath>)
 	{
@@ -3434,17 +3452,20 @@ struct RatedShipmentDetail : CustomStringConvertible
 	{
 		return Money(
 			currency: _stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|EffectiveNetDiscount|Currency")[safe: _index]?.value,
-			amount: NSDecimalNumber(string: _stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|EffectiveNetDiscount|Amount")[safe: _index]?.value)
+			amount: Decimal(string: (_stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|EffectiveNetDiscount|Amount")[safe: _index]?.value)!)
 		)
 	}
 	func adjustedCodCollectionAmount() -> Money?
 	{
 		return Money(
 			currency: _stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|AdjustedCodCollectionAmount|Currency")[safe: _index]?.value,
-			amount: NSDecimalNumber(string: _stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|AdjustedCodCollectionAmount|Amount")[safe: _index]?.value)
+			amount: Decimal(string: (_stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|AdjustedCodCollectionAmount|Amount")[safe: _index]?.value)!)
 		)
 	}
-	func shipmentRateDetail() -> ShipmentRateDetail? { return nil }
+	func shipmentRateDetail() -> ShipmentRateDetail?
+	{
+		return ShipmentRateDetail(_index, _stack)
+	}
 	func ratedPackages() -> RatedPackageDetail? { return nil }
 }
 
@@ -3479,129 +3500,71 @@ struct RatedPackageDetail : CustomStringConvertible
 
 struct ShipmentRateDetail : CustomStringConvertible
 {
-	fileprivate let _rateType: ReturnedRateType?
-	fileprivate let _rateScale: String?
-	fileprivate let _rateZone: String?
-	fileprivate let _pricingCode: PricingCodeType?
-	fileprivate let _ratedWeightMethod: RatedWeightMethod?
-	fileprivate let _minimumChargeType: MinimumChargeType?
-	fileprivate let _currencyExchangeRate: CurrencyExchangeRate?
-	fileprivate let _specialRatingApplied: SpecialRatingAppliedType?
-	fileprivate let _dimDivisor: UInt?
-	fileprivate let _dimDivisorType: RateDimensionalDivisorType?
-	fileprivate let _fuelSurchargePercent: NSDecimalNumber?
-	fileprivate let _totalBillingWeight: Weight?
-	fileprivate let _totalDimWeight: Weight?
-	fileprivate let _totalBaseCharge: Money?
-	fileprivate let _totalFreightDiscounts: Money?
-	fileprivate let _totalNetFreight: Money?
-	fileprivate let _totalSurcharges: Money?
-	fileprivate let _totalNetFedExCharge: Money?
-	fileprivate let _totalTaxes: Money?
-	fileprivate let _totalNetCharge: Money?
-	fileprivate let _totalRebates: Money?
-	fileprivate let _totalDutiesAndTaxes: Money?
-	fileprivate let _totalAncillaryFeesAndTaxes: Money?
-	fileprivate let _totalDutiesTaxesAndFees: Money?
-	fileprivate let _totalNetChargeWithDutiesAndTaxes: Money?
-	fileprivate let _shipmentLegRateDetails: ShipmentLegRateDetail?
-	fileprivate let _freightRateDetail: FreightRateDetail?
-	fileprivate let _freightDiscounts: RateDiscount?
-	fileprivate let _rebates: Rebate?
-	fileprivate let _surcharges: Surcharge?
-	fileprivate let _taxes: Tax?
-	fileprivate let _dutiesAndTaxes: EdtCommodityTax?
-	fileprivate let _ancillaryFeesAndTaxes: AncillaryFeeAndTax?
-	fileprivate let _variableHandlingCharges: VariableHandlingCharges?
-	fileprivate let _totalVariableHandlingCharges: VariableHandlingCharges?
+	fileprivate let _index: Int
+	fileprivate let _stack: Stack<ValuePath>
+	fileprivate let _rateReplyDetail: RateReplyDetail
 	
-	var description: String { return "\(rateType())\(rateScale())\(rateZone())\(pricingCode())\(ratedWeightMethod())\(minimumChargeType())\(currencyExchangeRate())\(specialRatingApplied())\(dimDivisor())\(dimDivisorType())\(fuelSurchargePercent())\(totalBillingWeight())\(totalDimWeight())\(totalBaseCharge())\(totalFreightDiscounts())\(totalNetFreight())\(totalSurcharges())\(totalNetFedExCharge())\(totalTaxes())\(totalNetCharge())\(totalRebates())\(totalDutiesAndTaxes())\(totalAncillaryFeesAndTaxes())\(totalDutiesTaxesAndFees())\(totalNetChargeWithDutiesAndTaxes())\(shipmentLegRateDetails())\(freightRateDetail())\(freightDiscounts())\(rebates())\(surcharges())\(taxes())\(dutiesAndTaxes())\(ancillaryFeesAndTaxes())\(variableHandlingCharges())\(totalVariableHandlingCharges())" }
+	var description: String { return "Shipment Rate Detail" }
 	
-	init(rateType: ReturnedRateType, rateScale: String, rateZone: String, pricingCode: PricingCodeType, ratedWeightMethod: RatedWeightMethod, minimumChargeType: MinimumChargeType, currencyExchangeRate: CurrencyExchangeRate, specialRatingApplied: SpecialRatingAppliedType, dimDivisor: UInt, dimDivisorType: RateDimensionalDivisorType, fuelSurchargePercent: NSDecimalNumber, totalBillingWeight: Weight, totalDimWeight: Weight, totalBaseCharge: Money, totalFreightDiscounts: Money, totalNetFreight: Money, totalSurcharges: Money, totalNetFedExCharge: Money, totalTaxes: Money, totalNetCharge: Money, totalRebates: Money, totalDutiesAndTaxes: Money, totalAncillaryFeesAndTaxes: Money, totalDutiesTaxesAndFees: Money, totalNetChargeWithDutiesAndTaxes: Money, shipmentLegRateDetails: ShipmentLegRateDetail, freightRateDetail: FreightRateDetail, freightDiscounts: RateDiscount, rebates: Rebate, surcharges: Surcharge, taxes: Tax, dutiesAndTaxes: EdtCommodityTax, ancillaryFeesAndTaxes: AncillaryFeeAndTax, variableHandlingCharges: VariableHandlingCharges, totalVariableHandlingCharges: VariableHandlingCharges)
+	init(_ index: Int, _ stack: Stack<ValuePath>)
 	{
-		_rateType = rateType
-		_rateScale = rateScale
-		_rateZone = rateZone
-		_pricingCode = pricingCode
-		_ratedWeightMethod = ratedWeightMethod
-		_minimumChargeType = minimumChargeType
-		_currencyExchangeRate = currencyExchangeRate
-		_specialRatingApplied = specialRatingApplied
-		_dimDivisor = dimDivisor
-		_dimDivisorType = dimDivisorType
-		_fuelSurchargePercent = fuelSurchargePercent
-		_totalBillingWeight = totalBillingWeight
-		_totalDimWeight = totalDimWeight
-		_totalBaseCharge = totalBaseCharge
-		_totalFreightDiscounts = totalFreightDiscounts
-		_totalNetFreight = totalNetFreight
-		_totalSurcharges = totalSurcharges
-		_totalNetFedExCharge = totalNetFedExCharge
-		_totalTaxes = totalTaxes
-		_totalNetCharge = totalNetCharge
-		_totalRebates = totalRebates
-		_totalDutiesAndTaxes = totalDutiesAndTaxes
-		_totalAncillaryFeesAndTaxes = totalAncillaryFeesAndTaxes
-		_totalDutiesTaxesAndFees = totalDutiesTaxesAndFees
-		_totalNetChargeWithDutiesAndTaxes = totalNetChargeWithDutiesAndTaxes
-		_shipmentLegRateDetails = shipmentLegRateDetails
-		_freightRateDetail = freightRateDetail
-		_freightDiscounts = freightDiscounts
-		_rebates = rebates
-		_surcharges = surcharges
-		_taxes = taxes
-		_dutiesAndTaxes = dutiesAndTaxes
-		_ancillaryFeesAndTaxes = ancillaryFeesAndTaxes
-		_variableHandlingCharges = variableHandlingCharges
-		_totalVariableHandlingCharges = totalVariableHandlingCharges
+		_index = index
+		_stack = stack
+		_rateReplyDetail = (RateReply(_stack).rateReplyDetails()?[_index])!
 	}
 	
-	func rateType() -> String { return (_rateType == nil ? "" : "<RateType>\(_rateType!)</RateType>") }
-	func rateScale() -> String { return (_rateScale == nil ? "" : "<RateScale>\(_rateScale!)</RateScale>") }
-	func rateZone() -> String { return (_rateZone == nil ? "" : "<RateZone>\(_rateZone!)</RateZone>") }
-	func pricingCode() -> String { return (_pricingCode == nil ? "" : "<PricingCode>\(_pricingCode!)</PricingCode>") }
-	func ratedWeightMethod() -> String { return (_ratedWeightMethod == nil ? "" : "<RatedWeightMethod>\(_ratedWeightMethod!)</RatedWeightMethod>") }
-	func minimumChargeType() -> String { return (_minimumChargeType == nil ? "" : "<MinimumChargeType>\(_minimumChargeType!)</MinimumChargeType>") }
-	func currencyExchangeRate() -> String { return (_currencyExchangeRate == nil ? "" : "<CurrencyExchangeRate>\(_currencyExchangeRate!)</CurrencyExchangeRate>") }
-	func specialRatingApplied() -> String { return (_specialRatingApplied == nil ? "" : "<SpecialRatingApplied>\(_specialRatingApplied!)</SpecialRatingApplied>") }
-	func dimDivisor() -> String { return (_dimDivisor == nil ? "" : "<DimDivisor>\(_dimDivisor!)</DimDivisor>") }
-	func dimDivisorType() -> String { return (_dimDivisorType == nil ? "" : "<DimDivisorType>\(_dimDivisorType!)</DimDivisorType>") }
-	func fuelSurchargePercent() -> String { return (_fuelSurchargePercent == nil ? "" : "<FuelSurchargePercent>\(_fuelSurchargePercent!)</FuelSurchargePercent>") }
-	func totalBillingWeight() -> String { return (_totalBillingWeight == nil ? "" : "<TotalBillingWeight>\(_totalBillingWeight!)</TotalBillingWeight>") }
-	func totalDimWeight() -> String { return (_totalDimWeight == nil ? "" : "<TotalDimWeight>\(_totalDimWeight!)</TotalDimWeight>") }
-	func totalBaseCharge() -> String { return (_totalBaseCharge == nil ? "" : "<TotalBaseCharge>\(_totalBaseCharge!)</TotalBaseCharge>") }
-	func totalFreightDiscounts() -> String { return (_totalFreightDiscounts == nil ? "" : "<TotalFreightDiscounts>\(_totalFreightDiscounts!)</TotalFreightDiscounts>") }
-	func totalNetFreight() -> String { return (_totalNetFreight == nil ? "" : "<TotalNetFreight>\(_totalNetFreight!)</TotalNetFreight>") }
-	func totalSurcharges() -> String { return (_totalSurcharges == nil ? "" : "<TotalSurcharges>\(_totalSurcharges!)</TotalSurcharges>") }
-	func totalNetFedExCharge() -> String { return (_totalNetFedExCharge == nil ? "" : "<TotalNetFedExCharge>\(_totalNetFedExCharge!)</TotalNetFedExCharge>") }
-	func totalTaxes() -> String { return (_totalTaxes == nil ? "" : "<TotalTaxes>\(_totalTaxes!)</TotalTaxes>") }
-	func totalNetCharge() -> String { return (_totalNetCharge == nil ? "" : "<TotalNetCharge>\(_totalNetCharge!)</TotalNetCharge>") }
-	func totalRebates() -> String { return (_totalRebates == nil ? "" : "<TotalRebates>\(_totalRebates!)</TotalRebates>") }
-	func totalDutiesAndTaxes() -> String { return (_totalDutiesAndTaxes == nil ? "" : "<TotalDutiesAndTaxes>\(_totalDutiesAndTaxes!)</TotalDutiesAndTaxes>") }
-	func totalAncillaryFeesAndTaxes() -> String { return (_totalAncillaryFeesAndTaxes == nil ? "" : "<TotalAncillaryFeesAndTaxes>\(_totalAncillaryFeesAndTaxes!)</TotalAncillaryFeesAndTaxes>") }
-	func totalDutiesTaxesAndFees() -> String { return (_totalDutiesTaxesAndFees == nil ? "" : "<TotalDutiesTaxesAndFees>\(_totalDutiesTaxesAndFees!)</TotalDutiesTaxesAndFees>") }
-	func totalNetChargeWithDutiesAndTaxes() -> String { return (_totalNetChargeWithDutiesAndTaxes == nil ? "" : "<TotalNetChargeWithDutiesAndTaxes>\(_totalNetChargeWithDutiesAndTaxes!)</TotalNetChargeWithDutiesAndTaxes>") }
-	func shipmentLegRateDetails() -> String { return (_shipmentLegRateDetails == nil ? "" : "<ShipmentLegRateDetails>\(_shipmentLegRateDetails!)</ShipmentLegRateDetails>") }
-	func freightRateDetail() -> String { return (_freightRateDetail == nil ? "" : "<FreightRateDetail>\(_freightRateDetail!)</FreightRateDetail>") }
-	func freightDiscounts() -> String { return (_freightDiscounts == nil ? "" : "<FreightDiscounts>\(_freightDiscounts!)</FreightDiscounts>") }
-	func rebates() -> String { return (_rebates == nil ? "" : "<Rebates>\(_rebates!)</Rebates>") }
-	func surcharges() -> String { return (_surcharges == nil ? "" : "<Surcharges>\(_surcharges!)</Surcharges>") }
-	func taxes() -> String { return (_taxes == nil ? "" : "<Taxes>\(_taxes!)</Taxes>") }
-	func dutiesAndTaxes() -> String { return (_dutiesAndTaxes == nil ? "" : "<DutiesAndTaxes>\(_dutiesAndTaxes!)</DutiesAndTaxes>") }
-	func ancillaryFeesAndTaxes() -> String { return (_ancillaryFeesAndTaxes == nil ? "" : "<AncillaryFeesAndTaxes>\(_ancillaryFeesAndTaxes!)</AncillaryFeesAndTaxes>") }
-	func variableHandlingCharges() -> String { return (_variableHandlingCharges == nil ? "" : "<VariableHandlingCharges>\(_variableHandlingCharges!)</VariableHandlingCharges>") }
-	func totalVariableHandlingCharges() -> String { return (_totalVariableHandlingCharges == nil ? "" : "<TotalVariableHandlingCharges>\(_totalVariableHandlingCharges!)</TotalVariableHandlingCharges>") }
+	func rateType() -> ReturnedRateType? { return nil }
+	func rateScale() -> String? { return nil }
+	func rateZone() -> String? { return nil }
+	func pricingCode() -> PricingCodeType? { return nil }
+	func ratedWeightMethod() -> RatedWeightMethod? { return nil }
+	func minimumChargeType() -> MinimumChargeType? { return nil }
+	func currencyExchangeRate() -> CurrencyExchangeRate? { return nil }
+	func specialRatingApplied() -> SpecialRatingAppliedType? { return nil }
+	func dimDivisor() -> UInt? { return nil }
+	func dimDivisorType() -> RateDimensionalDivisorType? { return nil }
+	func fuelSurchargePercent() -> Decimal? { return nil }
+	func totalBillingWeight() -> Weight? { return nil }
+	func totalDimWeight() -> Weight? { return nil }
+	func totalBaseCharge() -> Money? { return nil }
+	func totalFreightDiscounts() -> Money? { return nil }
+	func totalNetFreight() -> Money? { return nil }
+	func totalSurcharges() -> Money? { return nil }
+	func totalNetFedExCharge() -> Money? { return nil }
+	func totalTaxes() -> Money? { return nil }
+	func totalNetCharge() -> Money?
+	{
+		return Money(
+			currency: _stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|ShipmentRateDetail|TotalNetCharge").getValue(service: (_rateReplyDetail.serviceType()?.rawValue)!, value: "Currency"),
+			amount: Decimal(string: _stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|ShipmentRateDetail|TotalNetCharge").getValue(service: (_rateReplyDetail.serviceType()?.rawValue)!, value: "Amount")!)
+		)
+	}
+	func totalRebates() -> Money? { return nil }
+	func totalDutiesAndTaxes() -> Money? { return nil }
+	func totalAncillaryFeesAndTaxes() -> Money? { return nil }
+	func totalDutiesTaxesAndFees() -> Money? { return nil }
+	func totalNetChargeWithDutiesAndTaxes() -> Money? { return nil }
+	func shipmentLegRateDetails() -> ShipmentLegRateDetail? { return nil }
+	func freightRateDetail() -> FreightRateDetail? { return nil }
+	func freightDiscounts() -> RateDiscount? { return nil }
+	func rebates() -> Rebate? { return nil }
+	func surcharges() -> Surcharge? { return nil }
+	func taxes() -> Tax? { return nil }
+	func dutiesAndTaxes() -> EdtCommodityTax? { return nil }
+	func ancillaryFeesAndTaxes() -> AncillaryFeeAndTax? { return nil }
+	func variableHandlingCharges() -> VariableHandlingCharges? { return nil }
+	func totalVariableHandlingCharges() -> VariableHandlingCharges? { return nil }
 }
 
 struct CurrencyExchangeRate : CustomStringConvertible
 {
 	fileprivate let _fromCurrency: String?
 	fileprivate let _intoCurrency: String?
-	fileprivate let _rate: NSDecimalNumber?
+	fileprivate let _rate: Decimal?
 	
 	var description: String { return "\(fromCurrency())\(intoCurrency())\(rate())" }
 	
-	init(fromCurrency: String, intoCurrency: String, rate: NSDecimalNumber)
+	init(fromCurrency: String, intoCurrency: String, rate: Decimal)
 	{
 		_fromCurrency = fromCurrency
 		_intoCurrency = intoCurrency
@@ -3630,7 +3593,7 @@ struct ShipmentLegRateDetail : CustomStringConvertible
 	fileprivate let _specialRatingApplied: SpecialRatingAppliedType?
 	fileprivate let _dimDivisor: UInt?
 	fileprivate let _dimDivisorType: RateDimensionalDivisorType?
-	fileprivate let _fuelSurchargePercent: NSDecimalNumber?
+	fileprivate let _fuelSurchargePercent: Decimal?
 	fileprivate let _totalBillingWeight: Weight?
 	fileprivate let _totalDimWeight: Weight?
 	fileprivate let _totalBaseCharge: Money?
@@ -3654,7 +3617,7 @@ struct ShipmentLegRateDetail : CustomStringConvertible
 	
 	var description: String { return "\(legDescription())\(legOrigin())\(legOriginLocationId())\(legDestination())\(legDestinationLocationId())\(rateType())\(rateScale())\(rateZone())\(pricingCode())\(ratedWeightMethod())\(minimumChargeType())\(currencyExchangeRate())\(specialRatingApplied())\(dimDivisor())\(dimDivisorType())\(fuelSurchargePercent())\(totalBillingWeight())\(totalDimWeight())\(totalBaseCharge())\(totalFreightDiscounts())\(totalNetFreight())\(totalSurcharges())\(totalNetFedExCharge())\(totalTaxes())\(totalNetCharge())\(totalRebates())\(totalDutiesAndTaxes())\(totalNetChargeWithDutiesAndTaxes())\(freightRateDetail())\(freightDiscounts())\(rebates())\(surcharges())\(taxes())\(dutiesAndTaxes())\(variableHandlingCharges())\(totalVariableHandlingCharges())" }
 	
-	init(legDescription: String, legOrigin: Address, legOriginLocationId: String, legDestination: Address, legDestinationLocationId: String, rateType: ReturnedRateType, rateScale: String, rateZone: String, pricingCode: PricingCodeType, ratedWeightMethod: RatedWeightMethod, minimumChargeType: MinimumChargeType, currencyExchangeRate: CurrencyExchangeRate, specialRatingApplied: SpecialRatingAppliedType, dimDivisor: UInt, dimDivisorType: RateDimensionalDivisorType, fuelSurchargePercent: NSDecimalNumber, totalBillingWeight: Weight, totalDimWeight: Weight, totalBaseCharge: Money, totalFreightDiscounts: Money, totalNetFreight: Money, totalSurcharges: Money, totalNetFedExCharge: Money, totalTaxes: Money, totalNetCharge: Money, totalRebates: Money, totalDutiesAndTaxes: Money, totalNetChargeWithDutiesAndTaxes: Money, freightRateDetail: FreightRateDetail, freightDiscounts: RateDiscount, rebates: Rebate, surcharges: Surcharge, taxes: Tax, dutiesAndTaxes: EdtCommodityTax, variableHandlingCharges: VariableHandlingCharges, totalVariableHandlingCharges: VariableHandlingCharges)
+	init(legDescription: String, legOrigin: Address, legOriginLocationId: String, legDestination: Address, legDestinationLocationId: String, rateType: ReturnedRateType, rateScale: String, rateZone: String, pricingCode: PricingCodeType, ratedWeightMethod: RatedWeightMethod, minimumChargeType: MinimumChargeType, currencyExchangeRate: CurrencyExchangeRate, specialRatingApplied: SpecialRatingAppliedType, dimDivisor: UInt, dimDivisorType: RateDimensionalDivisorType, fuelSurchargePercent: Decimal, totalBillingWeight: Weight, totalDimWeight: Weight, totalBaseCharge: Money, totalFreightDiscounts: Money, totalNetFreight: Money, totalSurcharges: Money, totalNetFedExCharge: Money, totalTaxes: Money, totalNetCharge: Money, totalRebates: Money, totalDutiesAndTaxes: Money, totalNetChargeWithDutiesAndTaxes: Money, freightRateDetail: FreightRateDetail, freightDiscounts: RateDiscount, rebates: Rebate, surcharges: Surcharge, taxes: Tax, dutiesAndTaxes: EdtCommodityTax, variableHandlingCharges: VariableHandlingCharges, totalVariableHandlingCharges: VariableHandlingCharges)
 	{
 		_legDescription = legDescription
 		_legOrigin = legOrigin
@@ -3815,11 +3778,11 @@ struct RateDiscount : CustomStringConvertible
 	fileprivate let _rateDiscountType: RateDiscountType?
 	fileprivate let _description: String?
 	fileprivate let _amount: Money?
-	fileprivate let _percent: NSDecimalNumber?
+	fileprivate let _percent: Decimal?
 	
 	var description: String { return "\(rateDiscountType())\(description_())\(amount())\(percent())" }
 	
-	init(rateDiscountType: RateDiscountType, description: String, amount: Money, percent: NSDecimalNumber)
+	init(rateDiscountType: RateDiscountType, description: String, amount: Money, percent: Decimal)
 	{
 		_rateDiscountType = rateDiscountType
 		_description = description
@@ -3838,11 +3801,11 @@ struct Rebate : CustomStringConvertible
 	fileprivate let _rebateType: RebateType?
 	fileprivate let _description: String?
 	fileprivate let _amount: Money?
-	fileprivate let _percent: NSDecimalNumber?
+	fileprivate let _percent: Decimal?
 	
 	var description: String { return "\(rebateType())\(description_())\(amount())\(percent())" }
 	
-	init(rebateType: RebateType, description: String, amount: Money, percent: NSDecimalNumber)
+	init(rebateType: RebateType, description: String, amount: Money, percent: Decimal)
 	{
 		_rebateType = rebateType
 		_description = description
@@ -4082,11 +4045,11 @@ struct PackageRateDetail : CustomStringConvertible
 struct Weight : CustomStringConvertible
 {
 	fileprivate let _units: WeightUnits?
-	fileprivate let _value: NSDecimalNumber?
+	fileprivate let _value: Decimal?
 	
 	var description: String { return "\(units())\(value())" }
 	
-	init(units: WeightUnits, value: NSDecimalNumber)
+	init(units: WeightUnits, value: Decimal)
 	{
 		_units = units
 		_value = value
