@@ -9,6 +9,7 @@
 import Cocoa
 
 typealias ValuePath = (path: String, tag: String?, value: String?)
+//typealias SoapElement = (path: String, elements: [String], count: Int, parent: String, tag: String, value: String, service: String)
 
 struct Stack<Element> {
 	var items = [Element]()
@@ -39,6 +40,19 @@ extension Stack {
 		return items.filter{ ($0 is String) ? String(describing: $0).contains(search) : ($0 as! ValuePath).path.contains(search) }
 	}
 	
+	func filter2(_ depthEqualTo: Int) -> [Element]
+	{
+		var arr: [Element] = [Element]()
+			
+		items.forEach{ soapElement in
+			if (soapElement as! SoapElement).depth == depthEqualTo {
+				arr.append(soapElement)
+			}
+		}
+		
+		return arr
+	}
+	
 	func indexOf(search: String, start: Int) -> Int {
 		if let i = items.index(where: { String(describing: $0).contains(search) && items.index(after: start) >= start }) {
 			return i
@@ -48,6 +62,30 @@ extension Stack {
 			return -1
 		}
 	}
+	
+	func unique() -> [String] {
+		return Set(items.map{ ($0 as! ValuePath).path.components(separatedBy: "|").dropLast().joined(separator: "|") })
+			.sorted(by: { $0.0.components(separatedBy: "|").count < $0.1.components(separatedBy: "|").count })
+	}
+	
+	func subrange(_ index: Int) -> [String] {
+		return Set(items.map{ ($0 as! ValuePath).path.components(separatedBy: "|")[index] }).sorted(by: <)
+	}
+	
+	func getPathFromChild(_ value: String) -> Element? {
+		return items.filter{ ($0 as! ValuePath).path.components(separatedBy: "|").dropLast().last == value }.last
+	}
+}
+
+struct SoapElement
+{
+	let id: Int
+	let path: String
+	let elements: Array<String>
+	let depth: Int
+	let parent: Int?
+	let tag: String
+	let value: String?
 }
 
 extension Array where Element == ValuePath
@@ -91,14 +129,13 @@ class AppDelegate: NSObject
 	//var rateRequest: RateRequest
 	var xmlParser = XMLParser()
 	var pathStack = Stack<String>()
-	var valueStack = Stack<ValuePath>()
-	var rateReply: RateReply
-	var service: String
+	var soapStack = Stack<SoapElement>()
+	var parentStack = Stack<SoapElement>()
+	var currentId: Int?
 	
 	override init()
 	{
-		rateReply = RateReply(valueStack)
-		service = String()
+		currentId = nil
 	}
 	
 	@IBAction func quickTrack(_ sender: Any)
@@ -156,12 +193,12 @@ class AppDelegate: NSObject
 			variableOptions: nil,
 			consolidationKey: nil,
 			requestedShipment: RequestedShipment(
-				shipTimestamp: Date().addingTimeInterval(86400*2),
+				shipTimestamp: Date().addingTimeInterval(86400),
 				dropoffType: DropoffType.REGULAR_PICKUP,
-				serviceType: nil, //ServiceType.FEDEX_GROUND,
+				serviceType: nil, //ServiceType.GROUND_HOME_DELIVERY,
 				packagingType: PackagingType.YOUR_PACKAGING,
 				variationOptions: nil,
-				totalWeight: Weight(units: WeightUnits.LB, value: 20.0),
+				totalWeight: Weight(units: WeightUnits.LB, value: 100.0),
 				totalInsuredValue: nil,
 				preferredCurrency: nil,
 				shipmentAuthorizationDetail: nil,
@@ -282,14 +319,19 @@ class AppDelegate: NSObject
 		
 		if (httpResponse?.statusCode == 200)
 		{
+			let start = CFAbsoluteTimeGetCurrent()
+			
 			// reset stack vars
 			pathStack = Stack<String>()
-			valueStack = Stack<ValuePath>()
+			soapStack = Stack<SoapElement>()
+			parentStack = Stack<SoapElement>()
 			
 			// init parser
 			self.xmlParser = XMLParser(data: data2!)
 			self.xmlParser.delegate = self
 			self.xmlParser.parse()
+			
+			print("\(CFAbsoluteTimeGetCurrent() - start)")
 		}
 	}
 }
@@ -329,24 +371,53 @@ extension AppDelegate: XMLParserDelegate
 		// ignore SOAP headers
 		if (elementName.contains("SOAP-ENV")) { return }
 		
-		// set flag for grouping/identification
-		if (elementName == "ServiceType") { service = "SET" }
-		
 		// store opening tag
 		pathStack.push(elementName)
+		
+		if soapStack.items.count == 0 {
+			currentId = nil
+		} else if (pathStack.xpath!.components(separatedBy: "|").count > (soapStack.items.last?.depth)!) {
+			currentId = (parentStack.items.last?.id)!
+		} else if (pathStack.xpath!.components(separatedBy: "|").count < (soapStack.items.last?.depth)!) {
+			currentId = (parentStack.filter2(pathStack.xpath!.components(separatedBy: "|").count - 1).last?.id)
+		}
+		
+		parentStack.push(
+			SoapElement(
+				id: soapStack.items.count,
+				path: pathStack.xpath!,
+				elements: pathStack.xpath!.components(separatedBy: "|"),
+				depth: pathStack.xpath!.components(separatedBy: "|").count,
+				parent: currentId,
+				tag: elementName,
+				value: nil
+			)
+		)
+	
+		soapStack.push(parentStack.items.last!)
 	}
 	
 	func parser(_ parser: XMLParser, foundCharacters string: String)
 	{
-		if (service == "SET") { service = string }
+		// remove header for value elements
+		if pathStack.xpath! == soapStack.items.last!.path {
+			let _ = soapStack.pop()
+			let _ = parentStack.pop()
+		}
 		
-		// store full path and value
-		valueStack.push((path: pathStack.xpath!, tag: service, value: string))
+		soapStack.push(SoapElement(id: soapStack.items.count,
+		                           path: pathStack.xpath!,
+		                           elements: pathStack.xpath!.components(separatedBy: "|"),
+		                           depth: pathStack.xpath!.components(separatedBy: "|").count,
+		                           parent: currentId,
+		                           tag: pathStack.xpath!.components(separatedBy: "|").last!,
+		                           value: string)
+		)
 	}
 	
 	func parser(_ parser: XMLParser, didEndElement elementName: String, namespaceURI: String?, qualifiedName qName: String?)
 	{
-		// remove value from stack to retain path integrity
+		// remove tag to back out of path
 		if (pathStack.peek == elementName)
 		{
 			// pop and ignore return
@@ -362,18 +433,21 @@ extension AppDelegate: XMLParserDelegate
 	func parserDidEndDocument(_ parser: XMLParser)
 	{
 		DispatchQueue.main.async(execute: { () -> Void in
-			self.rateReply = RateReply(self.valueStack)
-			
-			if (self.showRawXml.state == NSOnState)
-			{
-				print("\(self.rateReply)")
-			}
-			
-			// print non-SUCCESS messages
-			if (self.rateReply.highestSeverity() != NotificationSeverityType.SUCCESS)
-			{
-				print(self.rateReply.notifications().filter{ $0.severity().value == self.rateReply.highestSeverity() } )
-			}
+//			self.rateReply = RateReply(self.valueStack)
+//			
+//			if (self.showRawXml.state == NSOnState)
+//			{
+//				//print("\(self.rateReply)")
+//			}
+//			
+//			print("\(self.parentStack)")
+//			print("\(self.soapStack.items.filter{ $0.value == nil })")
+//
+//			// print non-SUCCESS messages
+//			if (self.rateReply.highestSeverity() != NotificationSeverityType.SUCCESS)
+//			{
+//				//print(self.rateReply.notifications().filter{ $0.severity().value == self.rateReply.highestSeverity() } )
+//			}
 		})
 		
 		DispatchQueue.main.async(execute: { () -> Void in
@@ -384,6 +458,8 @@ extension AppDelegate: XMLParserDelegate
 			self.detailsTable.reloadData()
 			self.detailsView.reloadData()
 			self.httpResponseLabel.stringValue = "Status: Parsing Complete"
+			
+			self.detailsView.expandItem(nil, expandChildren: true)
 		})
 	}
 }
@@ -392,18 +468,20 @@ extension AppDelegate: NSTableViewDataSource
 {
 	func numberOfRows(in tableView: NSTableView) -> Int
 	{
-		if (valueStack.items.count == 0)
-		{
-			return 0
-		}
-		else if (self.rateReply.highestSeverity() == NotificationSeverityType.FAILURE)
-		{
-			return self.rateReply.notifications().count
-		}
-		else
-		{
-			return (rateReply.rateReplyDetails()?.count)! // valueStack.find("RateReply|RateReplyDetails|ServiceType|").count
-		}
+//		if (valueStack.items.count == 0)
+//		{
+//			return 0
+//		}
+//		else if (self.rateReply.highestSeverity() == NotificationSeverityType.FAILURE)
+//		{
+//			return self.rateReply.notifications().count
+//		}
+//		else
+//		{
+//			return (rateReply.rateReplyDetails()?.count)! // valueStack.find("RateReply|RateReplyDetails|ServiceType|").count
+//		}
+		
+		return 0
 	}
 }
 
@@ -412,10 +490,10 @@ extension AppDelegate: NSTableViewDelegate
 	func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any?
 	{
 		// get record to display
-		let svc = rateReply.rateReplyDetails()?[row].serviceType()?.rawValue
-		
-		if (tableColumn?.identifier == "NameCol") { return "Service" }
-		else if (tableColumn?.identifier == "ValueCol") { return svc }
+//		let svc = rateReply.rateReplyDetails()?[row].serviceType()?.rawValue
+//		
+//		if (tableColumn?.identifier == "NameCol") { return "Service" }
+//		else if (tableColumn?.identifier == "ValueCol") { return svc }
 		
 		return nil
 	}
@@ -425,18 +503,16 @@ extension AppDelegate: NSOutlineViewDelegate
 {
 	func outlineView(_ outlineView: NSOutlineView, objectValueFor tableColumn: NSTableColumn?, byItem item: Any?) -> Any?
 	{
-		if let feed = item as? (Any, Any?)
-		{
-			if (tableColumn?.identifier == "NameColumn") {
-				return feed.0
-			} else {
-				if let _ = feed.1 as? CommitDetail { return "" }
-				
-				return "\(feed.1 ?? "")"
-			}
+		// if item is nil, empty view (i.e. init)
+		guard let soapElement = item as? SoapElement else  { return nil }
+		
+		// if NameColumn
+		if tableColumn?.identifier == "NameColumn" {
+			return soapElement.tag
 		}
 		
-		return nil
+		// else ValueColumn
+		return soapElement.value
 	}
 }
 
@@ -444,46 +520,30 @@ extension AppDelegate: NSOutlineViewDataSource
 {
 	func outlineView(_ outlineView: NSOutlineView, isItemExpandable item: Any) -> Bool
 	{
-		if let _ = item as? (Int, ServiceType) { return true }
-		if let _ = item as? (String, CommitDetail) { return true }
-		if let _ = item as? (String, fNotification) { return true }
-		else { return false }
+		// if has children, return true
+		return parentStack.items.filter{ $0.id == (item as? SoapElement)!.id }.count > 0
 	}
 	
 	func outlineView(_ outlineView: NSOutlineView, numberOfChildrenOfItem item: Any?) -> Int
 	{
-		if (valueStack.items.count == 0) { return 0 }
-		if (rateReply.highestSeverity() == NotificationSeverityType.FAILURE) { return rateReply.notifications().count }
+		// if stack is empty, return 0 (i.e. init)
+		if (soapStack.items.count == 0) { return 0 }
 		
-		if let _ = item as? (Int, ServiceType) { return 3 }
-		if let _ = item as? (String, CommitDetail) { return 3 }
-		else { return rateReply.rateReplyDetails()!.count }
+		// if item is nil, return 1 (i.e. root)
+		guard let soapElement = item as? SoapElement else { return 1 }
+		
+		// else return number of children
+		return soapStack.items.filter{ $0.parent == soapElement.id }.count
 	}
 	
 	func outlineView(_ outlineView: NSOutlineView, child index: Int, ofItem item: Any?) -> Any
 	{
-		if ((item as? (Int, Any?)) != nil) {	// child
-			guard let i = item as? (Int, ServiceType) else { return "" }
-			
-			if (index == 0) { return (name: "Packaging Type", value: rateReply.rateReplyDetails()![i.0].packagingType()?.rawValue) }
-			if (index == 1) { return (name: "Actual Rate Type", value: rateReply.rateReplyDetails()![i.0].actualRateType()?.rawValue) }
-			else { return (name: "Commit Details", value: rateReply.rateReplyDetails()![i.0].commitDetails()?[i.0]) }
+		// if item is nil, return root element
+		guard let soapElement = item as? SoapElement else {
+			return soapStack.items.first!
 		}
 		
-		if let _item = item as? (String, CommitDetail) {	// child
-			if (index == 0) { return (name: "Commit Timestamp", value: _item.1.commitTimestamp()) }
-			if (index == 1) { return (name: "Day Of Week", value: _item.1.dayOfWeek()?.rawValue) }
-			else { return (name: "Transit Time", value: _item.1.transitTime()?.rawValue) }
-		}
-		
-		if ((item as? fNotification)) != nil {
-			return rateReply.notifications()[index].message().value
-		}
-		
-		if (rateReply.highestSeverity() == NotificationSeverityType.FAILURE) {
-			return (name: rateReply.notifications().filter{ $0.severity().value == NotificationSeverityType.FAILURE }[0].message().name, value: rateReply.notifications().filter{ $0.severity().value == NotificationSeverityType.FAILURE }[0].message().value)
-		}
-		
-		return (name: index, value: rateReply.rateReplyDetails()![index].serviceType())
+		// else return child elements
+		return soapStack.items.filter{ $0.parent == soapElement.id }[index]
 	}
 }
