@@ -7,15 +7,24 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		55391EA71EA8F3F900B7748C /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55391EA61EA8F3F900B7748C /* KeychainManager.swift */; };
+		55391EAD1EAA290C00B7748C /* Settings.xib in Resources */ = {isa = PBXBuildFile; fileRef = 55391EAC1EAA290C00B7748C /* Settings.xib */; };
+		55391EAF1EAA2B4B00B7748C /* TrackingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55391EAE1EAA2B4B00B7748C /* TrackingService.swift */; };
+		55391EB31EAA448700B7748C /* GlobalStructs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55391EB21EAA448700B7748C /* GlobalStructs.swift */; };
 		5544F1FD1E8076BF00FD44E0 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5544F1FC1E8076BF00FD44E0 /* AppDelegate.swift */; };
 		5544F1FF1E8076BF00FD44E0 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 5544F1FE1E8076BF00FD44E0 /* Assets.xcassets */; };
 		5544F2021E8076BF00FD44E0 /* MainMenu.xib in Resources */ = {isa = PBXBuildFile; fileRef = 5544F2001E8076BF00FD44E0 /* MainMenu.xib */; };
 		5544F20C1E8295F600FD44E0 /* .gitignore in Resources */ = {isa = PBXBuildFile; fileRef = 5544F20B1E8295F600FD44E0 /* .gitignore */; };
 		556DED161EA71B3A00CD11C0 /* RateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556DED141EA71B3A00CD11C0 /* RateService.swift */; };
 		556DED171EA71B3A00CD11C0 /* WsdlEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556DED151EA71B3A00CD11C0 /* WsdlEnums.swift */; };
+		558D1A141EAAF39F00C15A7E /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558D1A131EAAF39F00C15A7E /* SettingsController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		55391EA61EA8F3F900B7748C /* KeychainManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
+		55391EAC1EAA290C00B7748C /* Settings.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Settings.xib; sourceTree = "<group>"; };
+		55391EAE1EAA2B4B00B7748C /* TrackingService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TrackingService.swift; sourceTree = "<group>"; };
+		55391EB21EAA448700B7748C /* GlobalStructs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GlobalStructs.swift; sourceTree = "<group>"; };
 		5544F1F91E8076BF00FD44E0 /* FXR.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = FXR.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		5544F1FC1E8076BF00FD44E0 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		5544F1FE1E8076BF00FD44E0 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -24,6 +33,7 @@
 		5544F20B1E8295F600FD44E0 /* .gitignore */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		556DED141EA71B3A00CD11C0 /* RateService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RateService.swift; sourceTree = "<group>"; };
 		556DED151EA71B3A00CD11C0 /* WsdlEnums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WsdlEnums.swift; sourceTree = "<group>"; };
+		558D1A131EAAF39F00C15A7E /* SettingsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,9 +68,14 @@
 			isa = PBXGroup;
 			children = (
 				5544F1FC1E8076BF00FD44E0 /* AppDelegate.swift */,
+				55391EA61EA8F3F900B7748C /* KeychainManager.swift */,
 				556DED141EA71B3A00CD11C0 /* RateService.swift */,
+				55391EAE1EAA2B4B00B7748C /* TrackingService.swift */,
+				55391EB21EAA448700B7748C /* GlobalStructs.swift */,
 				5544F1FE1E8076BF00FD44E0 /* Assets.xcassets */,
 				5544F2001E8076BF00FD44E0 /* MainMenu.xib */,
+				55391EAC1EAA290C00B7748C /* Settings.xib */,
+				558D1A131EAAF39F00C15A7E /* SettingsController.swift */,
 				5544F2031E8076BF00FD44E0 /* Info.plist */,
 				556DED151EA71B3A00CD11C0 /* WsdlEnums.swift */,
 			);
@@ -130,6 +145,7 @@
 				5544F1FF1E8076BF00FD44E0 /* Assets.xcassets in Resources */,
 				5544F20C1E8295F600FD44E0 /* .gitignore in Resources */,
 				5544F2021E8076BF00FD44E0 /* MainMenu.xib in Resources */,
+				55391EAD1EAA290C00B7748C /* Settings.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -143,6 +159,10 @@
 				5544F1FD1E8076BF00FD44E0 /* AppDelegate.swift in Sources */,
 				556DED171EA71B3A00CD11C0 /* WsdlEnums.swift in Sources */,
 				556DED161EA71B3A00CD11C0 /* RateService.swift in Sources */,
+				558D1A141EAAF39F00C15A7E /* SettingsController.swift in Sources */,
+				55391EAF1EAA2B4B00B7748C /* TrackingService.swift in Sources */,
+				55391EA71EA8F3F900B7748C /* KeychainManager.swift in Sources */,
+				55391EB31EAA448700B7748C /* GlobalStructs.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
