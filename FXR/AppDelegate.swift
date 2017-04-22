@@ -112,6 +112,14 @@ extension String {
 	}
 }
 
+extension String {
+	func toCurrency() -> String? {
+		let nf = NumberFormatter(); nf.locale = Locale(identifier: Locale.current.identifier); nf.numberStyle = .currency
+		
+		return nf.string(from: NSNumber(value: Float(self)!)) ?? nil
+	}
+}
+
 @NSApplicationMain
 class AppDelegate: NSObject
 {
@@ -125,17 +133,21 @@ class AppDelegate: NSObject
 	@IBOutlet weak var httpResponseLabel: NSTextField!
 	@IBOutlet weak var showRawXml: NSButton!
 	@IBOutlet weak var detailsView: NSOutlineView!
+	@IBOutlet weak var rateButton: NSButton!
 	
 	//var rateRequest: RateRequest
 	var xmlParser = XMLParser()
 	var pathStack = Stack<String>()
 	var soapStack = Stack<SoapElement>()
 	var parentStack = Stack<SoapElement>()
-	var currentId: Int?
+	var currentId: Int? = nil
 	
-	override init()
-	{
-		currentId = nil
+	var prefs: SettingsController? = nil
+	
+	@IBAction func OpenPreferences(_ sender: Any) {
+		DispatchQueue.main.async(execute: { () -> Void in
+			NSApplication.shared().runModal(for: (self.prefs?.window)!)
+		})
 	}
 	
 	@IBAction func quickTrack(_ sender: Any)
@@ -181,12 +193,23 @@ class AppDelegate: NSObject
 	
 	@IBAction func quickRate(_ sender: Any)
 	{
+		if (senderZip.stringValue == "" || recipientZip.stringValue == "" || packageWeight.stringValue == "") {
+			return
+		}
+		
 		let web = RateRequest(
 			webAuthenticationDetail: WebAuthenticationDetail(
 				parentCredential: nil,
-				userCredential: WebAuthenticationCredential(key: "ATjhnRZwKmclwko3", password: "yrsrYK0DeXj6RbbKrn51p8f8O")
+				userCredential: WebAuthenticationCredential(
+					key: try! KeychainManager.queryData(itemKey: "key") as! String,
+					password: try! KeychainManager.queryData(itemKey: "password") as! String)
 			),
-			clientDetail: ClientDetail(accountNumber: "510087100", meterNumber: "118784833", integratorId: nil, region: nil, localization: nil),
+			clientDetail: ClientDetail(
+				accountNumber: try! KeychainManager.queryData(itemKey: "account") as! String,
+				meterNumber: try! KeychainManager.queryData(itemKey: "meter") as! String,
+				integratorId: nil,
+				region: nil,
+				localization: nil),
 			transactionDetail: TransactionDetail(customerTransactionId: "FXR TEST", localization: nil),
 			returnTransAndCommit: true,
 			carrierCodes: nil,
@@ -198,7 +221,7 @@ class AppDelegate: NSObject
 				serviceType: nil, //ServiceType.GROUND_HOME_DELIVERY,
 				packagingType: PackagingType.YOUR_PACKAGING,
 				variationOptions: nil,
-				totalWeight: Weight(units: WeightUnits.LB, value: 100.0),
+				totalWeight: Weight(units: WeightUnits.LB, value: Float(packageWeight.stringValue)!),
 				totalInsuredValue: nil,
 				preferredCurrency: nil,
 				shipmentAuthorizationDetail: nil,
@@ -208,9 +231,9 @@ class AppDelegate: NSObject
 					contact: nil,
 					address: Address(
 						streetLines: nil,
-						city: "Plainfield",
-						stateOrProvinceCode: "IN",
-						postalCode: "46168",
+						city: nil,
+						stateOrProvinceCode: nil,
+						postalCode: senderZip.stringValue,
 						urbanizationCode: nil,
 						countryCode: "US",
 						countryName: nil,
@@ -223,9 +246,9 @@ class AppDelegate: NSObject
 					contact: nil,
 					address: Address(
 						streetLines: nil,
-						city: "FRANKLIN",
-						stateOrProvinceCode: "IN",
-						postalCode: "46131",
+						city: nil,
+						stateOrProvinceCode: nil,
+						postalCode: recipientZip.stringValue,
 						urbanizationCode: nil,
 						countryCode: "US",
 						countryName: nil,
@@ -269,7 +292,7 @@ class AppDelegate: NSObject
 			)
 		)
 		
-		callDataTask(body: SoapMessage(message: web).description)
+		callDataTask(body: "\(web)")
 	}
 	
 	func getUrlRequest(body: String) -> URLRequest
@@ -341,6 +364,10 @@ extension AppDelegate: NSApplicationDelegate
 	func applicationDidFinishLaunching(_ aNotification: Notification)
 	{
 		// Insert code here to initialize your application
+		
+		currentId = nil
+		
+		prefs = SettingsController()
 		
 		detailsTable.delegate = self
 		detailsTable.dataSource = self
@@ -440,7 +467,7 @@ extension AppDelegate: XMLParserDelegate
 //				//print("\(self.rateReply)")
 //			}
 //			
-//			print("\(self.parentStack)")
+//			print("\(self.soapStack)")
 //			print("\(self.soapStack.items.filter{ $0.value == nil })")
 //
 //			// print non-SUCCESS messages
@@ -459,7 +486,7 @@ extension AppDelegate: XMLParserDelegate
 			self.detailsView.reloadData()
 			self.httpResponseLabel.stringValue = "Status: Parsing Complete"
 			
-			self.detailsView.expandItem(nil, expandChildren: true)
+			self.detailsView.expandItem(self.detailsView.item(atRow: 0), expandChildren: false)
 		})
 	}
 }
@@ -509,10 +536,49 @@ extension AppDelegate: NSOutlineViewDelegate
 		// if NameColumn
 		if tableColumn?.identifier == "NameColumn" {
 			return soapElement.tag
+		} else if tableColumn?.identifier == "ValueColumn" {
+			if soapElement.tag == "RateReplyDetails" {
+				return soapStack.items.filter{ $0.parent == soapElement.id && $0.tag == "ServiceType" }.last?.value
+			}
+			
+			return soapElement.value
+		} else if tableColumn?.identifier == "CostColumn" {
+			if soapElement.tag == "RateReplyDetails" {
+				return drillDown(parent: soapElement, path: "RatedShipmentDetails|ShipmentRateDetail|TotalNetCharge|Amount")?.value?.toCurrency() ?? "0".toCurrency()
+			}
+		} else if tableColumn?.identifier == "CommitColumn" {
+			if soapElement.tag == "RateReplyDetails" {
+				guard let x = drillDown(parent: soapElement, path: "CommitDetails|DayOfWeek")?.value! else {
+					return drillDown(parent: soapElement, path: "CommitDetails|TransitTime")?.value!
+				}
+				
+				return x
+			}
 		}
 		
-		// else ValueColumn
-		return soapElement.value
+		return nil
+	}
+	
+	func drillDown(parent: SoapElement, path: String) -> SoapElement? {
+//		print(parent)
+//		print(path)
+		
+		if path.components(separatedBy: "|").count > 1 {
+			return drillDown(
+				parent: soapStack.items
+					.filter{ $0.parent == parent.id }
+					.filter{ $0.tag == path.components(separatedBy: "|").first! }.first!,
+				path: (path.components(separatedBy: "|").dropFirst().joined(separator: "|"))
+			)
+		}
+		
+		return soapStack.items.filter{ $0.parent == parent.id && $0.tag == path.components(separatedBy: "|").last! }.last
+		
+//		let ratedShipmentDetails = soapStack.items.filter{ $0.parent == parent.id && $0.tag == "RatedShipmentDetails" }.last?.id
+//		let shipmentRateDetail = soapStack.items.filter{ $0.parent == ratedShipmentDetails && $0.tag == "ShipmentRateDetail" }.last?.id
+//		let totalNetCharge = soapStack.items.filter{ $0.parent == shipmentRateDetail && $0.tag == "TotalNetCharge" }.last?.id
+//		
+//		return soapStack.items.filter{ $0.parent == totalNetCharge && $0.tag == "Amount" }.last!
 	}
 }
 
