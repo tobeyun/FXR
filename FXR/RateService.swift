@@ -8,27 +8,20 @@
 
 import Foundation
 
-protocol HasChildren
+private struct SoapMessage : CustomStringConvertible
 {
-	var children: [(name: String, value: Any?)] {get}
-}
-
-struct SoapMessage : CustomStringConvertible
-{
-	fileprivate let _message: RateRequest
+	fileprivate let _message: String
 	
 	var description: String { return "<SOAP-ENV:Envelope xmlns:SOAP-ENV=\"http://schemas.xmlsoap.org/soap/envelope/\" " +
 										"xmlns:SOAP-ENC=\"http://schemas.xmlsoap.org/soap/encoding/\" " +
 										"xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" " +
 										"xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" " +
-										"xmlns=\"http://fedex.com/ws/rate/v20\"><SOAP-ENV:Body>\(message())</SOAP-ENV:Body></SOAP-ENV:Envelope>" }
+										"xmlns=\"http://fedex.com/ws/rate/v20\"><SOAP-ENV:Body>\(_message)</SOAP-ENV:Body></SOAP-ENV:Envelope>" }
 	
-	init(message: RateRequest)
+	init(_ message: String)
 	{
 		_message = message
 	}
-	
-	func message() -> String { return "\(_message)" }
 }
 
 struct RateRequest : CustomStringConvertible
@@ -43,7 +36,7 @@ struct RateRequest : CustomStringConvertible
 	fileprivate let _consolidationKey: ConsolidationKey?
 	fileprivate let _requestedShipment: RequestedShipment?
 
-	var description: String { return "<\(type(of: self))>\(webAuthenticationDetail())\(clientDetail())\(transactionDetail())\(version())\(returnTransitAndCommit())\(carrierCodes())\(variableOptions())\(consolidationKey())\(requestedShipment())</\(type(of: self))>" }
+	var description: String { return "\(SoapMessage("<\(type(of: self))>\(webAuthenticationDetail())\(clientDetail())\(transactionDetail())\(version())\(returnTransitAndCommit())\(carrierCodes())\(variableOptions())\(consolidationKey())\(requestedShipment())</\(type(of: self))>"))" }
 	
 	init(webAuthenticationDetail: WebAuthenticationDetail, clientDetail: ClientDetail, transactionDetail: TransactionDetail?, returnTransAndCommit: Bool?, carrierCodes: CarrierCodeType?, variableOptions: ServiceOptionType?, consolidationKey: ConsolidationKey?, requestedShipment: RequestedShipment?)
 	{
@@ -69,276 +62,136 @@ struct RateRequest : CustomStringConvertible
 	func requestedShipment() -> String { return (_requestedShipment == nil ? "" : "<RequestedShipment>\(_requestedShipment!)</RequestedShipment>") }
 }
 
-struct RateReply : CustomStringConvertible
-{
-	enum Funcs
-	{
-		case HighestSeverity ( (Void) -> NotificationSeverityType )
-		case Notifications ( (Void) -> [fNotification] )
-		case TransactionDetail ( (Void) -> TransactionDetail? )
-		case Version ( (Void) -> VersionId )
-		case RateReplyDetails ( (Void) -> [RateReplyDetail]? )
-	}
-	
-	fileprivate let _stack: Stack<ValuePath>
-	
-	var description: String { return "RateReply" }
-	var funcs = Array<Funcs>()
-	
-	init(_ stack: Stack<ValuePath>)
-	{
-		_stack = stack
-		
-		funcs.append(Funcs.HighestSeverity(highestSeverity))
-		funcs.append(Funcs.Notifications(notifications))
-		funcs.append(Funcs.TransactionDetail(transactionDetail))
-		funcs.append(Funcs.Version(version))
-		funcs.append(Funcs.RateReplyDetails(rateReplyDetails))
-	}
-
-	func highestSeverity() -> NotificationSeverityType { return NotificationSeverityType(rawValue: _stack.find("RateReply|HighestSeverity")[0].value)! }
-	
-	func notifications() -> [fNotification] { return _stack.find("RateReply|Notifications|Severity").enumerated().map{ (index, element) -> fNotification in
-			return fNotification(
-				severity: NotificationSeverityType(rawValue: element.value),
-				source: _stack.find("RateReply|Notifications|Source")[safe: index]?.value ?? "",
-				code: _stack.find("RateReply|Notifications|Code")[safe: index]?.value ?? "",
-				message: _stack.find("RateReply|Notifications|Message")[safe: index]?.value ?? "",
-				localizedMessage: _stack.find("RateReply|Notifications|LocalizedMessage")[safe: index]?.value ?? "",
-				messageParameters: _stack.find("RateReply|Notifications|MessageParameters").enumerated().map{ (i, e) -> NotificationParameter in
-					return NotificationParameter(
-						id: _stack.find("RateReply|Notifications|MessageParameters")[safe: i]!.value,
-						value: _stack.find("RateReply|Notifications|MessageParameters")[safe: i]!.value
-					)
-				}
-			)
-		}
-	}
-	
-	func transactionDetail() -> TransactionDetail? { return TransactionDetail(
-			customerTransactionId: _stack.find("RateReply|TransactionDetail|CustomerTransactionId").map{ $0.value! }[safe: 0],
-			localization: Localization(
-				languageCode: (_stack.find("RateReply|TransactionDetail|Localization|LanguageCode").map{ $0.value }[safe: 0] ?? "")!,
-				localeCode: _stack.find("RateReply|TransactionDetail|Localization|LocaleCode").map{ $0.value }[safe: 0] ?? ""
-			)
-		)
-	}
-		
-	func version() -> VersionId { return VersionId() }
-		
-	func rateReplyDetails() -> [RateReplyDetail]?
-	{
-		if (highestSeverity() == NotificationSeverityType.FAILURE)
-		{
-			return nil
-		}
-		else
-		{
-			return _stack.find("RateReply|RateReplyDetails|ServiceType").enumerated().map{ (index, element) -> RateReplyDetail in
-				return RateReplyDetail(index, _stack)
-			}
-		}
-	}
-}
-
-struct RateReplyDetail : CustomStringConvertible
-{
-	fileprivate let _index: Int
-	fileprivate let _stack: Stack<ValuePath>
-	
-	var description: String { return "RateReply|RateReplyDetails" }
-	
-	init(_ index: Int, _ stack: Stack<ValuePath>)
-	{
-		_index = index
-		_stack = stack
-	}
-	
-	func serviceType() -> ServiceType? { return ServiceType(rawValue: _stack.find("RateReply|RateReplyDetails|ServiceType")[_index].value)! }
-	func packagingType() -> PackagingType? { return PackagingType(rawValue: _stack.find("RateReply|RateReplyDetails|PackagingType")[_index].value)! }
-	
-	func appliedOptions() -> [ServiceOptionType]?
-	{
-		return _stack.find("RateReply|RateReplyDetails|AppliedOptions").enumerated().map{ (i, e) -> ServiceOptionType in
-					return ServiceOptionType(rawValue: e.value)!
-				}
-	}
-	
-	func appliedSubOptions() -> ServiceSubOptionDetail?
-	{
-		return ServiceSubOptionDetail(
-			freightGuarantee: FreightGuaranteeType(rawValue: _stack.find("RateReply|RateReplyDetails|AppliedSubOptions|FreightGuarantee")[safe: _index]?.value),
-			smartPostHubId: _stack.find("RateReply|RateReplyDetails|AppliedSubOptions|SmartPostHubId")[safe: _index]?.value,
-			smartPostIndicia: SmartPostIndiciaType(rawValue: _stack.find("RateReply|RateReplyDetails|AppliedSubOptions|SmartPostIndicia")[safe: _index]?.value)
-		)
-	}
-	
-	func deliveryStation() -> String? { return _stack.find("RateReply|RateReplyDetails|DeliveryStation")[safe: _index]?.value }
-	func deliveryDayOfWeek() -> DayOfWeekType? { return DayOfWeekType(rawValue: _stack.find("RateReply|RateReplyDetails|DeliveryDayOfWeek")[safe: _index]?.value) }
-	func deliveryTimestamp() -> Date? { return _stack.find("RateReply|RateReplyDetails|DeliveryTimestamp")[safe: _index]?.value?.toDate() }
-	
-	func commitDetails() -> [CommitDetail]?
-	{
-		return _stack.find("RateReply|RateReplyDetails|CommitDetails|ServiceType").enumerated().map{ (i, e) -> CommitDetail in
-					return CommitDetail(i, _stack)
-				}
-	}
-	
-	func destinationAirportId() -> String? { return _stack.find("RateReply|RateReplyDetails|DestinationAirportId")[safe: _index]?.value }
-	func ineligibleForMoneyBackGuarantee() -> Bool? { return _stack.find("RateReply|RateReplyDetails|IneligibleForMoneyBackGuarantee")[safe: _index]?.value == "TRUE" }
-	func originServiceArea() -> String? { return _stack.find("RateReply|RateReplyDetails|OriginServiceArea")[safe: _index]?.value }
-	func destinationServiceArea() -> String? { return _stack.find("RateReply|RateReplyDetails|DestinationServiceArea")[safe: _index]?.value }
-	func transitTime() -> TransitTimeType? { return TransitTimeType(rawValue: _stack.find("RateReply|RateReplyDetails|TransitTime")[safe: _index]?.value) }
-	func maximumTransitTime() -> TransitTimeType? { return TransitTimeType(rawValue: _stack.find("RateReply|RateReplyDetails|MaximumTransitTime")[safe: _index]?.value) }
-	func signatureOption() -> SignatureOptionType? { return SignatureOptionType(rawValue: _stack.find("RateReply|RateReplyDetails|SignatureOption")[safe: _index]?.value) }
-	func actualRateType() -> ReturnedRateType? { return ReturnedRateType(rawValue: _stack.find("RateReply|RateReplyDetails|ActualRateType")[safe: _index]?.value) }
-	func ratedShipmentDetails() -> [RatedShipmentDetail]?
-	{
-		return _stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|ShipmentRateDetail|RateType").enumerated().map{ (i, e) -> RatedShipmentDetail in
-			return RatedShipmentDetail(i, _stack)
-		}
-	}
-}
-
-struct WebAuthenticationDetail : CustomStringConvertible
-{
-	fileprivate let _parentCredential: WebAuthenticationCredential?
-	fileprivate let _userCredential: WebAuthenticationCredential
-	
-	var description: String { return "\(parentCredential())\(userCredential())" }
-	
-	init(parentCredential: WebAuthenticationCredential?, userCredential: WebAuthenticationCredential)
-	{
-		_parentCredential = parentCredential
-		_userCredential = userCredential
-	}
-	
-	func parentCredential() -> String { return (_parentCredential == nil ? "" : "<ParentCredential>\(_parentCredential!)</ParentCredential>") }
-	func userCredential() -> String { return "<UserCredential>\(_userCredential)</UserCredential>" }
-}
-
-struct WebAuthenticationCredential : CustomStringConvertible
-{
-	fileprivate let _key: String
-	fileprivate let _password: String
-	
-	var description: String { return "\(key())\(password())" }
-	
-	init(key: String, password: String)
-	{
-		_key = key
-		_password = password
-	}
-	
-	func key() -> String { return "<Key>\(_key)</Key>" }
-	func password() -> String { return "<Password>\(_password)</Password>" }
-}
-
-struct ClientDetail : CustomStringConvertible
-{
-	fileprivate let _accountNumber: String
-	fileprivate let _meterNumber: String
-	fileprivate let _integratorId: String?
-	fileprivate let _region: ExpressRegionCode?
-	fileprivate let _localization: Localization?
-	
-	var description: String { return "\(accountNumber())\(meterNumber())\(integratorId())\(region())\(localization())" }
-	
-	init(accountNumber: String, meterNumber: String, integratorId: String?, region: ExpressRegionCode?, localization: Localization?)
-	{
-		_accountNumber = accountNumber
-		_meterNumber = meterNumber
-		_integratorId = integratorId
-		_region = region
-		_localization = localization
-	}
-	
-	func accountNumber() -> String { return "<AccountNumber>\(_accountNumber)</AccountNumber>" }
-	func meterNumber() -> String { return "<MeterNumber>\(_meterNumber)</MeterNumber>" }
-	func integratorId() -> String { return (_integratorId == nil ? "" : "<IntegratorId>\(_integratorId!)</IntegratorId>") }
-	func region() -> String { return (_region == nil ? "" : "<Region>\(_region!)</Region>") }
-	func localization() -> String { return (_localization == nil ? "" : "<Localization>\(_localization!)</Localization>") }
-}
-
-struct TransactionDetail : CustomStringConvertible
-{
-	fileprivate let _customerTransactionId: String?
-	fileprivate let _localization: Localization?
-	
-	var description: String { return "\(customerTransactionId())\(localization())" }
-	
-	init(customerTransactionId: String?, localization: Localization?)
-	{
-		_customerTransactionId = customerTransactionId
-		_localization = localization
-	}
-	
-	func customerTransactionId() -> String { return (_customerTransactionId == nil ? "" : "<CustomerTransactionId>\(_customerTransactionId!)</CustomerTransactionId>") }
-	func localization() -> String { return (_localization == nil ? "" : "<Localization>\(_localization!)</Localization>") }
-}
-
-struct fNotification : CustomStringConvertible
-{
-	fileprivate let _severity: NotificationSeverityType?
-	fileprivate let _source: String?
-	fileprivate let _code: String?
-	fileprivate let _message: String?
-	fileprivate let _localizedMessage: String?
-	fileprivate let _messageParameters: [NotificationParameter]?
-	
-	var description: String { return "\(severity())\(source())\(code())\(message())\(localizedMessage())\(messageParameters())" }
-	
-	init(severity: NotificationSeverityType?, source: String?, code: String?, message: String?, localizedMessage: String?, messageParameters: [NotificationParameter]?)
-	{
-		_severity = severity
-		_source = source
-		_code = code
-		_message = message
-		_localizedMessage = localizedMessage
-		_messageParameters = messageParameters
-	}
-	
-	func severity() -> (name: String, value: NotificationSeverityType?) { return (_severity == nil ? (name: "Severity", value: nil) : (name: "Severity", value: _severity!)) }
-	func source() -> (name: String, value: String) { return (_source == nil ? (name: "Source", value: "") : (name: "Source", value: _source!)) }
-	func code() -> (name: String, value: String) { return (_code == nil ? (name: "Code", value: "") : (name: "Code", value: _code!)) }
-	func message() -> (name: String, value: String) { return (_message == nil ? (name: "Message", value: "") : (name: "Message", value: _message!)) }
-	func localizedMessage() -> (name: String, value: String) { return (_localizedMessage == nil ? (name: "Localized Message", value: "") : (name: "Localized Message", value: _localizedMessage!)) }
-	func messageParameters() -> (name: String, value: [NotificationParameter]?) { return (_messageParameters == nil ? (name: "Message Parameters", value: nil) : (name: "Message Parameters", value: _messageParameters!)) }
-}
-
-struct NotificationParameter : CustomStringConvertible
-{
-	fileprivate let _id: String?
-	fileprivate let _value: String?
-	
-	var description: String { return "Notification Parameter" }
-	
-	init(id: String?, value: String?)
-	{
-		_id = id
-		_value = value
-	}
-	
-	func id() -> (name: String, value: String) { return (_id == nil ? (name: "Id", value: "") : (name: "Id", value: _id!)) }
-	func value() -> (name: String, value: String) { return (_value == nil ? (name: "Value", value: "") : (name: "Value", value: _value!)) }
-}
-
-struct Localization : CustomStringConvertible
-{
-	fileprivate let _languageCode: String
-	fileprivate let _localeCode: String?
-
-	var description: String { return "\(languageCode())\(localeCode())" }
-	
-	init(languageCode: String, localeCode: String?)
-	{
-		_languageCode = languageCode
-		_localeCode = localeCode
-	}
-	
-	func languageCode() -> String { return "<LanguageCode>\(_languageCode)</LanguageCode>" }
-	func localeCode() -> String { return (_localeCode == nil ? "" : "<LocaleCode>\(_localeCode!)</LocaleCode>") }
-}
+//struct RateReply : CustomStringConvertible
+//{
+//	enum Funcs
+//	{
+//		case HighestSeverity ( (Void) -> NotificationSeverityType )
+//		case Notifications ( (Void) -> [fNotification] )
+//		case TransactionDetail ( (Void) -> TransactionDetail? )
+//		case Version ( (Void) -> VersionId )
+//		case RateReplyDetails ( (Void) -> [RateReplyDetail]? )
+//	}
+//	
+//	fileprivate let _stack: Stack<ValuePath>
+//	
+//	var description: String { return "RateReply" }
+//	var funcs = Array<Funcs>()
+//	
+//	init(_ stack: Stack<ValuePath>)
+//	{
+//		_stack = stack
+//		
+//		funcs.append(Funcs.HighestSeverity(highestSeverity))
+//		funcs.append(Funcs.Notifications(notifications))
+//		funcs.append(Funcs.TransactionDetail(transactionDetail))
+//		funcs.append(Funcs.Version(version))
+//		funcs.append(Funcs.RateReplyDetails(rateReplyDetails))
+//	}
+//
+//	func highestSeverity() -> NotificationSeverityType { return NotificationSeverityType(rawValue: _stack.find("RateReply|HighestSeverity")[0].value)! }
+//	
+//	func notifications() -> [fNotification] { return _stack.find("RateReply|Notifications|Severity").enumerated().map{ (index, element) -> fNotification in
+//			return fNotification(
+//				severity: NotificationSeverityType(rawValue: element.value),
+//				source: _stack.find("RateReply|Notifications|Source")[safe: index]?.value ?? "",
+//				code: _stack.find("RateReply|Notifications|Code")[safe: index]?.value ?? "",
+//				message: _stack.find("RateReply|Notifications|Message")[safe: index]?.value ?? "",
+//				localizedMessage: _stack.find("RateReply|Notifications|LocalizedMessage")[safe: index]?.value ?? "",
+//				messageParameters: _stack.find("RateReply|Notifications|MessageParameters").enumerated().map{ (i, e) -> NotificationParameter in
+//					return NotificationParameter(
+//						id: _stack.find("RateReply|Notifications|MessageParameters")[safe: i]!.value,
+//						value: _stack.find("RateReply|Notifications|MessageParameters")[safe: i]!.value
+//					)
+//				}
+//			)
+//		}
+//	}
+//	
+//	func transactionDetail() -> TransactionDetail? { return TransactionDetail(
+//			customerTransactionId: _stack.find("RateReply|TransactionDetail|CustomerTransactionId").map{ $0.value! }[safe: 0],
+//			localization: Localization(
+//				languageCode: (_stack.find("RateReply|TransactionDetail|Localization|LanguageCode").map{ $0.value }[safe: 0] ?? "")!,
+//				localeCode: _stack.find("RateReply|TransactionDetail|Localization|LocaleCode").map{ $0.value }[safe: 0] ?? ""
+//			)
+//		)
+//	}
+//		
+//	func version() -> VersionId { return VersionId() }
+//		
+//	func rateReplyDetails() -> [RateReplyDetail]?
+//	{
+//		if (highestSeverity() == NotificationSeverityType.FAILURE)
+//		{
+//			return nil
+//		}
+//		else
+//		{
+//			return _stack.find("RateReply|RateReplyDetails|ServiceType").enumerated().map{ (index, element) -> RateReplyDetail in
+//				return RateReplyDetail(index, _stack)
+//			}
+//		}
+//	}
+//}
+//
+//struct RateReplyDetail : CustomStringConvertible
+//{
+//	fileprivate let _index: Int
+//	fileprivate let _stack: Stack<ValuePath>
+//	
+//	var description: String { return "RateReply|RateReplyDetails" }
+//	
+//	init(_ index: Int, _ stack: Stack<ValuePath>)
+//	{
+//		_index = index
+//		_stack = stack
+//	}
+//	
+//	func serviceType() -> ServiceType? { return ServiceType(rawValue: _stack.find("RateReply|RateReplyDetails|ServiceType")[_index].value)! }
+//	func packagingType() -> PackagingType? { return PackagingType(rawValue: _stack.find("RateReply|RateReplyDetails|PackagingType")[_index].value)! }
+//	
+//	func appliedOptions() -> [ServiceOptionType]?
+//	{
+//		return _stack.find("RateReply|RateReplyDetails|AppliedOptions").enumerated().map{ (i, e) -> ServiceOptionType in
+//					return ServiceOptionType(rawValue: e.value)!
+//				}
+//	}
+//	
+//	func appliedSubOptions() -> ServiceSubOptionDetail?
+//	{
+//		return ServiceSubOptionDetail(
+//			freightGuarantee: FreightGuaranteeType(rawValue: _stack.find("RateReply|RateReplyDetails|AppliedSubOptions|FreightGuarantee")[safe: _index]?.value),
+//			smartPostHubId: _stack.find("RateReply|RateReplyDetails|AppliedSubOptions|SmartPostHubId")[safe: _index]?.value,
+//			smartPostIndicia: SmartPostIndiciaType(rawValue: _stack.find("RateReply|RateReplyDetails|AppliedSubOptions|SmartPostIndicia")[safe: _index]?.value)
+//		)
+//	}
+//	
+//	func deliveryStation() -> String? { return _stack.find("RateReply|RateReplyDetails|DeliveryStation")[safe: _index]?.value }
+//	func deliveryDayOfWeek() -> DayOfWeekType? { return DayOfWeekType(rawValue: _stack.find("RateReply|RateReplyDetails|DeliveryDayOfWeek")[safe: _index]?.value) }
+//	func deliveryTimestamp() -> Date? { return _stack.find("RateReply|RateReplyDetails|DeliveryTimestamp")[safe: _index]?.value?.toDate() }
+//	
+//	func commitDetails() -> [CommitDetail]?
+//	{
+//		return _stack.find("RateReply|RateReplyDetails|CommitDetails|ServiceType").enumerated().map{ (i, e) -> CommitDetail in
+//					return CommitDetail(i, _stack)
+//				}
+//	}
+//	
+//	func destinationAirportId() -> String? { return _stack.find("RateReply|RateReplyDetails|DestinationAirportId")[safe: _index]?.value }
+//	func ineligibleForMoneyBackGuarantee() -> Bool? { return _stack.find("RateReply|RateReplyDetails|IneligibleForMoneyBackGuarantee")[safe: _index]?.value == "TRUE" }
+//	func originServiceArea() -> String? { return _stack.find("RateReply|RateReplyDetails|OriginServiceArea")[safe: _index]?.value }
+//	func destinationServiceArea() -> String? { return _stack.find("RateReply|RateReplyDetails|DestinationServiceArea")[safe: _index]?.value }
+//	func transitTime() -> TransitTimeType? { return TransitTimeType(rawValue: _stack.find("RateReply|RateReplyDetails|TransitTime")[safe: _index]?.value) }
+//	func maximumTransitTime() -> TransitTimeType? { return TransitTimeType(rawValue: _stack.find("RateReply|RateReplyDetails|MaximumTransitTime")[safe: _index]?.value) }
+//	func signatureOption() -> SignatureOptionType? { return SignatureOptionType(rawValue: _stack.find("RateReply|RateReplyDetails|SignatureOption")[safe: _index]?.value) }
+//	func actualRateType() -> ReturnedRateType? { return ReturnedRateType(rawValue: _stack.find("RateReply|RateReplyDetails|ActualRateType")[safe: _index]?.value) }
+//	func ratedShipmentDetails() -> [RatedShipmentDetail]?
+//	{
+//		return _stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|ShipmentRateDetail|RateType").enumerated().map{ (i, e) -> RatedShipmentDetail in
+//			return RatedShipmentDetail(i, _stack)
+//		}
+//	}
+//}
 
 struct VersionId : CustomStringConvertible
 {
@@ -3435,126 +3288,126 @@ struct Money : CustomStringConvertible
 	func amount() -> String { return (_amount == nil ? "" : "<Amount>\(_amount!)</Amount>") }
 }
 
-struct RatedShipmentDetail : CustomStringConvertible
-{
-	fileprivate let _index: Int
-	fileprivate let _stack: Stack<ValuePath>
-	
-	var description: String { return "RateReply|RateReplyDetails|RatedShipmentDetails" }
-	
-	init(_ index: Int, _ stack: Stack<ValuePath>)
-	{
-		_index = index
-		_stack = stack
-	}
-	
-	func effectiveNetDiscount() -> Money?
-	{
-		return Money(
-			currency: _stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|EffectiveNetDiscount|Currency")[safe: _index]?.value,
-			amount: Decimal(string: (_stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|EffectiveNetDiscount|Amount")[safe: _index]?.value)!)
-		)
-	}
-	func adjustedCodCollectionAmount() -> Money?
-	{
-		return Money(
-			currency: _stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|AdjustedCodCollectionAmount|Currency")[safe: _index]?.value,
-			amount: Decimal(string: (_stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|AdjustedCodCollectionAmount|Amount")[safe: _index]?.value)!)
-		)
-	}
-	func shipmentRateDetail() -> ShipmentRateDetail?
-	{
-		return ShipmentRateDetail(_index, _stack)
-	}
-	func ratedPackages() -> RatedPackageDetail? { return nil }
-}
+//struct RatedShipmentDetail : CustomStringConvertible
+//{
+//	fileprivate let _index: Int
+//	fileprivate let _stack: Stack<ValuePath>
+//	
+//	var description: String { return "RateReply|RateReplyDetails|RatedShipmentDetails" }
+//	
+//	init(_ index: Int, _ stack: Stack<ValuePath>)
+//	{
+//		_index = index
+//		_stack = stack
+//	}
+//	
+//	func effectiveNetDiscount() -> Money?
+//	{
+//		return Money(
+//			currency: _stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|EffectiveNetDiscount|Currency")[safe: _index]?.value,
+//			amount: Decimal(string: (_stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|EffectiveNetDiscount|Amount")[safe: _index]?.value)!)
+//		)
+//	}
+//	func adjustedCodCollectionAmount() -> Money?
+//	{
+//		return Money(
+//			currency: _stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|AdjustedCodCollectionAmount|Currency")[safe: _index]?.value,
+//			amount: Decimal(string: (_stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|AdjustedCodCollectionAmount|Amount")[safe: _index]?.value)!)
+//		)
+//	}
+//	func shipmentRateDetail() -> ShipmentRateDetail?
+//	{
+//		return ShipmentRateDetail(_index, _stack)
+//	}
+//	func ratedPackages() -> RatedPackageDetail? { return nil }
+//}
 
-struct RatedPackageDetail : CustomStringConvertible
-{
-	fileprivate let _trackingIds: TrackingId?
-	fileprivate let _groupNumber: UInt?
-	fileprivate let _effectiveNetDiscount: Money?
-	fileprivate let _adjustedCodCollectionAmount: Money?
-	fileprivate let _oversizeClass: OversizeClassType?
-	fileprivate let _packageRateDetail: PackageRateDetail?
-	
-	var description: String { return "\(trackingIds())\(groupNumber())\(effectiveNetDiscount())\(adjustedCodCollectionAmount())\(oversizeClass())\(packageRateDetail())" }
-	
-	init(trackingIds: TrackingId, groupNumber: UInt, effectiveNetDiscount: Money, adjustedCodCollectionAmount: Money, oversizeClass: OversizeClassType, packageRateDetail: PackageRateDetail)
-	{
-		_trackingIds = trackingIds
-		_groupNumber = groupNumber
-		_effectiveNetDiscount = effectiveNetDiscount
-		_adjustedCodCollectionAmount = adjustedCodCollectionAmount
-		_oversizeClass = oversizeClass
-		_packageRateDetail = packageRateDetail
-	}
-	
-	func trackingIds() -> String { return (_trackingIds == nil ? "" : "<TrackingIds>\(_trackingIds!)</TrackingIds>") }
-	func groupNumber() -> String { return (_groupNumber == nil ? "" : "<GroupNumber>\(_groupNumber!)</GroupNumber>") }
-	func effectiveNetDiscount() -> String { return (_effectiveNetDiscount == nil ? "" : "<EffectiveNetDiscount>\(_effectiveNetDiscount!)</EffectiveNetDiscount>") }
-	func adjustedCodCollectionAmount() -> String { return (_adjustedCodCollectionAmount == nil ? "" : "<AdjustedCodCollectionAmount>\(_adjustedCodCollectionAmount!)</AdjustedCodCollectionAmount>") }
-	func oversizeClass() -> String { return (_oversizeClass == nil ? "" : "<OversizeClass>\(_oversizeClass!)</OversizeClass>") }
-	func packageRateDetail() -> String { return (_packageRateDetail == nil ? "" : "<PackageRateDetail>\(_packageRateDetail!)</PackageRateDetail>") }
-}
-
-struct ShipmentRateDetail : CustomStringConvertible
-{
-	fileprivate let _index: Int
-	fileprivate let _stack: Stack<ValuePath>
-	fileprivate let _rateReplyDetail: RateReplyDetail
-	
-	var description: String { return "Shipment Rate Detail" }
-	
-	init(_ index: Int, _ stack: Stack<ValuePath>)
-	{
-		_index = index
-		_stack = stack
-		_rateReplyDetail = (RateReply(_stack).rateReplyDetails()?[_index])!
-	}
-	
-	func rateType() -> ReturnedRateType? { return nil }
-	func rateScale() -> String? { return nil }
-	func rateZone() -> String? { return nil }
-	func pricingCode() -> PricingCodeType? { return nil }
-	func ratedWeightMethod() -> RatedWeightMethod? { return nil }
-	func minimumChargeType() -> MinimumChargeType? { return nil }
-	func currencyExchangeRate() -> CurrencyExchangeRate? { return nil }
-	func specialRatingApplied() -> SpecialRatingAppliedType? { return nil }
-	func dimDivisor() -> UInt? { return nil }
-	func dimDivisorType() -> RateDimensionalDivisorType? { return nil }
-	func fuelSurchargePercent() -> Decimal? { return nil }
-	func totalBillingWeight() -> Weight? { return nil }
-	func totalDimWeight() -> Weight? { return nil }
-	func totalBaseCharge() -> Money? { return nil }
-	func totalFreightDiscounts() -> Money? { return nil }
-	func totalNetFreight() -> Money? { return nil }
-	func totalSurcharges() -> Money? { return nil }
-	func totalNetFedExCharge() -> Money? { return nil }
-	func totalTaxes() -> Money? { return nil }
-	func totalNetCharge() -> Money?
-	{
-		return Money(
-			currency: _stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|ShipmentRateDetail|TotalNetCharge").getValue(service: (_rateReplyDetail.serviceType()?.rawValue)!, value: "Currency"),
-			amount: Decimal(string: _stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|ShipmentRateDetail|TotalNetCharge").getValue(service: (_rateReplyDetail.serviceType()?.rawValue)!, value: "Amount")!)
-		)
-	}
-	func totalRebates() -> Money? { return nil }
-	func totalDutiesAndTaxes() -> Money? { return nil }
-	func totalAncillaryFeesAndTaxes() -> Money? { return nil }
-	func totalDutiesTaxesAndFees() -> Money? { return nil }
-	func totalNetChargeWithDutiesAndTaxes() -> Money? { return nil }
-	func shipmentLegRateDetails() -> ShipmentLegRateDetail? { return nil }
-	func freightRateDetail() -> FreightRateDetail? { return nil }
-	func freightDiscounts() -> RateDiscount? { return nil }
-	func rebates() -> Rebate? { return nil }
-	func surcharges() -> Surcharge? { return nil }
-	func taxes() -> Tax? { return nil }
-	func dutiesAndTaxes() -> EdtCommodityTax? { return nil }
-	func ancillaryFeesAndTaxes() -> AncillaryFeeAndTax? { return nil }
-	func variableHandlingCharges() -> VariableHandlingCharges? { return nil }
-	func totalVariableHandlingCharges() -> VariableHandlingCharges? { return nil }
-}
+//struct RatedPackageDetail : CustomStringConvertible
+//{
+//	fileprivate let _trackingIds: TrackingId?
+//	fileprivate let _groupNumber: UInt?
+//	fileprivate let _effectiveNetDiscount: Money?
+//	fileprivate let _adjustedCodCollectionAmount: Money?
+//	fileprivate let _oversizeClass: OversizeClassType?
+//	fileprivate let _packageRateDetail: PackageRateDetail?
+//	
+//	var description: String { return "\(trackingIds())\(groupNumber())\(effectiveNetDiscount())\(adjustedCodCollectionAmount())\(oversizeClass())\(packageRateDetail())" }
+//	
+//	init(trackingIds: TrackingId, groupNumber: UInt, effectiveNetDiscount: Money, adjustedCodCollectionAmount: Money, oversizeClass: OversizeClassType, packageRateDetail: PackageRateDetail)
+//	{
+//		_trackingIds = trackingIds
+//		_groupNumber = groupNumber
+//		_effectiveNetDiscount = effectiveNetDiscount
+//		_adjustedCodCollectionAmount = adjustedCodCollectionAmount
+//		_oversizeClass = oversizeClass
+//		_packageRateDetail = packageRateDetail
+//	}
+//	
+//	func trackingIds() -> String { return (_trackingIds == nil ? "" : "<TrackingIds>\(_trackingIds!)</TrackingIds>") }
+//	func groupNumber() -> String { return (_groupNumber == nil ? "" : "<GroupNumber>\(_groupNumber!)</GroupNumber>") }
+//	func effectiveNetDiscount() -> String { return (_effectiveNetDiscount == nil ? "" : "<EffectiveNetDiscount>\(_effectiveNetDiscount!)</EffectiveNetDiscount>") }
+//	func adjustedCodCollectionAmount() -> String { return (_adjustedCodCollectionAmount == nil ? "" : "<AdjustedCodCollectionAmount>\(_adjustedCodCollectionAmount!)</AdjustedCodCollectionAmount>") }
+//	func oversizeClass() -> String { return (_oversizeClass == nil ? "" : "<OversizeClass>\(_oversizeClass!)</OversizeClass>") }
+//	func packageRateDetail() -> String { return (_packageRateDetail == nil ? "" : "<PackageRateDetail>\(_packageRateDetail!)</PackageRateDetail>") }
+//}
+//
+//struct ShipmentRateDetail : CustomStringConvertible
+//{
+//	fileprivate let _index: Int
+//	fileprivate let _stack: Stack<ValuePath>
+//	fileprivate let _rateReplyDetail: RateReplyDetail
+//	
+//	var description: String { return "Shipment Rate Detail" }
+//	
+//	init(_ index: Int, _ stack: Stack<ValuePath>)
+//	{
+//		_index = index
+//		_stack = stack
+//		_rateReplyDetail = (RateReply(_stack).rateReplyDetails()?[_index])!
+//	}
+//	
+//	func rateType() -> ReturnedRateType? { return nil }
+//	func rateScale() -> String? { return nil }
+//	func rateZone() -> String? { return nil }
+//	func pricingCode() -> PricingCodeType? { return nil }
+//	func ratedWeightMethod() -> RatedWeightMethod? { return nil }
+//	func minimumChargeType() -> MinimumChargeType? { return nil }
+//	func currencyExchangeRate() -> CurrencyExchangeRate? { return nil }
+//	func specialRatingApplied() -> SpecialRatingAppliedType? { return nil }
+//	func dimDivisor() -> UInt? { return nil }
+//	func dimDivisorType() -> RateDimensionalDivisorType? { return nil }
+//	func fuelSurchargePercent() -> Decimal? { return nil }
+//	func totalBillingWeight() -> Weight? { return nil }
+//	func totalDimWeight() -> Weight? { return nil }
+//	func totalBaseCharge() -> Money? { return nil }
+//	func totalFreightDiscounts() -> Money? { return nil }
+//	func totalNetFreight() -> Money? { return nil }
+//	func totalSurcharges() -> Money? { return nil }
+//	func totalNetFedExCharge() -> Money? { return nil }
+//	func totalTaxes() -> Money? { return nil }
+//	func totalNetCharge() -> Money?
+//	{
+//		return Money(
+//			currency: _stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|ShipmentRateDetail|TotalNetCharge").getValue(service: (_rateReplyDetail.serviceType()?.rawValue)!, value: "Currency"),
+//			amount: Decimal(string: _stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|ShipmentRateDetail|TotalNetCharge").getValue(service: (_rateReplyDetail.serviceType()?.rawValue)!, value: "Amount")!)
+//		)
+//	}
+//	func totalRebates() -> Money? { return nil }
+//	func totalDutiesAndTaxes() -> Money? { return nil }
+//	func totalAncillaryFeesAndTaxes() -> Money? { return nil }
+//	func totalDutiesTaxesAndFees() -> Money? { return nil }
+//	func totalNetChargeWithDutiesAndTaxes() -> Money? { return nil }
+//	func shipmentLegRateDetails() -> ShipmentLegRateDetail? { return nil }
+//	func freightRateDetail() -> FreightRateDetail? { return nil }
+//	func freightDiscounts() -> RateDiscount? { return nil }
+//	func rebates() -> Rebate? { return nil }
+//	func surcharges() -> Surcharge? { return nil }
+//	func taxes() -> Tax? { return nil }
+//	func dutiesAndTaxes() -> EdtCommodityTax? { return nil }
+//	func ancillaryFeesAndTaxes() -> AncillaryFeeAndTax? { return nil }
+//	func variableHandlingCharges() -> VariableHandlingCharges? { return nil }
+//	func totalVariableHandlingCharges() -> VariableHandlingCharges? { return nil }
+//}
 
 struct CurrencyExchangeRate : CustomStringConvertible
 {
@@ -3576,124 +3429,124 @@ struct CurrencyExchangeRate : CustomStringConvertible
 	func rate() -> String { return (_rate == nil ? "" : "<Rate>\(_rate!)</Rate>") }
 }
 
-struct ShipmentLegRateDetail : CustomStringConvertible
-{
-	fileprivate let _legDescription: String?
-	fileprivate let _legOrigin: Address?
-	fileprivate let _legOriginLocationId: String?
-	fileprivate let _legDestination: Address?
-	fileprivate let _legDestinationLocationId: String?
-	fileprivate let _rateType: ReturnedRateType?
-	fileprivate let _rateScale: String?
-	fileprivate let _rateZone: String?
-	fileprivate let _pricingCode: PricingCodeType?
-	fileprivate let _ratedWeightMethod: RatedWeightMethod?
-	fileprivate let _minimumChargeType: MinimumChargeType?
-	fileprivate let _currencyExchangeRate: CurrencyExchangeRate?
-	fileprivate let _specialRatingApplied: SpecialRatingAppliedType?
-	fileprivate let _dimDivisor: UInt?
-	fileprivate let _dimDivisorType: RateDimensionalDivisorType?
-	fileprivate let _fuelSurchargePercent: Decimal?
-	fileprivate let _totalBillingWeight: Weight?
-	fileprivate let _totalDimWeight: Weight?
-	fileprivate let _totalBaseCharge: Money?
-	fileprivate let _totalFreightDiscounts: Money?
-	fileprivate let _totalNetFreight: Money?
-	fileprivate let _totalSurcharges: Money?
-	fileprivate let _totalNetFedExCharge: Money?
-	fileprivate let _totalTaxes: Money?
-	fileprivate let _totalNetCharge: Money?
-	fileprivate let _totalRebates: Money?
-	fileprivate let _totalDutiesAndTaxes: Money?
-	fileprivate let _totalNetChargeWithDutiesAndTaxes: Money?
-	fileprivate let _freightRateDetail: FreightRateDetail?
-	fileprivate let _freightDiscounts: RateDiscount?
-	fileprivate let _rebates: Rebate?
-	fileprivate let _surcharges: Surcharge?
-	fileprivate let _taxes: Tax?
-	fileprivate let _dutiesAndTaxes: EdtCommodityTax?
-	fileprivate let _variableHandlingCharges: VariableHandlingCharges?
-	fileprivate let _totalVariableHandlingCharges: VariableHandlingCharges?
-	
-	var description: String { return "\(legDescription())\(legOrigin())\(legOriginLocationId())\(legDestination())\(legDestinationLocationId())\(rateType())\(rateScale())\(rateZone())\(pricingCode())\(ratedWeightMethod())\(minimumChargeType())\(currencyExchangeRate())\(specialRatingApplied())\(dimDivisor())\(dimDivisorType())\(fuelSurchargePercent())\(totalBillingWeight())\(totalDimWeight())\(totalBaseCharge())\(totalFreightDiscounts())\(totalNetFreight())\(totalSurcharges())\(totalNetFedExCharge())\(totalTaxes())\(totalNetCharge())\(totalRebates())\(totalDutiesAndTaxes())\(totalNetChargeWithDutiesAndTaxes())\(freightRateDetail())\(freightDiscounts())\(rebates())\(surcharges())\(taxes())\(dutiesAndTaxes())\(variableHandlingCharges())\(totalVariableHandlingCharges())" }
-	
-	init(legDescription: String, legOrigin: Address, legOriginLocationId: String, legDestination: Address, legDestinationLocationId: String, rateType: ReturnedRateType, rateScale: String, rateZone: String, pricingCode: PricingCodeType, ratedWeightMethod: RatedWeightMethod, minimumChargeType: MinimumChargeType, currencyExchangeRate: CurrencyExchangeRate, specialRatingApplied: SpecialRatingAppliedType, dimDivisor: UInt, dimDivisorType: RateDimensionalDivisorType, fuelSurchargePercent: Decimal, totalBillingWeight: Weight, totalDimWeight: Weight, totalBaseCharge: Money, totalFreightDiscounts: Money, totalNetFreight: Money, totalSurcharges: Money, totalNetFedExCharge: Money, totalTaxes: Money, totalNetCharge: Money, totalRebates: Money, totalDutiesAndTaxes: Money, totalNetChargeWithDutiesAndTaxes: Money, freightRateDetail: FreightRateDetail, freightDiscounts: RateDiscount, rebates: Rebate, surcharges: Surcharge, taxes: Tax, dutiesAndTaxes: EdtCommodityTax, variableHandlingCharges: VariableHandlingCharges, totalVariableHandlingCharges: VariableHandlingCharges)
-	{
-		_legDescription = legDescription
-		_legOrigin = legOrigin
-		_legOriginLocationId = legOriginLocationId
-		_legDestination = legDestination
-		_legDestinationLocationId = legDestinationLocationId
-		_rateType = rateType
-		_rateScale = rateScale
-		_rateZone = rateZone
-		_pricingCode = pricingCode
-		_ratedWeightMethod = ratedWeightMethod
-		_minimumChargeType = minimumChargeType
-		_currencyExchangeRate = currencyExchangeRate
-		_specialRatingApplied = specialRatingApplied
-		_dimDivisor = dimDivisor
-		_dimDivisorType = dimDivisorType
-		_fuelSurchargePercent = fuelSurchargePercent
-		_totalBillingWeight = totalBillingWeight
-		_totalDimWeight = totalDimWeight
-		_totalBaseCharge = totalBaseCharge
-		_totalFreightDiscounts = totalFreightDiscounts
-		_totalNetFreight = totalNetFreight
-		_totalSurcharges = totalSurcharges
-		_totalNetFedExCharge = totalNetFedExCharge
-		_totalTaxes = totalTaxes
-		_totalNetCharge = totalNetCharge
-		_totalRebates = totalRebates
-		_totalDutiesAndTaxes = totalDutiesAndTaxes
-		_totalNetChargeWithDutiesAndTaxes = totalNetChargeWithDutiesAndTaxes
-		_freightRateDetail = freightRateDetail
-		_freightDiscounts = freightDiscounts
-		_rebates = rebates
-		_surcharges = surcharges
-		_taxes = taxes
-		_dutiesAndTaxes = dutiesAndTaxes
-		_variableHandlingCharges = variableHandlingCharges
-		_totalVariableHandlingCharges = totalVariableHandlingCharges
-	}
-	
-	func legDescription() -> String { return (_legDescription == nil ? "" : "<LegDescription>\(_legDescription!)</LegDescription>") }
-	func legOrigin() -> String { return (_legOrigin == nil ? "" : "<LegOrigin>\(_legOrigin!)</LegOrigin>") }
-	func legOriginLocationId() -> String { return (_legOriginLocationId == nil ? "" : "<LegOriginLocationId>\(_legOriginLocationId!)</LegOriginLocationId>") }
-	func legDestination() -> String { return (_legDestination == nil ? "" : "<LegDestination>\(_legDestination!)</LegDestination>") }
-	func legDestinationLocationId() -> String { return (_legDestinationLocationId == nil ? "" : "<LegDestinationLocationId>\(_legDestinationLocationId!)</LegDestinationLocationId>") }
-	func rateType() -> String { return (_rateType == nil ? "" : "<RateType>\(_rateType!)</RateType>") }
-	func rateScale() -> String { return (_rateScale == nil ? "" : "<RateScale>\(_rateScale!)</RateScale>") }
-	func rateZone() -> String { return (_rateZone == nil ? "" : "<RateZone>\(_rateZone!)</RateZone>") }
-	func pricingCode() -> String { return (_pricingCode == nil ? "" : "<PricingCode>\(_pricingCode!)</PricingCode>") }
-	func ratedWeightMethod() -> String { return (_ratedWeightMethod == nil ? "" : "<RatedWeightMethod>\(_ratedWeightMethod!)</RatedWeightMethod>") }
-	func minimumChargeType() -> String { return (_minimumChargeType == nil ? "" : "<MinimumChargeType>\(_minimumChargeType!)</MinimumChargeType>") }
-	func currencyExchangeRate() -> String { return (_currencyExchangeRate == nil ? "" : "<CurrencyExchangeRate>\(_currencyExchangeRate!)</CurrencyExchangeRate>") }
-	func specialRatingApplied() -> String { return (_specialRatingApplied == nil ? "" : "<SpecialRatingApplied>\(_specialRatingApplied!)</SpecialRatingApplied>") }
-	func dimDivisor() -> String { return (_dimDivisor == nil ? "" : "<DimDivisor>\(_dimDivisor!)</DimDivisor>") }
-	func dimDivisorType() -> String { return (_dimDivisorType == nil ? "" : "<DimDivisorType>\(_dimDivisorType!)</DimDivisorType>") }
-	func fuelSurchargePercent() -> String { return (_fuelSurchargePercent == nil ? "" : "<FuelSurchargePercent>\(_fuelSurchargePercent!)</FuelSurchargePercent>") }
-	func totalBillingWeight() -> String { return (_totalBillingWeight == nil ? "" : "<TotalBillingWeight>\(_totalBillingWeight!)</TotalBillingWeight>") }
-	func totalDimWeight() -> String { return (_totalDimWeight == nil ? "" : "<TotalDimWeight>\(_totalDimWeight!)</TotalDimWeight>") }
-	func totalBaseCharge() -> String { return (_totalBaseCharge == nil ? "" : "<TotalBaseCharge>\(_totalBaseCharge!)</TotalBaseCharge>") }
-	func totalFreightDiscounts() -> String { return (_totalFreightDiscounts == nil ? "" : "<TotalFreightDiscounts>\(_totalFreightDiscounts!)</TotalFreightDiscounts>") }
-	func totalNetFreight() -> String { return (_totalNetFreight == nil ? "" : "<TotalNetFreight>\(_totalNetFreight!)</TotalNetFreight>") }
-	func totalSurcharges() -> String { return (_totalSurcharges == nil ? "" : "<TotalSurcharges>\(_totalSurcharges!)</TotalSurcharges>") }
-	func totalNetFedExCharge() -> String { return (_totalNetFedExCharge == nil ? "" : "<TotalNetFedExCharge>\(_totalNetFedExCharge!)</TotalNetFedExCharge>") }
-	func totalTaxes() -> String { return (_totalTaxes == nil ? "" : "<TotalTaxes>\(_totalTaxes!)</TotalTaxes>") }
-	func totalNetCharge() -> String { return (_totalNetCharge == nil ? "" : "<TotalNetCharge>\(_totalNetCharge!)</TotalNetCharge>") }
-	func totalRebates() -> String { return (_totalRebates == nil ? "" : "<TotalRebates>\(_totalRebates!)</TotalRebates>") }
-	func totalDutiesAndTaxes() -> String { return (_totalDutiesAndTaxes == nil ? "" : "<TotalDutiesAndTaxes>\(_totalDutiesAndTaxes!)</TotalDutiesAndTaxes>") }
-	func totalNetChargeWithDutiesAndTaxes() -> String { return (_totalNetChargeWithDutiesAndTaxes == nil ? "" : "<TotalNetChargeWithDutiesAndTaxes>\(_totalNetChargeWithDutiesAndTaxes!)</TotalNetChargeWithDutiesAndTaxes>") }
-	func freightRateDetail() -> String { return (_freightRateDetail == nil ? "" : "<FreightRateDetail>\(_freightRateDetail!)</FreightRateDetail>") }
-	func freightDiscounts() -> String { return (_freightDiscounts == nil ? "" : "<FreightDiscounts>\(_freightDiscounts!)</FreightDiscounts>") }
-	func rebates() -> String { return (_rebates == nil ? "" : "<Rebates>\(_rebates!)</Rebates>") }
-	func surcharges() -> String { return (_surcharges == nil ? "" : "<Surcharges>\(_surcharges!)</Surcharges>") }
-	func taxes() -> String { return (_taxes == nil ? "" : "<Taxes>\(_taxes!)</Taxes>") }
-	func dutiesAndTaxes() -> String { return (_dutiesAndTaxes == nil ? "" : "<DutiesAndTaxes>\(_dutiesAndTaxes!)</DutiesAndTaxes>") }
-	func variableHandlingCharges() -> String { return (_variableHandlingCharges == nil ? "" : "<VariableHandlingCharges>\(_variableHandlingCharges!)</VariableHandlingCharges>") }
-	func totalVariableHandlingCharges() -> String { return (_totalVariableHandlingCharges == nil ? "" : "<TotalVariableHandlingCharges>\(_totalVariableHandlingCharges!)</TotalVariableHandlingCharges>") }
-}
+//struct ShipmentLegRateDetail : CustomStringConvertible
+//{
+//	fileprivate let _legDescription: String?
+//	fileprivate let _legOrigin: Address?
+//	fileprivate let _legOriginLocationId: String?
+//	fileprivate let _legDestination: Address?
+//	fileprivate let _legDestinationLocationId: String?
+//	fileprivate let _rateType: ReturnedRateType?
+//	fileprivate let _rateScale: String?
+//	fileprivate let _rateZone: String?
+//	fileprivate let _pricingCode: PricingCodeType?
+//	fileprivate let _ratedWeightMethod: RatedWeightMethod?
+//	fileprivate let _minimumChargeType: MinimumChargeType?
+//	fileprivate let _currencyExchangeRate: CurrencyExchangeRate?
+//	fileprivate let _specialRatingApplied: SpecialRatingAppliedType?
+//	fileprivate let _dimDivisor: UInt?
+//	fileprivate let _dimDivisorType: RateDimensionalDivisorType?
+//	fileprivate let _fuelSurchargePercent: Decimal?
+//	fileprivate let _totalBillingWeight: Weight?
+//	fileprivate let _totalDimWeight: Weight?
+//	fileprivate let _totalBaseCharge: Money?
+//	fileprivate let _totalFreightDiscounts: Money?
+//	fileprivate let _totalNetFreight: Money?
+//	fileprivate let _totalSurcharges: Money?
+//	fileprivate let _totalNetFedExCharge: Money?
+//	fileprivate let _totalTaxes: Money?
+//	fileprivate let _totalNetCharge: Money?
+//	fileprivate let _totalRebates: Money?
+//	fileprivate let _totalDutiesAndTaxes: Money?
+//	fileprivate let _totalNetChargeWithDutiesAndTaxes: Money?
+//	fileprivate let _freightRateDetail: FreightRateDetail?
+//	fileprivate let _freightDiscounts: RateDiscount?
+//	fileprivate let _rebates: Rebate?
+//	fileprivate let _surcharges: Surcharge?
+//	fileprivate let _taxes: Tax?
+//	fileprivate let _dutiesAndTaxes: EdtCommodityTax?
+//	fileprivate let _variableHandlingCharges: VariableHandlingCharges?
+//	fileprivate let _totalVariableHandlingCharges: VariableHandlingCharges?
+//	
+//	var description: String { return "\(legDescription())\(legOrigin())\(legOriginLocationId())\(legDestination())\(legDestinationLocationId())\(rateType())\(rateScale())\(rateZone())\(pricingCode())\(ratedWeightMethod())\(minimumChargeType())\(currencyExchangeRate())\(specialRatingApplied())\(dimDivisor())\(dimDivisorType())\(fuelSurchargePercent())\(totalBillingWeight())\(totalDimWeight())\(totalBaseCharge())\(totalFreightDiscounts())\(totalNetFreight())\(totalSurcharges())\(totalNetFedExCharge())\(totalTaxes())\(totalNetCharge())\(totalRebates())\(totalDutiesAndTaxes())\(totalNetChargeWithDutiesAndTaxes())\(freightRateDetail())\(freightDiscounts())\(rebates())\(surcharges())\(taxes())\(dutiesAndTaxes())\(variableHandlingCharges())\(totalVariableHandlingCharges())" }
+//	
+//	init(legDescription: String, legOrigin: Address, legOriginLocationId: String, legDestination: Address, legDestinationLocationId: String, rateType: ReturnedRateType, rateScale: String, rateZone: String, pricingCode: PricingCodeType, ratedWeightMethod: RatedWeightMethod, minimumChargeType: MinimumChargeType, currencyExchangeRate: CurrencyExchangeRate, specialRatingApplied: SpecialRatingAppliedType, dimDivisor: UInt, dimDivisorType: RateDimensionalDivisorType, fuelSurchargePercent: Decimal, totalBillingWeight: Weight, totalDimWeight: Weight, totalBaseCharge: Money, totalFreightDiscounts: Money, totalNetFreight: Money, totalSurcharges: Money, totalNetFedExCharge: Money, totalTaxes: Money, totalNetCharge: Money, totalRebates: Money, totalDutiesAndTaxes: Money, totalNetChargeWithDutiesAndTaxes: Money, freightRateDetail: FreightRateDetail, freightDiscounts: RateDiscount, rebates: Rebate, surcharges: Surcharge, taxes: Tax, dutiesAndTaxes: EdtCommodityTax, variableHandlingCharges: VariableHandlingCharges, totalVariableHandlingCharges: VariableHandlingCharges)
+//	{
+//		_legDescription = legDescription
+//		_legOrigin = legOrigin
+//		_legOriginLocationId = legOriginLocationId
+//		_legDestination = legDestination
+//		_legDestinationLocationId = legDestinationLocationId
+//		_rateType = rateType
+//		_rateScale = rateScale
+//		_rateZone = rateZone
+//		_pricingCode = pricingCode
+//		_ratedWeightMethod = ratedWeightMethod
+//		_minimumChargeType = minimumChargeType
+//		_currencyExchangeRate = currencyExchangeRate
+//		_specialRatingApplied = specialRatingApplied
+//		_dimDivisor = dimDivisor
+//		_dimDivisorType = dimDivisorType
+//		_fuelSurchargePercent = fuelSurchargePercent
+//		_totalBillingWeight = totalBillingWeight
+//		_totalDimWeight = totalDimWeight
+//		_totalBaseCharge = totalBaseCharge
+//		_totalFreightDiscounts = totalFreightDiscounts
+//		_totalNetFreight = totalNetFreight
+//		_totalSurcharges = totalSurcharges
+//		_totalNetFedExCharge = totalNetFedExCharge
+//		_totalTaxes = totalTaxes
+//		_totalNetCharge = totalNetCharge
+//		_totalRebates = totalRebates
+//		_totalDutiesAndTaxes = totalDutiesAndTaxes
+//		_totalNetChargeWithDutiesAndTaxes = totalNetChargeWithDutiesAndTaxes
+//		_freightRateDetail = freightRateDetail
+//		_freightDiscounts = freightDiscounts
+//		_rebates = rebates
+//		_surcharges = surcharges
+//		_taxes = taxes
+//		_dutiesAndTaxes = dutiesAndTaxes
+//		_variableHandlingCharges = variableHandlingCharges
+//		_totalVariableHandlingCharges = totalVariableHandlingCharges
+//	}
+//	
+//	func legDescription() -> String { return (_legDescription == nil ? "" : "<LegDescription>\(_legDescription!)</LegDescription>") }
+//	func legOrigin() -> String { return (_legOrigin == nil ? "" : "<LegOrigin>\(_legOrigin!)</LegOrigin>") }
+//	func legOriginLocationId() -> String { return (_legOriginLocationId == nil ? "" : "<LegOriginLocationId>\(_legOriginLocationId!)</LegOriginLocationId>") }
+//	func legDestination() -> String { return (_legDestination == nil ? "" : "<LegDestination>\(_legDestination!)</LegDestination>") }
+//	func legDestinationLocationId() -> String { return (_legDestinationLocationId == nil ? "" : "<LegDestinationLocationId>\(_legDestinationLocationId!)</LegDestinationLocationId>") }
+//	func rateType() -> String { return (_rateType == nil ? "" : "<RateType>\(_rateType!)</RateType>") }
+//	func rateScale() -> String { return (_rateScale == nil ? "" : "<RateScale>\(_rateScale!)</RateScale>") }
+//	func rateZone() -> String { return (_rateZone == nil ? "" : "<RateZone>\(_rateZone!)</RateZone>") }
+//	func pricingCode() -> String { return (_pricingCode == nil ? "" : "<PricingCode>\(_pricingCode!)</PricingCode>") }
+//	func ratedWeightMethod() -> String { return (_ratedWeightMethod == nil ? "" : "<RatedWeightMethod>\(_ratedWeightMethod!)</RatedWeightMethod>") }
+//	func minimumChargeType() -> String { return (_minimumChargeType == nil ? "" : "<MinimumChargeType>\(_minimumChargeType!)</MinimumChargeType>") }
+//	func currencyExchangeRate() -> String { return (_currencyExchangeRate == nil ? "" : "<CurrencyExchangeRate>\(_currencyExchangeRate!)</CurrencyExchangeRate>") }
+//	func specialRatingApplied() -> String { return (_specialRatingApplied == nil ? "" : "<SpecialRatingApplied>\(_specialRatingApplied!)</SpecialRatingApplied>") }
+//	func dimDivisor() -> String { return (_dimDivisor == nil ? "" : "<DimDivisor>\(_dimDivisor!)</DimDivisor>") }
+//	func dimDivisorType() -> String { return (_dimDivisorType == nil ? "" : "<DimDivisorType>\(_dimDivisorType!)</DimDivisorType>") }
+//	func fuelSurchargePercent() -> String { return (_fuelSurchargePercent == nil ? "" : "<FuelSurchargePercent>\(_fuelSurchargePercent!)</FuelSurchargePercent>") }
+//	func totalBillingWeight() -> String { return (_totalBillingWeight == nil ? "" : "<TotalBillingWeight>\(_totalBillingWeight!)</TotalBillingWeight>") }
+//	func totalDimWeight() -> String { return (_totalDimWeight == nil ? "" : "<TotalDimWeight>\(_totalDimWeight!)</TotalDimWeight>") }
+//	func totalBaseCharge() -> String { return (_totalBaseCharge == nil ? "" : "<TotalBaseCharge>\(_totalBaseCharge!)</TotalBaseCharge>") }
+//	func totalFreightDiscounts() -> String { return (_totalFreightDiscounts == nil ? "" : "<TotalFreightDiscounts>\(_totalFreightDiscounts!)</TotalFreightDiscounts>") }
+//	func totalNetFreight() -> String { return (_totalNetFreight == nil ? "" : "<TotalNetFreight>\(_totalNetFreight!)</TotalNetFreight>") }
+//	func totalSurcharges() -> String { return (_totalSurcharges == nil ? "" : "<TotalSurcharges>\(_totalSurcharges!)</TotalSurcharges>") }
+//	func totalNetFedExCharge() -> String { return (_totalNetFedExCharge == nil ? "" : "<TotalNetFedExCharge>\(_totalNetFedExCharge!)</TotalNetFedExCharge>") }
+//	func totalTaxes() -> String { return (_totalTaxes == nil ? "" : "<TotalTaxes>\(_totalTaxes!)</TotalTaxes>") }
+//	func totalNetCharge() -> String { return (_totalNetCharge == nil ? "" : "<TotalNetCharge>\(_totalNetCharge!)</TotalNetCharge>") }
+//	func totalRebates() -> String { return (_totalRebates == nil ? "" : "<TotalRebates>\(_totalRebates!)</TotalRebates>") }
+//	func totalDutiesAndTaxes() -> String { return (_totalDutiesAndTaxes == nil ? "" : "<TotalDutiesAndTaxes>\(_totalDutiesAndTaxes!)</TotalDutiesAndTaxes>") }
+//	func totalNetChargeWithDutiesAndTaxes() -> String { return (_totalNetChargeWithDutiesAndTaxes == nil ? "" : "<TotalNetChargeWithDutiesAndTaxes>\(_totalNetChargeWithDutiesAndTaxes!)</TotalNetChargeWithDutiesAndTaxes>") }
+//	func freightRateDetail() -> String { return (_freightRateDetail == nil ? "" : "<FreightRateDetail>\(_freightRateDetail!)</FreightRateDetail>") }
+//	func freightDiscounts() -> String { return (_freightDiscounts == nil ? "" : "<FreightDiscounts>\(_freightDiscounts!)</FreightDiscounts>") }
+//	func rebates() -> String { return (_rebates == nil ? "" : "<Rebates>\(_rebates!)</Rebates>") }
+//	func surcharges() -> String { return (_surcharges == nil ? "" : "<Surcharges>\(_surcharges!)</Surcharges>") }
+//	func taxes() -> String { return (_taxes == nil ? "" : "<Taxes>\(_taxes!)</Taxes>") }
+//	func dutiesAndTaxes() -> String { return (_dutiesAndTaxes == nil ? "" : "<DutiesAndTaxes>\(_dutiesAndTaxes!)</DutiesAndTaxes>") }
+//	func variableHandlingCharges() -> String { return (_variableHandlingCharges == nil ? "" : "<VariableHandlingCharges>\(_variableHandlingCharges!)</VariableHandlingCharges>") }
+//	func totalVariableHandlingCharges() -> String { return (_totalVariableHandlingCharges == nil ? "" : "<TotalVariableHandlingCharges>\(_totalVariableHandlingCharges!)</TotalVariableHandlingCharges>") }
+//}
 
 struct FreightRateDetail : CustomStringConvertible
 {
@@ -3974,82 +3827,82 @@ struct TrackingId : CustomStringConvertible
 	func trackingNumber() -> String { return (_trackingNumber == nil ? "" : "<TrackingNumber>\(_trackingNumber!)</TrackingNumber>") }
 }
 
-struct PackageRateDetail : CustomStringConvertible
-{
-	fileprivate let _rateType: ReturnedRateType?
-	fileprivate let _ratedWeightMethod: RatedWeightMethod?
-	fileprivate let _minimumChargeType: MinimumChargeType?
-	fileprivate let _billingWeight: Weight?
-	fileprivate let _dimWeight: Weight?
-	fileprivate let _oversizeWeight: Weight?
-	fileprivate let _baseCharge: Money?
-	fileprivate let _totalFreightDiscounts: Money?
-	fileprivate let _netFreight: Money?
-	fileprivate let _totalSurcharges: Money?
-	fileprivate let _netFedExCharge: Money?
-	fileprivate let _totalTaxes: Money?
-	fileprivate let _netCharge: Money?
-	fileprivate let _totalRebates: Money?
-	fileprivate let _freightDiscounts: RateDiscount?
-	fileprivate let _rebates: Rebate?
-	fileprivate let _surcharges: Surcharge?
-	fileprivate let _taxes: Tax?
-	fileprivate let _variableHandlingCharges: VariableHandlingCharges?
-	
-	var description: String { return "\(rateType())\(ratedWeightMethod())\(minimumChargeType())\(billingWeight())\(dimWeight())\(oversizeWeight())\(baseCharge())\(totalFreightDiscounts())\(netFreight())\(totalSurcharges())\(netFedExCharge())\(totalTaxes())\(netCharge())\(totalRebates())\(freightDiscounts())\(rebates())\(surcharges())\(taxes())\(variableHandlingCharges())" }
-	
-	init(rateType: ReturnedRateType, ratedWeightMethod: RatedWeightMethod, minimumChargeType: MinimumChargeType, billingWeight: Weight, dimWeight: Weight, oversizeWeight: Weight, baseCharge: Money, totalFreightDiscounts: Money, netFreight: Money, totalSurcharges: Money, netFedExCharge: Money, totalTaxes: Money, netCharge: Money, totalRebates: Money, freightDiscounts: RateDiscount, rebates: Rebate, surcharges: Surcharge, taxes: Tax, variableHandlingCharges: VariableHandlingCharges)
-	{
-		_rateType = rateType
-		_ratedWeightMethod = ratedWeightMethod
-		_minimumChargeType = minimumChargeType
-		_billingWeight = billingWeight
-		_dimWeight = dimWeight
-		_oversizeWeight = oversizeWeight
-		_baseCharge = baseCharge
-		_totalFreightDiscounts = totalFreightDiscounts
-		_netFreight = netFreight
-		_totalSurcharges = totalSurcharges
-		_netFedExCharge = netFedExCharge
-		_totalTaxes = totalTaxes
-		_netCharge = netCharge
-		_totalRebates = totalRebates
-		_freightDiscounts = freightDiscounts
-		_rebates = rebates
-		_surcharges = surcharges
-		_taxes = taxes
-		_variableHandlingCharges = variableHandlingCharges
-	}
-	
-	func rateType() -> String { return (_rateType == nil ? "" : "<RateType>\(_rateType!)</RateType>") }
-	func ratedWeightMethod() -> String { return (_ratedWeightMethod == nil ? "" : "<RatedWeightMethod>\(_ratedWeightMethod!)</RatedWeightMethod>") }
-	func minimumChargeType() -> String { return (_minimumChargeType == nil ? "" : "<MinimumChargeType>\(_minimumChargeType!)</MinimumChargeType>") }
-	func billingWeight() -> String { return (_billingWeight == nil ? "" : "<BillingWeight>\(_billingWeight!)</BillingWeight>") }
-	func dimWeight() -> String { return (_dimWeight == nil ? "" : "<DimWeight>\(_dimWeight!)</DimWeight>") }
-	func oversizeWeight() -> String { return (_oversizeWeight == nil ? "" : "<OversizeWeight>\(_oversizeWeight!)</OversizeWeight>") }
-	func baseCharge() -> String { return (_baseCharge == nil ? "" : "<BaseCharge>\(_baseCharge!)</BaseCharge>") }
-	func totalFreightDiscounts() -> String { return (_totalFreightDiscounts == nil ? "" : "<TotalFreightDiscounts>\(_totalFreightDiscounts!)</TotalFreightDiscounts>") }
-	func netFreight() -> String { return (_netFreight == nil ? "" : "<NetFreight>\(_netFreight!)</NetFreight>") }
-	func totalSurcharges() -> String { return (_totalSurcharges == nil ? "" : "<TotalSurcharges>\(_totalSurcharges!)</TotalSurcharges>") }
-	func netFedExCharge() -> String { return (_netFedExCharge == nil ? "" : "<NetFedExCharge>\(_netFedExCharge!)</NetFedExCharge>") }
-	func totalTaxes() -> String { return (_totalTaxes == nil ? "" : "<TotalTaxes>\(_totalTaxes!)</TotalTaxes>") }
-	func netCharge() -> String { return (_netCharge == nil ? "" : "<NetCharge>\(_netCharge!)</NetCharge>") }
-	func totalRebates() -> String { return (_totalRebates == nil ? "" : "<TotalRebates>\(_totalRebates!)</TotalRebates>") }
-	func freightDiscounts() -> String { return (_freightDiscounts == nil ? "" : "<FreightDiscounts>\(_freightDiscounts!)</FreightDiscounts>") }
-	func rebates() -> String { return (_rebates == nil ? "" : "<Rebates>\(_rebates!)</Rebates>") }
-	func surcharges() -> String { return (_surcharges == nil ? "" : "<Surcharges>\(_surcharges!)</Surcharges>") }
-	func taxes() -> String { return (_taxes == nil ? "" : "<Taxes>\(_taxes!)</Taxes>") }
-	func variableHandlingCharges() -> String { return (_variableHandlingCharges == nil ? "" : "<VariableHandlingCharges>\(_variableHandlingCharges!)</VariableHandlingCharges>") }
-}
+//struct PackageRateDetail : CustomStringConvertible
+//{
+//	fileprivate let _rateType: ReturnedRateType?
+//	fileprivate let _ratedWeightMethod: RatedWeightMethod?
+//	fileprivate let _minimumChargeType: MinimumChargeType?
+//	fileprivate let _billingWeight: Weight?
+//	fileprivate let _dimWeight: Weight?
+//	fileprivate let _oversizeWeight: Weight?
+//	fileprivate let _baseCharge: Money?
+//	fileprivate let _totalFreightDiscounts: Money?
+//	fileprivate let _netFreight: Money?
+//	fileprivate let _totalSurcharges: Money?
+//	fileprivate let _netFedExCharge: Money?
+//	fileprivate let _totalTaxes: Money?
+//	fileprivate let _netCharge: Money?
+//	fileprivate let _totalRebates: Money?
+//	fileprivate let _freightDiscounts: RateDiscount?
+//	fileprivate let _rebates: Rebate?
+//	fileprivate let _surcharges: Surcharge?
+//	fileprivate let _taxes: Tax?
+//	fileprivate let _variableHandlingCharges: VariableHandlingCharges?
+//	
+//	var description: String { return "\(rateType())\(ratedWeightMethod())\(minimumChargeType())\(billingWeight())\(dimWeight())\(oversizeWeight())\(baseCharge())\(totalFreightDiscounts())\(netFreight())\(totalSurcharges())\(netFedExCharge())\(totalTaxes())\(netCharge())\(totalRebates())\(freightDiscounts())\(rebates())\(surcharges())\(taxes())\(variableHandlingCharges())" }
+//	
+//	init(rateType: ReturnedRateType, ratedWeightMethod: RatedWeightMethod, minimumChargeType: MinimumChargeType, billingWeight: Weight, dimWeight: Weight, oversizeWeight: Weight, baseCharge: Money, totalFreightDiscounts: Money, netFreight: Money, totalSurcharges: Money, netFedExCharge: Money, totalTaxes: Money, netCharge: Money, totalRebates: Money, freightDiscounts: RateDiscount, rebates: Rebate, surcharges: Surcharge, taxes: Tax, variableHandlingCharges: VariableHandlingCharges)
+//	{
+//		_rateType = rateType
+//		_ratedWeightMethod = ratedWeightMethod
+//		_minimumChargeType = minimumChargeType
+//		_billingWeight = billingWeight
+//		_dimWeight = dimWeight
+//		_oversizeWeight = oversizeWeight
+//		_baseCharge = baseCharge
+//		_totalFreightDiscounts = totalFreightDiscounts
+//		_netFreight = netFreight
+//		_totalSurcharges = totalSurcharges
+//		_netFedExCharge = netFedExCharge
+//		_totalTaxes = totalTaxes
+//		_netCharge = netCharge
+//		_totalRebates = totalRebates
+//		_freightDiscounts = freightDiscounts
+//		_rebates = rebates
+//		_surcharges = surcharges
+//		_taxes = taxes
+//		_variableHandlingCharges = variableHandlingCharges
+//	}
+//	
+//	func rateType() -> String { return (_rateType == nil ? "" : "<RateType>\(_rateType!)</RateType>") }
+//	func ratedWeightMethod() -> String { return (_ratedWeightMethod == nil ? "" : "<RatedWeightMethod>\(_ratedWeightMethod!)</RatedWeightMethod>") }
+//	func minimumChargeType() -> String { return (_minimumChargeType == nil ? "" : "<MinimumChargeType>\(_minimumChargeType!)</MinimumChargeType>") }
+//	func billingWeight() -> String { return (_billingWeight == nil ? "" : "<BillingWeight>\(_billingWeight!)</BillingWeight>") }
+//	func dimWeight() -> String { return (_dimWeight == nil ? "" : "<DimWeight>\(_dimWeight!)</DimWeight>") }
+//	func oversizeWeight() -> String { return (_oversizeWeight == nil ? "" : "<OversizeWeight>\(_oversizeWeight!)</OversizeWeight>") }
+//	func baseCharge() -> String { return (_baseCharge == nil ? "" : "<BaseCharge>\(_baseCharge!)</BaseCharge>") }
+//	func totalFreightDiscounts() -> String { return (_totalFreightDiscounts == nil ? "" : "<TotalFreightDiscounts>\(_totalFreightDiscounts!)</TotalFreightDiscounts>") }
+//	func netFreight() -> String { return (_netFreight == nil ? "" : "<NetFreight>\(_netFreight!)</NetFreight>") }
+//	func totalSurcharges() -> String { return (_totalSurcharges == nil ? "" : "<TotalSurcharges>\(_totalSurcharges!)</TotalSurcharges>") }
+//	func netFedExCharge() -> String { return (_netFedExCharge == nil ? "" : "<NetFedExCharge>\(_netFedExCharge!)</NetFedExCharge>") }
+//	func totalTaxes() -> String { return (_totalTaxes == nil ? "" : "<TotalTaxes>\(_totalTaxes!)</TotalTaxes>") }
+//	func netCharge() -> String { return (_netCharge == nil ? "" : "<NetCharge>\(_netCharge!)</NetCharge>") }
+//	func totalRebates() -> String { return (_totalRebates == nil ? "" : "<TotalRebates>\(_totalRebates!)</TotalRebates>") }
+//	func freightDiscounts() -> String { return (_freightDiscounts == nil ? "" : "<FreightDiscounts>\(_freightDiscounts!)</FreightDiscounts>") }
+//	func rebates() -> String { return (_rebates == nil ? "" : "<Rebates>\(_rebates!)</Rebates>") }
+//	func surcharges() -> String { return (_surcharges == nil ? "" : "<Surcharges>\(_surcharges!)</Surcharges>") }
+//	func taxes() -> String { return (_taxes == nil ? "" : "<Taxes>\(_taxes!)</Taxes>") }
+//	func variableHandlingCharges() -> String { return (_variableHandlingCharges == nil ? "" : "<VariableHandlingCharges>\(_variableHandlingCharges!)</VariableHandlingCharges>") }
+//}
 
 struct Weight : CustomStringConvertible
 {
 	fileprivate let _units: WeightUnits?
-	fileprivate let _value: Decimal?
+	fileprivate let _value: Float?
 	
 	var description: String { return "\(units())\(value())" }
 	
-	init(units: WeightUnits, value: Decimal)
+	init(units: WeightUnits, value: Float)
 	{
 		_units = units
 		_value = value
