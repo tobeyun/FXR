@@ -1,9 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12118" systemVersion="16E195" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
+<document type="com.apple.InterfaceBuilder3.Cocoa.XIB" version="3.0" toolsVersion="12120" systemVersion="16E195" targetRuntime="MacOSX.Cocoa" propertyAccessControl="none" useAutolayout="YES" customObjectInstantitationMethod="direct">
     <dependencies>
         <deployment identifier="macosx"/>
-        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12118"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.CocoaPlugin" version="12120"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
+        <capability name="system font weights other than Regular or Bold" minToolsVersion="7.0"/>
     </dependencies>
     <objects>
         <customObject id="-2" userLabel="File's Owner" customClass="NSApplication">
@@ -23,7 +24,6 @@
                 <outlet property="rateButton" destination="dpZ-ID-co7" id="O3Y-YD-lsM"/>
                 <outlet property="recipientZip" destination="nRP-kL-8yG" id="RBR-AF-LOY"/>
                 <outlet property="senderZip" destination="9oL-p6-r3N" id="tNa-n5-FS9"/>
-                <outlet property="showRawXml" destination="jF4-7R-DIi" id="Pgg-Ue-7Xg"/>
                 <outlet property="window" destination="QvC-M9-y7g" id="gIp-Ho-8D9"/>
             </connections>
         </customObject>
@@ -453,7 +453,7 @@
                         </connections>
                     </button>
                     <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" maxValue="100" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="Vev-8s-cMk">
-                        <rect key="frame" x="438" y="27" width="16" height="16"/>
+                        <rect key="frame" x="393" y="321" width="16" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     </progressIndicator>
                     <textField identifier="recipientZipTextField" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nRP-kL-8yG">
@@ -525,7 +525,7 @@
                             <font key="font" metaFont="system"/>
                         </buttonCell>
                     </button>
-                    <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1o9-fa-Mhd">
+                    <scrollView hidden="YES" fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1o9-fa-Mhd">
                         <rect key="frame" x="20" y="74" width="83" height="195"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <clipView key="contentView" ambiguous="YES" id="Ivh-ew-Vsc">
@@ -595,29 +595,21 @@
                             <color key="backgroundColor" name="controlColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="jF4-7R-DIi">
-                        <rect key="frame" x="20" y="18" width="128" height="18"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
-                        <buttonCell key="cell" type="check" title="show raw XML" bezelStyle="regularSquare" imagePosition="left" inset="2" id="nYr-Ac-a5v">
-                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                            <font key="font" metaFont="system"/>
-                        </buttonCell>
-                    </button>
                     <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Cej-7K-IaR">
-                        <rect key="frame" x="111" y="74" width="719" height="195"/>
+                        <rect key="frame" x="22" y="20" width="808" height="287"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <clipView key="contentView" ambiguous="YES" id="7rc-D1-Rcr">
-                            <rect key="frame" x="1" y="0.0" width="717" height="194"/>
+                            <rect key="frame" x="1" y="0.0" width="806" height="286"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
                                 <outlineView verticalHuggingPriority="750" allowsExpansionToolTips="YES" multipleSelection="NO" autosaveColumns="NO" headerView="CnV-PM-WcT" indentationPerLevel="16" outlineTableColumn="QIU-HT-Lz3" id="LKt-tL-myq">
-                                    <rect key="frame" x="0.0" y="0.0" width="717" height="171"/>
+                                    <rect key="frame" x="0.0" y="0.0" width="806" height="263"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <size key="intercellSpacing" width="3" height="2"/>
                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                     <tableColumns>
-                                        <tableColumn identifier="NameColumn" editable="NO" width="185" minWidth="40" maxWidth="1000" id="QIU-HT-Lz3">
+                                        <tableColumn identifier="NameColumn" editable="NO" width="275" minWidth="40" maxWidth="1000" id="QIU-HT-Lz3">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" title="Name">
                                                 <font key="font" metaFont="smallSystem"/>
                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -632,7 +624,7 @@
                                         </tableColumn>
                                         <tableColumn identifier="ValueColumn" editable="NO" width="284" minWidth="10" maxWidth="3.4028234663852886e+38" id="bao-ND-Lrk">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Value">
-                                                <font key="font" metaFont="smallSystem"/>
+                                                <font key="font" metaFont="systemMedium" size="11"/>
                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                             </tableHeaderCell>
@@ -687,7 +679,7 @@
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                         <tableHeaderView key="headerView" id="CnV-PM-WcT">
-                            <rect key="frame" x="0.0" y="0.0" width="717" height="23"/>
+                            <rect key="frame" x="0.0" y="0.0" width="806" height="23"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </tableHeaderView>
                     </scrollView>
