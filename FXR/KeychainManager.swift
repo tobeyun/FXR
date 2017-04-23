@@ -23,9 +23,9 @@ public enum KeychainError: Error {
 }
 
 public struct KeychainManager {
-	public static func addData(itemKey:String, itemValue:String) throws {
+	public static func addData(itemKey:String, itemValue:String) {
 		guard let valueData = itemValue.data(using: String.Encoding.utf8) else {
-			throw KeychainError.InvalidInput
+			return //throw KeychainError.InvalidInput
 		}
 		
 		let queryAdd: [String: AnyObject] = [
@@ -43,7 +43,7 @@ public struct KeychainManager {
 		}
 	}
 	
-	public static func deleteData(itemKey:String) throws {
+	public static func deleteData(itemKey:String) {
 		let queryDelete: [String: AnyObject] = [
 			kSecClass as String: kSecClassGenericPassword,
 			kSecAttrAccount as String: itemKey as AnyObject
@@ -52,15 +52,15 @@ public struct KeychainManager {
 		let resultCodeDelete = SecItemDelete(queryDelete as CFDictionary)
 		
 		if let err = mapResultCode(result: resultCodeDelete) {
-			throw err
+			print("\(err)")
 		} else {
 			print("KeychainManager: Successfully deleted data")
 		}
 	}
 	
-	public static func updateData(itemKey:String, itemValue:String) throws {
+	public static func updateData(itemKey:String, itemValue:String) {
 		guard let valueData = itemValue.data(using: String.Encoding.utf8) else {
-			throw KeychainError.InvalidInput
+			return //throw KeychainError.InvalidInput
 		}
 		
 		let updateQuery: [String: AnyObject] = [
@@ -76,14 +76,14 @@ public struct KeychainManager {
 			let updateResultCode = SecItemUpdate(updateQuery as CFDictionary, updateAttributes as CFDictionary)
 			
 			if let err = mapResultCode(result: updateResultCode) {
-				throw err
+				print("\(err)")
 			} else {
 				print("KeychainManager: Successfully updated data")
 			}
 		}
 	}
 	
-	public static func queryData (itemKey:String) throws -> AnyObject? {
+	public static func queryData (itemKey:String) -> AnyObject? {
 		let queryLoad: [String: AnyObject] = [
 			kSecClass as String: kSecClassGenericPassword,
 			kSecAttrAccount as String: itemKey as AnyObject,
@@ -96,11 +96,12 @@ public struct KeychainManager {
 		}
 		
 		if let err = mapResultCode(result: resultCodeLoad) {
-			throw err
+			print("\(err)")
 		}
 		
 		guard let resultVal = result as? NSData, let keyValue = NSString(data: resultVal as Data, encoding: String.Encoding.utf8.rawValue) as String? else {
 			print("KeychainManager: Error parsing keychain result: \(resultCodeLoad)")
+			
 			return nil
 		}
 		return keyValue as AnyObject
