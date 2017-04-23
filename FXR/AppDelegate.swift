@@ -131,7 +131,6 @@ class AppDelegate: NSObject
 	@IBOutlet weak var recipientZip: NSTextField!
 	@IBOutlet weak var packageWeight: NSTextField!
 	@IBOutlet weak var httpResponseLabel: NSTextField!
-	@IBOutlet weak var showRawXml: NSButton!
 	@IBOutlet weak var detailsView: NSOutlineView!
 	@IBOutlet weak var rateButton: NSButton!
 	
@@ -201,12 +200,12 @@ class AppDelegate: NSObject
 			webAuthenticationDetail: WebAuthenticationDetail(
 				parentCredential: nil,
 				userCredential: WebAuthenticationCredential(
-					key: try! KeychainManager.queryData(itemKey: "key") as! String,
-					password: try! KeychainManager.queryData(itemKey: "password") as! String)
+					key: KeychainManager.queryData(itemKey: "key") as? String ?? "",
+					password: KeychainManager.queryData(itemKey: "password") as? String ?? "")
 			),
 			clientDetail: ClientDetail(
-				accountNumber: try! KeychainManager.queryData(itemKey: "account") as! String,
-				meterNumber: try! KeychainManager.queryData(itemKey: "meter") as! String,
+				accountNumber: KeychainManager.queryData(itemKey: "account") as? String ?? "",
+				meterNumber: KeychainManager.queryData(itemKey: "meter") as? String ?? "",
 				integratorId: nil,
 				region: nil,
 				localization: nil),
@@ -292,6 +291,8 @@ class AppDelegate: NSObject
 			)
 		)
 		
+		//print("\(web)")
+		
 		callDataTask(body: "\(web)")
 	}
 	
@@ -329,10 +330,7 @@ class AppDelegate: NSObject
 			return
 		}
 		
-		if (showRawXml.state == NSOnState)
-		{
-			print(NSString(data: data2!, encoding: String.Encoding.utf8.rawValue) ?? "")
-		}
+		//print(NSString(data: data2!, encoding: String.Encoding.utf8.rawValue) ?? "")
 		
 		let httpResponse = response as? HTTPURLResponse
 		
@@ -364,6 +362,8 @@ extension AppDelegate: NSApplicationDelegate
 	func applicationDidFinishLaunching(_ aNotification: Notification)
 	{
 		// Insert code here to initialize your application
+		
+		senderZip.stringValue = "\((KeychainManager.queryData(itemKey: "zip")) as? String ?? "")"
 		
 		currentId = nil
 		
@@ -420,12 +420,14 @@ extension AppDelegate: XMLParserDelegate
 				value: nil
 			)
 		)
-	
+		
 		soapStack.push(parentStack.items.last!)
 	}
 	
 	func parser(_ parser: XMLParser, foundCharacters string: String)
 	{
+		if (string.trimmingCharacters(in: NSCharacterSet.whitespacesAndNewlines) == "") { return }
+		
 		// remove header for value elements
 		if pathStack.xpath! == soapStack.items.last!.path {
 			let _ = soapStack.pop()
