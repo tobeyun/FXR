@@ -518,6 +518,9 @@ DQ
                             <behavior key="behavior" lightByBackground="YES" lightByGray="YES" changeBackground="YES" changeGray="YES"/>
                             <font key="font" metaFont="system"/>
                         </buttonCell>
+                        <connections>
+                            <action selector="freightDisclosure:" target="Voe-Tx-rLC" id="qPD-eV-LJp"/>
+                        </connections>
                     </button>
                     <button hidden="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" springLoaded="YES" translatesAutoresizingMaskIntoConstraints="NO" id="YsF-l6-Hfk">
                         <rect key="frame" x="360" y="283" width="29" height="26"/>
