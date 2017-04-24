@@ -1186,7 +1186,7 @@ struct FreightShipmentDetail : CustomStringConvertible
 	
 	var description: String { return "\(fedExFreightAccountNumber())\(fedExFreightBillingContactAndAddress())\(alternateBilling())\(role())\(collectTermsType())\(declaredValuePerUnit())\(declaredValueUnits())\(liabilityCoverageDetail())\(coupons())\(totalHandlingUnits())\(clientDiscountPercent())\(palletWeight())\(shipmentDimensions())\(comment())\(specialServicePayments())\(hazardousMaterialsOfferor())\(lineItems())" }
 	
-	init(fedExFreightAccountNumber: String, fedExFreightBillingContactAndAddress: ContactAndAddress, alternateBilling: Party, role: FreightShipmentRoleType, collectTermsType: FreightCollectTermsType, declaredValuePerUnit: Money, declaredValueUnits: String, liabilityCoverageDetail: LiabilityCoverageDetail, coupons: String, totalHandlingUnits: UInt, clientDiscountPercent: Decimal, palletWeight: Weight, shipmentDimensions: Dimensions, comment: String, specialServicePayments: FreightSpecialServicePayment, hazardousMaterialsOfferor: String, lineItems: FreightShipmentLineItem)
+	init(fedExFreightAccountNumber: String?, fedExFreightBillingContactAndAddress: ContactAndAddress?, alternateBilling: Party?, role: FreightShipmentRoleType?, collectTermsType: FreightCollectTermsType?, declaredValuePerUnit: Money?, declaredValueUnits: String?, liabilityCoverageDetail: LiabilityCoverageDetail?, coupons: String?, totalHandlingUnits: UInt?, clientDiscountPercent: Decimal?, palletWeight: Weight?, shipmentDimensions: Dimensions?, comment: String?, specialServicePayments: FreightSpecialServicePayment?, hazardousMaterialsOfferor: String?, lineItems: FreightShipmentLineItem?)
 	{
 		_fedExFreightAccountNumber = fedExFreightAccountNumber
 		_fedExFreightBillingContactAndAddress = fedExFreightBillingContactAndAddress
@@ -1272,7 +1272,7 @@ struct FreightShipmentLineItem : CustomStringConvertible
 	
 	var description: String { return "\(freightClass())\(packaging())\(pieces())\(description_())\(weight())\(dimensions())\(volume())" }
 	
-	init(freightClass: FreightClassType, packaging: PhysicalPackagingType, pieces: UInt, description: String, weight: Weight, dimensions: Dimensions, volume: Volume)
+	init(freightClass: FreightClassType?, packaging: PhysicalPackagingType?, pieces: UInt?, description: String?, weight: Weight?, dimensions: Dimensions?, volume: Volume?)
 	{
 		_freightClass = freightClass
 		_packaging = packaging
