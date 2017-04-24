@@ -273,7 +273,45 @@ class AppDelegate: NSObject
 				shippingChargesPayment: nil,
 				specialServicesRequested: nil,
 				expressFreightDetail: nil,
-				freightShipmentDetail: nil,
+				freightShipmentDetail: FreightShipmentDetail(
+					fedExFreightAccountNumber: KeychainManager.queryData(itemKey: "ltlaccount") as? String ?? "",
+					fedExFreightBillingContactAndAddress: ContactAndAddress(
+						contact: nil,
+						address: Address(
+							streetLines: UserDefaults.standard.string(forKey: "ltladdress"),
+							city: UserDefaults.standard.string(forKey: "ltlcity"),
+							stateOrProvinceCode: UserDefaults.standard.string(forKey: "ltlstate"),
+							postalCode: UserDefaults.standard.string(forKey: "ltlzipcode"),
+							urbanizationCode: nil,
+							countryCode: "US",
+							countryName: nil,
+							residential: false
+						)
+					),
+					alternateBilling: nil, //Party?,
+					role: FreightShipmentRoleType(rawValue: (UserDefaults.standard.integer(forKey: "ltlthirdparty") == 0 ? "SHIPPER" : "CONSIGNEE")),
+					collectTermsType: FreightCollectTermsType.STANDARD,
+					declaredValuePerUnit: nil, //Money?,
+					declaredValueUnits: nil, //String?,
+					liabilityCoverageDetail: nil, //LiabilityCoverageDetail?,
+					coupons: nil, //String?,
+					totalHandlingUnits: nil, //UInt?,
+					clientDiscountPercent: nil, //Decimal?,
+					palletWeight: Weight(units: WeightUnits.LB, value: 100.0),
+					shipmentDimensions: nil, //Dimensions?,
+					comment: nil, //String?,
+					specialServicePayments: nil, //FreightSpecialServicePayment?,
+					hazardousMaterialsOfferor: nil, //String?,
+					lineItems: FreightShipmentLineItem(
+						freightClass: FreightClassType.CLASS_050,
+						packaging: PhysicalPackagingType.PALLET,
+						pieces: 1,
+						description: "test",
+						weight: Weight(units: WeightUnits.LB, value: 100.0),
+						dimensions: nil, //Dimensions?,
+						volume: nil //Volume?
+					)
+				),
 				deliveryInstructions: nil,
 				variableHandlingChargeDetail: nil,
 				customsClearanceDetail: nil,
