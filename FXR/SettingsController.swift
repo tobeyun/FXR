@@ -19,6 +19,13 @@ class SettingsController: NSWindowController, NSWindowDelegate
 	@IBOutlet weak var city: NSTextField!
 	@IBOutlet weak var state: NSTextField!
 	@IBOutlet weak var zipCode: NSTextField!
+	@IBOutlet weak var ltlAccountNumber: NSTextField!
+	@IBOutlet weak var ltlCompany: NSTextField!
+	@IBOutlet weak var ltlAddress: NSTextField!
+	@IBOutlet weak var ltlCity: NSTextField!
+	@IBOutlet weak var ltlState: NSTextField!
+	@IBOutlet weak var ltlZipCode: NSTextField!
+	@IBOutlet weak var ltlThirdParty: NSButton!
 	
 	override var windowNibName: String! {
 		return "Settings"
@@ -37,11 +44,18 @@ class SettingsController: NSWindowController, NSWindowDelegate
 		webCredentialKey.stringValue = "\((KeychainManager.queryData(itemKey: "key")) as? String ?? "")"
 		webCredentialPassword.stringValue = "\((KeychainManager.queryData(itemKey: "password")) as? String ?? "")"
 		
-		companyName.stringValue = "\((KeychainManager.queryData(itemKey: "company")) as? String ?? "")"
-		addressLine.stringValue = "\((KeychainManager.queryData(itemKey: "address")) as? String ?? "")"
-		city.stringValue = "\((KeychainManager.queryData(itemKey: "city")) as? String ?? "")"
-		state.stringValue = "\((KeychainManager.queryData(itemKey: "state")) as? String ?? "")"
-		zipCode.stringValue = "\((KeychainManager.queryData(itemKey: "zip")) as? String ?? "")"
+		companyName.stringValue = "\((UserDefaults.standard.string(forKey: "company")) ?? "")"
+		addressLine.stringValue = "\((UserDefaults.standard.string(forKey: "address")) ?? "")"
+		city.stringValue = "\((UserDefaults.standard.string(forKey: "city")) ?? "")"
+		state.stringValue = "\((UserDefaults.standard.string(forKey: "state")) ?? "")"
+		zipCode.stringValue = "\((UserDefaults.standard.string(forKey: "zip")) ?? "")"
+		
+		ltlCompany.stringValue = "\((UserDefaults.standard.string(forKey: "ltlcompany")) ?? "")"
+		ltlAddress.stringValue = "\((UserDefaults.standard.string(forKey: "ltladdress")) ?? "")"
+		ltlCity.stringValue = "\((UserDefaults.standard.string(forKey: "ltlcity")) ?? "")"
+		ltlState.stringValue = "\((UserDefaults.standard.string(forKey: "ltlstate")) ?? "")"
+		ltlZipCode.stringValue = "\((UserDefaults.standard.string(forKey: "ltlzip")) ?? "")"
+		ltlThirdParty.state = UserDefaults.standard.integer(forKey: "ltlthirdparty")
 	}
 	
 	func windowWillClose(_ notification: Notification) {
@@ -61,11 +75,18 @@ class SettingsController: NSWindowController, NSWindowDelegate
 		KeychainManager.addData(itemKey: "meter", itemValue: meterNumber.stringValue)
 		KeychainManager.addData(itemKey: "account", itemValue: accountNumber.stringValue)
 		
-		KeychainManager.addData(itemKey: "company", itemValue: companyName.stringValue)
-		KeychainManager.addData(itemKey: "address", itemValue: addressLine.stringValue)
-		KeychainManager.addData(itemKey: "city", itemValue: city.stringValue)
-		KeychainManager.addData(itemKey: "state", itemValue: state.stringValue)
-		KeychainManager.addData(itemKey: "zip", itemValue: zipCode.stringValue)
+		UserDefaults.standard.set(companyName.stringValue, forKey: "company")
+		UserDefaults.standard.set(addressLine.stringValue, forKey: "address")
+		UserDefaults.standard.set(city.stringValue, forKey: "city")
+		UserDefaults.standard.set(state.stringValue, forKey: "state")
+		UserDefaults.standard.set(zipCode.stringValue, forKey: "zip")
+		
+		UserDefaults.standard.set(ltlCompany.stringValue, forKey: "ltlcompany")
+		UserDefaults.standard.set(ltlAddress.stringValue, forKey: "ltladdress")
+		UserDefaults.standard.set(ltlCity.stringValue, forKey: "ltlcity")
+		UserDefaults.standard.set(ltlState.stringValue, forKey: "ltlstate")
+		UserDefaults.standard.set(ltlZipCode.stringValue, forKey: "ltlzip")
+		UserDefaults.standard.set(ltlThirdParty.stringValue, forKey: "ltlthirdparty")
 		
 		NSApplication.shared().stopModal()
 	}
