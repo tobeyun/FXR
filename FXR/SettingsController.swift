@@ -49,7 +49,8 @@ class SettingsController: NSWindowController, NSWindowDelegate
 		city.stringValue = "\((UserDefaults.standard.string(forKey: "city")) ?? "")"
 		state.stringValue = "\((UserDefaults.standard.string(forKey: "state")) ?? "")"
 		zipCode.stringValue = "\((UserDefaults.standard.string(forKey: "zip")) ?? "")"
-		
+	
+		ltlAccountNumber.stringValue = "\((KeychainManager.queryData(itemKey: "ltlaccount")) as? String ?? "")"
 		ltlCompany.stringValue = "\((UserDefaults.standard.string(forKey: "ltlcompany")) ?? "")"
 		ltlAddress.stringValue = "\((UserDefaults.standard.string(forKey: "ltladdress")) ?? "")"
 		ltlCity.stringValue = "\((UserDefaults.standard.string(forKey: "ltlcity")) ?? "")"
@@ -63,17 +64,13 @@ class SettingsController: NSWindowController, NSWindowDelegate
 		KeychainManager.deleteData(itemKey: "password")
 		KeychainManager.deleteData(itemKey: "meter")
 		KeychainManager.deleteData(itemKey: "account")
-		
-		KeychainManager.deleteData(itemKey: "company")
-		KeychainManager.deleteData(itemKey: "address")
-		KeychainManager.deleteData(itemKey: "city")
-		KeychainManager.deleteData(itemKey: "state")
-		KeychainManager.deleteData(itemKey: "zip")
+		KeychainManager.deleteData(itemKey: "ltlaccount")
 		
 		KeychainManager.addData(itemKey: "key", itemValue: webCredentialKey.stringValue)
 		KeychainManager.addData(itemKey: "password", itemValue: webCredentialPassword.stringValue)
 		KeychainManager.addData(itemKey: "meter", itemValue: meterNumber.stringValue)
 		KeychainManager.addData(itemKey: "account", itemValue: accountNumber.stringValue)
+		KeychainManager.addData(itemKey: "ltlaccount", itemValue: accountNumber.stringValue)
 		
 		UserDefaults.standard.set(companyName.stringValue, forKey: "company")
 		UserDefaults.standard.set(addressLine.stringValue, forKey: "address")
