@@ -378,6 +378,8 @@ extension AppDelegate: NSApplicationDelegate
 		detailsView.reloadData()
 		
 		progressIndicator.isDisplayedWhenStopped = false
+		
+		UserDefaults.standard.set(1, forKey: "NSInitialToolTipDelay")
 	}
 	
 	func applicationWillTerminate(_ aNotification: Notification)
@@ -461,27 +463,8 @@ extension AppDelegate: XMLParserDelegate
 	
 	func parserDidEndDocument(_ parser: XMLParser)
 	{
-		DispatchQueue.main.async(execute: { () -> Void in
-//			self.rateReply = RateReply(self.valueStack)
-//			
-//			if (self.showRawXml.state == NSOnState)
-//			{
-//				//print("\(self.rateReply)")
-//			}
-//			
-//			print("\(self.soapStack)")
-//			print("\(self.soapStack.items.filter{ $0.value == nil })")
-//
-//			// print non-SUCCESS messages
-//			if (self.rateReply.highestSeverity() != NotificationSeverityType.SUCCESS)
-//			{
-//				//print(self.rateReply.notifications().filter{ $0.severity().value == self.rateReply.highestSeverity() } )
-//			}
-		})
-		
-		DispatchQueue.main.async(execute: { () -> Void in
-			self.progressIndicator.stopAnimation(self)
-		})
+//		print("\(self.soapStack)")
+//		print("\(self.soapStack.items.filter{ $0.value == nil })")
 		
 		DispatchQueue.main.async(execute: { () -> Void in
 			self.detailsTable.reloadData()
@@ -489,6 +472,9 @@ extension AppDelegate: XMLParserDelegate
 			self.httpResponseLabel.stringValue = "Status: Parsing Complete"
 			
 			self.detailsView.expandItem(self.detailsView.item(atRow: 0), expandChildren: false)
+			self.detailsView.becomeFirstResponder()
+			
+			self.progressIndicator.stopAnimation(self)
 		})
 	}
 }
@@ -534,13 +520,17 @@ extension AppDelegate: NSOutlineViewDelegate
 	{
 		// if item is nil, empty view (i.e. init)
 		guard let soapElement = item as? SoapElement else  { return nil }
-		
+
 		// if NameColumn
 		if tableColumn?.identifier == "NameColumn" {
 			return soapElement.tag
 		} else if tableColumn?.identifier == "ValueColumn" {
 			if soapElement.tag == "RateReplyDetails" {
 				return soapStack.items.filter{ $0.parent == soapElement.id && $0.tag == "ServiceType" }.last?.value
+			}
+			
+			if (soapElement.tag == "Notifications") {
+				return soapStack.items.filter{ $0.parent == soapElement.id && $0.tag == "Message" }.last?.value
 			}
 			
 			return soapElement.value
@@ -560,6 +550,10 @@ extension AppDelegate: NSOutlineViewDelegate
 		
 		return nil
 	}
+	
+//	func outlineView(_ outlineView: NSOutlineView, toolTipFor cell: NSCell, rect: NSRectPointer, tableColumn: NSTableColumn?, item: Any, mouseLocation: NSPoint) -> String {
+//		return cell.stringValue
+//	}
 	
 	func drillDown(parent: SoapElement, path: String) -> SoapElement? {
 //		print(parent)
