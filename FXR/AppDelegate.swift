@@ -149,6 +149,20 @@ class AppDelegate: NSObject
 		})
 	}
 	
+	@IBAction func freightDisclosure(_ sender: NSButton) {
+		var windowFrame = window.frame
+		
+		let oldWidth = windowFrame.size.width
+		let oldHeight = windowFrame.size.height
+		let toAdd = CGFloat(100)
+		let newWidth = oldWidth + toAdd
+		let newHeight = oldHeight + toAdd
+		
+		windowFrame.size = NSMakeSize(newWidth, newHeight)
+		
+		window.setFrame(windowFrame, display: true)
+	}
+	
 	@IBAction func quickTrack(_ sender: Any)
 	{
 //		let soapMessage = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:v12=\"http://fedex.com/ws/track/v12\"><soapenv:Header> </soapenv:Header>" +
@@ -363,7 +377,7 @@ extension AppDelegate: NSApplicationDelegate
 	{
 		// Insert code here to initialize your application
 		
-		senderZip.stringValue = "\((KeychainManager.queryData(itemKey: "zip")) as? String ?? "")"
+		senderZip.stringValue = "\((UserDefaults.standard.string(forKey: "zip")) ?? "")"
 		
 		currentId = nil
 		
