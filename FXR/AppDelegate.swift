@@ -134,6 +134,12 @@ class AppDelegate: NSObject
 	@IBOutlet weak var detailsView: NSOutlineView!
 	@IBOutlet weak var rateButton: NSButton!
 	@IBOutlet weak var viewHeightConstraint: NSLayoutConstraint!
+	@IBOutlet weak var freightClassType: NSComboBox!
+	@IBOutlet weak var freightDescription: NSTextField!
+	@IBOutlet weak var freightQuantity: NSTextField!
+	@IBOutlet weak var freightVolume: NSTextField!
+	@IBOutlet weak var residentialCheck: NSButton!
+	@IBOutlet weak var horizontalLine: NSBox!
 	
 	//var rateRequest: RateRequest
 	var xmlParser = XMLParser()
@@ -216,26 +222,102 @@ class AppDelegate: NSObject
 			return
 		}
 		
+		let wad = WebAuthenticationDetail(
+			parentCredential: nil,
+			userCredential: WebAuthenticationCredential(
+				key: KeychainManager.queryData(itemKey: "key") as? String ?? "",
+				password: KeychainManager.queryData(itemKey: "password") as? String ?? "")
+		)
+		
+		let cd = ClientDetail(
+			accountNumber: KeychainManager.queryData(itemKey: "account") as? String ?? "",
+			meterNumber: KeychainManager.queryData(itemKey: "meter") as? String ?? "",
+			integratorId: nil,
+			region: nil,
+			localization: nil)
+		
+		let shp = Party(
+			accountNumber: nil,
+			tins: nil,
+			contact: nil,
+			address: Address(
+				streetLines: UserDefaults.standard.string(forKey: "address"),
+				city: UserDefaults.standard.string(forKey: "city"),
+				stateOrProvinceCode: UserDefaults.standard.string(forKey: "state"),
+				postalCode: senderZip.stringValue,
+				urbanizationCode: nil,
+				countryCode: "US",
+				countryName: nil,
+				residential: false
+			)
+		)
+		
+		//let fsd = nil //FreightShipmentDetail(
+//			fedExFreightAccountNumber: KeychainManager.queryData(itemKey: "ltlaccount") as? String ?? "",
+//			fedExFreightBillingContactAndAddress: ContactAndAddress(
+//				contact: nil,
+//				address: Address(
+//					streetLines: UserDefaults.standard.string(forKey: "ltladdress"),
+//					city: UserDefaults.standard.string(forKey: "ltlcity"),
+//					stateOrProvinceCode: UserDefaults.standard.string(forKey: "ltlstate"),
+//					postalCode: UserDefaults.standard.string(forKey: "ltlzip"),
+//					urbanizationCode: nil,
+//					countryCode: "US",
+//					countryName: nil,
+//					residential: false
+//				)
+//			),
+//			alternateBilling: nil, //Party?,
+//			role: FreightShipmentRoleType(rawValue: (UserDefaults.standard.integer(forKey: "ltlthirdparty") == 0 ? "SHIPPER" : "CONSIGNEE")),
+//			collectTermsType: FreightCollectTermsType.STANDARD,
+//			declaredValuePerUnit: nil, //Money?,
+//			declaredValueUnits: nil, //String?,
+//			liabilityCoverageDetail: nil, //LiabilityCoverageDetail?,
+//			coupons: nil, //String?,
+//			totalHandlingUnits: nil, //UInt?,
+//			clientDiscountPercent: nil, //Decimal?,
+//			palletWeight: Weight(units: WeightUnits.LB, value: 100.0),
+//			shipmentDimensions: nil, //Dimensions?,
+//			comment: nil, //String?,
+//			specialServicePayments: nil, //FreightSpecialServicePayment?,
+//			hazardousMaterialsOfferor: nil, //String?,
+//			lineItems: FreightShipmentLineItem(
+//				freightClass: FreightClassType.CLASS_050,
+//				packaging: PhysicalPackagingType.PALLET,
+//				pieces: 1,
+//				description: "test",
+//				weight: Weight(units: WeightUnits.LB, value: 100.0),
+//				dimensions: nil, //Dimensions?,
+//				volume: nil //Volume?
+//			)
+//		)
+		
+		let rpli = RequestedPackageLineItem(
+			sequenceNumber: 1,
+			groupNumber: 1,
+			groupPackageCount: 1,
+			variableHandlingChargeDetail: nil,
+			insuredValue: nil,
+			weight: Weight(units: WeightUnits.LB, value: Float(packageWeight.stringValue)!),
+			dimensions: nil,
+			physicalPackaging: PhysicalPackagingType.BOX,
+			itemDescription: nil,
+			itemDescriptionForClearance: nil,
+			customerReferences: nil,
+			specialServicesRequested: nil,
+			contentRecords: nil
+		)
+		
 		let web = RateRequest(
-			webAuthenticationDetail: WebAuthenticationDetail(
-				parentCredential: nil,
-				userCredential: WebAuthenticationCredential(
-					key: KeychainManager.queryData(itemKey: "key") as? String ?? "",
-					password: KeychainManager.queryData(itemKey: "password") as? String ?? "")
-			),
-			clientDetail: ClientDetail(
-				accountNumber: KeychainManager.queryData(itemKey: "account") as? String ?? "",
-				meterNumber: KeychainManager.queryData(itemKey: "meter") as? String ?? "",
-				integratorId: nil,
-				region: nil,
-				localization: nil),
+			webAuthenticationDetail: wad,
+			clientDetail: cd,
 			transactionDetail: TransactionDetail(customerTransactionId: "FXR TEST", localization: nil),
 			returnTransAndCommit: true,
 			carrierCodes: nil,
 			variableOptions: nil,
 			consolidationKey: nil,
 			requestedShipment: RequestedShipment(
-				shipTimestamp: Date().addingTimeInterval(86400),
+				shipTimestamp: Date(), //.addingTimeInterval(86400),
 				dropoffType: DropoffType.REGULAR_PICKUP,
 				serviceType: nil, //ServiceType.GROUND_HOME_DELIVERY,
 				packagingType: PackagingType.YOUR_PACKAGING,
@@ -244,21 +326,7 @@ class AppDelegate: NSObject
 				totalInsuredValue: nil,
 				preferredCurrency: nil,
 				shipmentAuthorizationDetail: nil,
-				shipper: Party(
-					accountNumber: nil,
-					tins: nil,
-					contact: nil,
-					address: Address(
-						streetLines: nil,
-						city: nil,
-						stateOrProvinceCode: nil,
-						postalCode: senderZip.stringValue,
-						urbanizationCode: nil,
-						countryCode: "US",
-						countryName: nil,
-						residential: false
-					)
-				),
+				shipper: shp,
 				recipient: Party(
 					accountNumber: nil,
 					tins: nil,
@@ -271,7 +339,7 @@ class AppDelegate: NSObject
 						urbanizationCode: nil,
 						countryCode: "US",
 						countryName: nil,
-						residential: false)
+						residential: residentialCheck.state == 1)
 				),
 				recipientLocationNumber: nil,
 				origin: nil,
@@ -279,45 +347,7 @@ class AppDelegate: NSObject
 				shippingChargesPayment: nil,
 				specialServicesRequested: nil,
 				expressFreightDetail: nil,
-				freightShipmentDetail: nil, //FreightShipmentDetail(
-//					fedExFreightAccountNumber: KeychainManager.queryData(itemKey: "ltlaccount") as? String ?? "",
-//					fedExFreightBillingContactAndAddress: ContactAndAddress(
-//						contact: nil,
-//						address: Address(
-//							streetLines: UserDefaults.standard.string(forKey: "ltladdress"),
-//							city: UserDefaults.standard.string(forKey: "ltlcity"),
-//							stateOrProvinceCode: UserDefaults.standard.string(forKey: "ltlstate"),
-//							postalCode: UserDefaults.standard.string(forKey: "ltlzip"),
-//							urbanizationCode: nil,
-//							countryCode: "US",
-//							countryName: nil,
-//							residential: false
-//						)
-//					),
-//					alternateBilling: nil, //Party?,
-//					role: FreightShipmentRoleType(rawValue: (UserDefaults.standard.integer(forKey: "ltlthirdparty") == 0 ? "SHIPPER" : "CONSIGNEE")),
-//					collectTermsType: FreightCollectTermsType.STANDARD,
-//					declaredValuePerUnit: nil, //Money?,
-//					declaredValueUnits: nil, //String?,
-//					liabilityCoverageDetail: nil, //LiabilityCoverageDetail?,
-//					coupons: nil, //String?,
-//					totalHandlingUnits: nil, //UInt?,
-//					clientDiscountPercent: nil, //Decimal?,
-//					palletWeight: Weight(units: WeightUnits.LB, value: 100.0),
-//					shipmentDimensions: nil, //Dimensions?,
-//					comment: nil, //String?,
-//					specialServicePayments: nil, //FreightSpecialServicePayment?,
-//					hazardousMaterialsOfferor: nil, //String?,
-//					lineItems: FreightShipmentLineItem(
-//						freightClass: FreightClassType.CLASS_050,
-//						packaging: PhysicalPackagingType.PALLET,
-//						pieces: 1,
-//						description: "test",
-//						weight: Weight(units: WeightUnits.LB, value: 100.0),
-//						dimensions: nil, //Dimensions?,
-//						volume: nil //Volume?
-//					)
-//				),
+				freightShipmentDetail: nil,
 				deliveryInstructions: nil,
 				variableHandlingChargeDetail: nil,
 				customsClearanceDetail: nil,
@@ -331,21 +361,7 @@ class AppDelegate: NSObject
 				packageCount: 1,
 				shipmentOnlyFields: ShipmentOnlyFieldsType.WEIGHT,
 				configurationData: nil,
-				requestedPackageLineItems: RequestedPackageLineItem(
-					sequenceNumber: 1,
-					groupNumber: 1,
-					groupPackageCount: 1,
-					variableHandlingChargeDetail: nil,
-					insuredValue: nil,
-					weight: Weight(units: WeightUnits.LB, value: 20.0),
-					dimensions: nil,
-					physicalPackaging: PhysicalPackagingType.BOX,
-					itemDescription: nil,
-					itemDescriptionForClearance: nil,
-					customerReferences: nil,
-					specialServicesRequested: nil,
-					contentRecords: nil
-				)
+				requestedPackageLineItems: rpli
 			)
 		)
 		
@@ -424,18 +440,23 @@ extension AppDelegate: NSApplicationDelegate
 		senderZip.stringValue = "\((UserDefaults.standard.string(forKey: "zip")) ?? "")"
 		
 		detailsView.translatesAutoresizingMaskIntoConstraints = true
+		horizontalLine.translatesAutoresizingMaskIntoConstraints = true
 		
 		currentId = nil
 		
 		prefs = SettingsController()
 		
-		detailsTable.delegate = self
-		detailsTable.dataSource = self
-		detailsTable.reloadData()
+//		detailsTable.delegate = self
+//		detailsTable.dataSource = self
+//		detailsTable.reloadData()
 		
 		detailsView.delegate = self
 		detailsView.dataSource = self
 		detailsView.reloadData()
+		
+		freightClassType.delegate = self
+		freightClassType.dataSource = self
+		freightClassType.reloadData()
 		
 		progressIndicator.isDisplayedWhenStopped = false
 		
@@ -527,7 +548,7 @@ extension AppDelegate: XMLParserDelegate
 //		print("\(self.soapStack.items.filter{ $0.value == nil })")
 		
 		DispatchQueue.main.async(execute: { () -> Void in
-			self.detailsTable.reloadData()
+			//self.detailsTable.reloadData()
 			self.detailsView.reloadData()
 			self.httpResponseLabel.stringValue = "Status: Parsing Complete"
 			
@@ -629,12 +650,6 @@ extension AppDelegate: NSOutlineViewDelegate
 		}
 		
 		return soapStack.items.filter{ $0.parent == parent.id && $0.tag == path.components(separatedBy: "|").last! }.last
-		
-//		let ratedShipmentDetails = soapStack.items.filter{ $0.parent == parent.id && $0.tag == "RatedShipmentDetails" }.last?.id
-//		let shipmentRateDetail = soapStack.items.filter{ $0.parent == ratedShipmentDetails && $0.tag == "ShipmentRateDetail" }.last?.id
-//		let totalNetCharge = soapStack.items.filter{ $0.parent == shipmentRateDetail && $0.tag == "TotalNetCharge" }.last?.id
-//		
-//		return soapStack.items.filter{ $0.parent == totalNetCharge && $0.tag == "Amount" }.last!
 	}
 }
 
@@ -667,5 +682,16 @@ extension AppDelegate: NSOutlineViewDataSource
 		
 		// else return child elements
 		return soapStack.items.filter{ $0.parent == soapElement.id }[index]
+	}
+}
+
+extension AppDelegate: NSComboBoxDelegate, NSComboBoxDataSource
+{
+	func numberOfItems(in comboBox: NSComboBox) -> Int {
+		return FreightClassType.values.count
+	}
+	
+	func comboBox(_ comboBox: NSComboBox, objectValueForItemAt index: Int) -> Any? {
+		return FreightClassType.values[index].rawValue
 	}
 }
