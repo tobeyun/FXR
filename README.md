@@ -5,7 +5,7 @@ FedEx has created a desktop rating tool that has been very successful (i.e. popu
 
 ![Screen Shot](/images/ScreenShot.png)
 
-To use FXR, you will need to register a developer account at https://www.fedex.com/us/developer and enter the relevant information in Preferences:
+To use FXR, you will need to register as a Corporate Developer account at https://www.fedex.com/us/developer and enter the relevant information in Preferences:
 
 ![Prefs](/images/prefs.png)
 
