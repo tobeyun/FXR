@@ -60,17 +60,31 @@ class SettingsController: NSWindowController, NSWindowDelegate
 	}
 	
 	func windowWillClose(_ notification: Notification) {
-		KeychainManager.deleteData(itemKey: "key")
-		KeychainManager.deleteData(itemKey: "password")
-		KeychainManager.deleteData(itemKey: "meter")
-		KeychainManager.deleteData(itemKey: "account")
-		KeychainManager.deleteData(itemKey: "ltlaccount")
+		if (KeychainManager.queryData(itemKey: "key")?.stringValue != webCredentialKey.stringValue) {
+			KeychainManager.deleteData(itemKey: "key")
+			KeychainManager.addData(itemKey: "key", itemValue: webCredentialKey.stringValue)
+		}
 		
-		KeychainManager.addData(itemKey: "key", itemValue: webCredentialKey.stringValue)
-		KeychainManager.addData(itemKey: "password", itemValue: webCredentialPassword.stringValue)
-		KeychainManager.addData(itemKey: "meter", itemValue: meterNumber.stringValue)
-		KeychainManager.addData(itemKey: "account", itemValue: accountNumber.stringValue)
-		KeychainManager.addData(itemKey: "ltlaccount", itemValue: accountNumber.stringValue)
+		if (KeychainManager.queryData(itemKey: "password")?.stringValue != webCredentialPassword.stringValue) {
+			KeychainManager.deleteData(itemKey: "password")
+			KeychainManager.addData(itemKey: "password", itemValue: webCredentialPassword.stringValue)
+		}
+		
+		if (KeychainManager.queryData(itemKey: "meter")?.stringValue != webCredentialKey.stringValue) {
+			KeychainManager.deleteData(itemKey: "meter")
+			KeychainManager.addData(itemKey: "meter", itemValue: meterNumber.stringValue)
+		}
+		
+		
+		if (KeychainManager.queryData(itemKey: "account")?.stringValue != accountNumber.stringValue) {
+			KeychainManager.deleteData(itemKey: "account")
+			KeychainManager.addData(itemKey: "account", itemValue: accountNumber.stringValue)
+		}
+		
+		if (KeychainManager.queryData(itemKey: "ltlaccount")?.stringValue != webCredentialKey.stringValue) {
+			KeychainManager.deleteData(itemKey: "ltlaccount")
+			KeychainManager.addData(itemKey: "ltlaccount", itemValue: ltlAccountNumber.stringValue)
+		}
 		
 		UserDefaults.standard.set(companyName.stringValue, forKey: "company")
 		UserDefaults.standard.set(addressLine.stringValue, forKey: "address")
