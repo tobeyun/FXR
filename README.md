@@ -12,4 +12,5 @@ To use FXR, you will need to register as a Corporate Developer at https://www.fe
 ## Install
 Please install FXR from the Mac App Store (link pending approval).
 
-Please report all issues here.
+## Issue Reporting
+Please report all issues here (https://github.com/tobeyun/FXR/issues).
