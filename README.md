@@ -1,5 +1,5 @@
 # FXR
-FedEx desktop rating tool for MacOS
+FedEx desktop rating tool for MacOS.
 
 FedEx has created a desktop rating tool that has been very successful (i.e. popular) but without a Mac counterpart. Utilizing the same web services available to the general public, FXR is a Swift-based app designed for MacOS.
 
@@ -9,7 +9,7 @@ To use FXR, you will need to register as a Corporate Developer at https://www.fe
 
 ![Prefs](/images/prefs.png)
 
-#Install
+## Install
 Please install FXR from the Mac App Store (link pending approval).
 
 Please report all issues here.
