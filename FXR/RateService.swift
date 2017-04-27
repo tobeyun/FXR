@@ -1262,13 +1262,13 @@ struct FreightSpecialServicePayment : CustomStringConvertible
 
 struct FreightShipmentLineItem : CustomStringConvertible
 {
-	fileprivate let _freightClass: FreightClassType?
-	fileprivate let _packaging: PhysicalPackagingType?
-	fileprivate let _pieces: UInt?
-	fileprivate let _description: String?
-	fileprivate let _weight: Weight?
-	fileprivate let _dimensions: Dimensions?
-	fileprivate let _volume: Volume?
+	let _freightClass: FreightClassType?
+	let _packaging: PhysicalPackagingType?
+	let _pieces: UInt?
+	let _description: String?
+	let _weight: Weight?
+	let _dimensions: Dimensions?
+	let _volume: Volume?
 	
 	var description: String { return "\(freightClass())\(packaging())\(pieces())\(description_())\(weight())\(dimensions())\(volume())" }
 	
@@ -1283,13 +1283,13 @@ struct FreightShipmentLineItem : CustomStringConvertible
 		_volume = volume
 	}
 	
-	func freightClass() -> String { return (_freightClass == nil ? "" : "<FreightClass>\(_freightClass!)</FreightClass>") }
-	func packaging() -> String { return (_packaging == nil ? "" : "<Packaging>\(_packaging!)</Packaging>") }
-	func pieces() -> String { return (_pieces == nil ? "" : "<Pieces>\(_pieces!)</Pieces>") }
-	func description_() -> String { return (_description == nil ? "" : "<Description>\(_description!)</Description>") }
-	func weight() -> String { return (_weight == nil ? "" : "<Weight>\(_weight!)</Weight>") }
-	func dimensions() -> String { return (_dimensions == nil ? "" : "<Dimensions>\(_dimensions!)</Dimensions>") }
-	func volume() -> String { return (_volume == nil ? "" : "<Volume>\(_volume!)</Volume>") }
+	fileprivate func freightClass() -> String { return (_freightClass == nil ? "" : "<FreightClass>\(_freightClass!)</FreightClass>") }
+	fileprivate func packaging() -> String { return (_packaging == nil ? "" : "<Packaging>\(_packaging!)</Packaging>") }
+	fileprivate func pieces() -> String { return (_pieces == nil ? "" : "<Pieces>\(_pieces!)</Pieces>") }
+	fileprivate func description_() -> String { return (_description == nil ? "" : "<Description>\(_description!)</Description>") }
+	fileprivate func weight() -> String { return (_weight == nil ? "" : "<Weight>\(_weight!)</Weight>") }
+	fileprivate func dimensions() -> String { return (_dimensions == nil ? "" : "<Dimensions>\(_dimensions!)</Dimensions>") }
+	fileprivate func volume() -> String { return (_volume == nil ? "" : "<Volume>\(_volume!)</Volume>") }
 }
 
 struct Volume : CustomStringConvertible
