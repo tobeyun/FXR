@@ -1295,11 +1295,11 @@ struct FreightShipmentLineItem : CustomStringConvertible
 struct Volume : CustomStringConvertible
 {
 	fileprivate let _units: VolumeUnits?
-	fileprivate let _value: Decimal?
+	fileprivate let _value: Float?
 	
 	var description: String { return "\(units())\(value())" }
 	
-	init(units: VolumeUnits, value: Decimal)
+	init(units: VolumeUnits?, value: Float?)
 	{
 		_units = units
 		_value = value
