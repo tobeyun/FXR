@@ -140,6 +140,8 @@ class AppDelegate: NSObject
 	@IBOutlet weak var freightVolume: NSTextField!
 	@IBOutlet weak var residentialCheck: NSButton!
 	@IBOutlet weak var horizontalLine: NSBox!
+	@IBOutlet weak var outlineViewTopConstraint: NSLayoutConstraint!
+	@IBOutlet weak var lineItemTableBottomConstraint: NSLayoutConstraint!
 	
 	//var rateRequest: RateRequest
 	var xmlParser = XMLParser()
@@ -159,6 +161,9 @@ class AppDelegate: NSObject
 	@IBAction func freightDisclosure(_ sender: NSButton) {
 		var windowFrame = window.frame
 		
+//		outlineViewTopConstraint.isActive = (sender.state == 0)
+//		lineItemTableBottomConstraint.isActive = (sender.state == 1)
+		
 		let toAdd = CGFloat(100) * ((sender.state == 1) ? 1 : -1)
 		
 		let oldWidth = windowFrame.size.width
@@ -172,7 +177,7 @@ class AppDelegate: NSObject
 		
 		window.setFrame(windowFrame, display: true, animate: true)
 		
-		viewHeightConstraint.animator().constant -= toAdd
+		//outlineViewTopConstraint.animator().constant += toAdd
 	}
 	
 	@IBAction func quickTrack(_ sender: Any)
