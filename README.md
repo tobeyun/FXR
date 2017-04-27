@@ -9,4 +9,7 @@ To use FXR, you will need to register as a Corporate Developer at https://www.fe
 
 ![Prefs](/images/prefs.png)
 
+#Install
+Please install FXR from the Mac App Store (link pending approval).
+
 Please report all issues here.
