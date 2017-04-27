@@ -22,6 +22,8 @@
                 <outlet property="freightVolume" destination="PhB-V9-6NK" id="5UR-UN-pMj"/>
                 <outlet property="horizontalLine" destination="3Rr-iI-Ser" id="c5E-M4-TpG"/>
                 <outlet property="httpResponseLabel" destination="eT1-9D-YDT" id="qMO-rC-FZG"/>
+                <outlet property="lineItemTableBottomConstraint" destination="k03-MZ-nh4" id="xeF-Yq-sPp"/>
+                <outlet property="outlineViewTopConstraint" destination="gyr-cx-u4a" id="BAn-WT-Oub"/>
                 <outlet property="packageWeight" destination="VC9-gk-pmd" id="MWS-fL-LJJ"/>
                 <outlet property="progressIndicator" destination="Vev-8s-cMk" id="c0c-aQ-VjJ"/>
                 <outlet property="rateButton" destination="dpZ-ID-co7" id="O3Y-YD-lsM"/>
@@ -447,7 +449,7 @@
                 <rect key="frame" x="0.0" y="0.0" width="850" height="360"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XXk-nl-hLX">
+                    <scrollView identifier="LineItemTable" fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XXk-nl-hLX">
                         <rect key="frame" x="20" y="204" width="487" height="69"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <clipView key="contentView" ambiguous="YES" id="b1p-5H-dNy">
@@ -654,7 +656,7 @@
                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                             </tableHeaderCell>
                                             <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" title="Text Cell" id="rON-iA-gbG">
-                                                <font key="font" metaFont="system"/>
+                                                <font key="font" metaFont="system" size="11"/>
                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -667,7 +669,7 @@
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                             </tableHeaderCell>
                                             <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" alignment="left" title="Text Cell" id="a4b-6E-Taj">
-                                                <font key="font" metaFont="system"/>
+                                                <font key="font" metaFont="system" size="11"/>
                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -681,7 +683,7 @@
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                             </tableHeaderCell>
                                             <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" alignment="right" title="Text Cell" id="YzL-BQ-cpC">
-                                                <font key="font" metaFont="system"/>
+                                                <font key="font" metaFont="system" size="11"/>
                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -694,7 +696,7 @@
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                             </tableHeaderCell>
                                             <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" alignment="center" title="Text Cell" id="jsU-j5-rTD">
-                                                <font key="font" metaFont="system"/>
+                                                <font key="font" metaFont="system" size="11"/>
                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -754,7 +756,7 @@ DQ
                         <rect key="frame" x="481" y="321" width="16" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     </progressIndicator>
-                    <button hidden="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" springLoaded="YES" translatesAutoresizingMaskIntoConstraints="NO" id="D4K-9j-PlI">
+                    <button horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" springLoaded="YES" translatesAutoresizingMaskIntoConstraints="NO" id="D4K-9j-PlI">
                         <rect key="frame" x="448" y="315" width="29" height="26"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="disclosure" bezelStyle="roundedDisclosure" imagePosition="only" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="99m-uh-w8U">
@@ -769,8 +771,8 @@ DQ
                 <constraints>
                     <constraint firstAttribute="trailing" secondItem="Cej-7K-IaR" secondAttribute="trailing" constant="20" symbolic="YES" id="7k8-Iu-K4O"/>
                     <constraint firstAttribute="bottom" secondItem="Cej-7K-IaR" secondAttribute="bottom" constant="20" symbolic="YES" id="H06-QR-xyg"/>
+                    <constraint firstItem="Cej-7K-IaR" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" constant="53" id="gyr-cx-u4a"/>
                     <constraint firstItem="Cej-7K-IaR" firstAttribute="leading" secondItem="EiT-Mj-1SZ" secondAttribute="leading" constant="20" symbolic="YES" id="k03-MZ-nh4"/>
-                    <constraint firstItem="Cej-7K-IaR" firstAttribute="top" secondItem="EiT-Mj-1SZ" secondAttribute="top" constant="53" id="wBc-hj-b0D"/>
                 </constraints>
             </view>
             <point key="canvasLocation" x="324" y="161"/>
