@@ -133,28 +133,65 @@ class AppDelegate: NSObject
 	@IBOutlet weak var httpResponseLabel: NSTextField!
 	@IBOutlet weak var detailsView: NSOutlineView!
 	@IBOutlet weak var rateButton: NSButton!
-	@IBOutlet weak var viewHeightConstraint: NSLayoutConstraint!
-	@IBOutlet weak var freightClassType: NSComboBox!
+	@IBOutlet weak var freightClassPopUp: NSPopUpButton!
+	@IBOutlet weak var freightPkgTypePopUp: NSPopUpButton!
 	@IBOutlet weak var freightDescription: NSTextField!
 	@IBOutlet weak var freightQuantity: NSTextField!
 	@IBOutlet weak var freightVolume: NSTextField!
 	@IBOutlet weak var residentialCheck: NSButton!
-	@IBOutlet weak var horizontalLine: NSBox!
-	@IBOutlet weak var outlineViewTopConstraint: NSLayoutConstraint!
-	@IBOutlet weak var lineItemTableBottomConstraint: NSLayoutConstraint!
+	@IBOutlet weak var lineItemsTable: NSTableView!
+	@IBOutlet weak var linearUnitsPopUp: NSPopUpButton!
+	@IBOutlet weak var freightItemWeight: NSTextField!
+	@IBOutlet weak var freightItemLength: NSTextField!
+	@IBOutlet weak var freightItemWidth: NSTextField!
+	@IBOutlet weak var freightItemHeight: NSTextField!
 	
-	//var rateRequest: RateRequest
+	// local vars
 	var xmlParser = XMLParser()
 	var pathStack = Stack<String>()
 	var soapStack = Stack<SoapElement>()
 	var parentStack = Stack<SoapElement>()
 	var currentId: Int? = nil
+	var lineItems = Stack<Any>()
 	
 	var prefs: SettingsController? = nil
 	
 	@IBAction func OpenPreferences(_ sender: Any) {
 		DispatchQueue.main.async(execute: { () -> Void in
 			NSApplication.shared().runModal(for: (self.prefs?.window)!)
+		})
+	}
+	
+	@IBAction func addFreightLineItemButton(_ sender: Any) {
+		lineItems.items.append(FreightShipmentLineItem(
+			freightClass: FreightClassType(rawValue: freightClassPopUp.titleOfSelectedItem!),
+			packaging: PhysicalPackagingType(rawValue: freightPkgTypePopUp.titleOfSelectedItem!),
+			pieces: UInt(freightQuantity.stringValue) ?? 0,
+			description: freightDescription.stringValue,
+			weight: Weight(units: WeightUnits.LB, value: Float(freightItemWeight.stringValue) ?? 0),
+			dimensions: Dimensions(
+				length: UInt(freightItemLength.stringValue) ?? 0,
+				width: UInt(freightItemWidth.stringValue) ?? 0,
+				height: UInt(freightItemHeight.stringValue) ?? 0,
+				units: LinearUnits(rawValue: linearUnitsPopUp.titleOfSelectedItem)!
+			),
+			volume: Volume(units: VolumeUnits.CUBIC_FT, value: Float(freightVolume.stringValue) ?? 0)
+			)
+		)
+		
+		DispatchQueue.main.async(execute: { () -> Void in
+			self.lineItemsTable.reloadData()
+			
+			self.freightClassPopUp.selectItem(at: 0)
+			self.freightPkgTypePopUp.selectItem(at: 0)
+			self.freightDescription.stringValue = ""
+			self.freightQuantity.stringValue = ""
+			self.freightVolume.stringValue = ""
+			self.freightItemWeight.stringValue = ""
+			self.freightItemWidth.stringValue = ""
+			self.freightItemHeight.stringValue = ""
+			self.freightItemLength.stringValue = ""
+			self.linearUnitsPopUp.selectItem(at: 0)
 		})
 	}
 	
@@ -375,6 +412,10 @@ class AppDelegate: NSObject
 		callDataTask(body: "\(web)")
 	}
 	
+	@IBAction func freightClassPopUp(_ sender: Any) {
+		
+	}
+	
 	func getUrlRequest(body: String) -> URLRequest
 	{
 		var request = URLRequest(url: URL(string: "https://wsbeta.fedex.com:443/web-services/")!)
@@ -444,24 +485,27 @@ extension AppDelegate: NSApplicationDelegate
 		
 		senderZip.stringValue = "\((UserDefaults.standard.string(forKey: "zip")) ?? "")"
 		
-		detailsView.translatesAutoresizingMaskIntoConstraints = true
-		horizontalLine.translatesAutoresizingMaskIntoConstraints = true
-		
 		currentId = nil
 		
 		prefs = SettingsController()
 		
-//		detailsTable.delegate = self
-//		detailsTable.dataSource = self
-//		detailsTable.reloadData()
+		lineItemsTable.delegate = self
+		lineItemsTable.dataSource = self
+		lineItemsTable.target = self
+		lineItemsTable.reloadData()
+		lineItemsTable.doubleAction = #selector(tableViewDoubleClick(_:))
 		
 		detailsView.delegate = self
 		detailsView.dataSource = self
 		detailsView.reloadData()
 		
-		freightClassType.delegate = self
-		freightClassType.dataSource = self
-		freightClassType.reloadData()
+//		freightClassType.delegate = self
+//		freightClassType.dataSource = self
+//		freightClassType.reloadData()
+		
+		freightClassPopUp.addItems(withTitles: FreightClassType.values)
+		freightPkgTypePopUp.addItems(withTitles: PhysicalPackagingType.values)
+		linearUnitsPopUp.addItems(withTitles: LinearUnits.values)
 		
 		progressIndicator.isDisplayedWhenStopped = false
 		
@@ -569,34 +613,49 @@ extension AppDelegate: NSTableViewDataSource
 {
 	func numberOfRows(in tableView: NSTableView) -> Int
 	{
-//		if (valueStack.items.count == 0)
-//		{
-//			return 0
-//		}
-//		else if (self.rateReply.highestSeverity() == NotificationSeverityType.FAILURE)
-//		{
-//			return self.rateReply.notifications().count
-//		}
-//		else
-//		{
-//			return (rateReply.rateReplyDetails()?.count)! // valueStack.find("RateReply|RateReplyDetails|ServiceType|").count
-//		}
-		
-		return 0
+		return lineItems.items.count
 	}
 }
 
 extension AppDelegate: NSTableViewDelegate
 {
-	func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any?
-	{
-		// get record to display
-//		let svc = rateReply.rateReplyDetails()?[row].serviceType()?.rawValue
-//		
-//		if (tableColumn?.identifier == "NameCol") { return "Service" }
-//		else if (tableColumn?.identifier == "ValueCol") { return svc }
+	func tableView(_ tableView: NSTableView, dataCellFor tableColumn: NSTableColumn?, row: Int) -> NSCell? {
+//		if (tableColumn?.identifier == "ModifyColumn") {
+//			let cell = NSCell()
+//			
+//			cell.image = NSImage(named: "NSActionTemplate")
+//			
+//			return cell
+//		}
 		
 		return nil
+	}
+	
+	func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any?
+	{
+		if (tableColumn?.identifier == "ValueColumn") {
+			// get record to display
+			if let lineItem = lineItems.items[row] as? FreightShipmentLineItem {
+				return lineItem._description
+			}
+			
+			if let lineItem = lineItems.items[row] as? RequestedPackageLineItem {
+				return lineItem.itemdescription_()
+			}
+		}
+		
+		return nil
+	}
+	
+	func tableViewDoubleClick(_ sender:AnyObject) {
+		guard lineItemsTable.selectedRow >= 0,
+			let item = lineItems.items[lineItemsTable.selectedRow] as? FreightShipmentLineItem else {
+			
+				return
+		}
+		
+		freightDescription.stringValue = item._description!
+		//freightClassPopUp.select(NSMenuItem(title: item.description_(), action: nil, keyEquivalent: ""))
 	}
 }
 
@@ -636,10 +695,6 @@ extension AppDelegate: NSOutlineViewDelegate
 		
 		return nil
 	}
-	
-//	func outlineView(_ outlineView: NSOutlineView, toolTipFor cell: NSCell, rect: NSRectPointer, tableColumn: NSTableColumn?, item: Any, mouseLocation: NSPoint) -> String {
-//		return cell.stringValue
-//	}
 	
 	func drillDown(parent: SoapElement, path: String) -> SoapElement? {
 //		print(parent)
@@ -697,6 +752,6 @@ extension AppDelegate: NSComboBoxDelegate, NSComboBoxDataSource
 	}
 	
 	func comboBox(_ comboBox: NSComboBox, objectValueForItemAt index: Int) -> Any? {
-		return FreightClassType.values[index].rawValue
+		return FreightClassType.values[index]
 	}
 }
