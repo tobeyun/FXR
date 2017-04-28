@@ -1182,11 +1182,11 @@ struct FreightShipmentDetail : CustomStringConvertible
 	fileprivate let _comment: String?
 	fileprivate let _specialServicePayments: FreightSpecialServicePayment?
 	fileprivate let _hazardousMaterialsOfferor: String?
-	fileprivate let _lineItems: FreightShipmentLineItem?
+	fileprivate let _lineItems: [FreightShipmentLineItem]
 	
 	var description: String { return "\(fedExFreightAccountNumber())\(fedExFreightBillingContactAndAddress())\(alternateBilling())\(role())\(collectTermsType())\(declaredValuePerUnit())\(declaredValueUnits())\(liabilityCoverageDetail())\(coupons())\(totalHandlingUnits())\(clientDiscountPercent())\(palletWeight())\(shipmentDimensions())\(comment())\(specialServicePayments())\(hazardousMaterialsOfferor())\(lineItems())" }
 	
-	init(fedExFreightAccountNumber: String?, fedExFreightBillingContactAndAddress: ContactAndAddress?, alternateBilling: Party?, role: FreightShipmentRoleType?, collectTermsType: FreightCollectTermsType?, declaredValuePerUnit: Money?, declaredValueUnits: String?, liabilityCoverageDetail: LiabilityCoverageDetail?, coupons: String?, totalHandlingUnits: UInt?, clientDiscountPercent: Decimal?, palletWeight: Weight?, shipmentDimensions: Dimensions?, comment: String?, specialServicePayments: FreightSpecialServicePayment?, hazardousMaterialsOfferor: String?, lineItems: FreightShipmentLineItem?)
+	init(fedExFreightAccountNumber: String?, fedExFreightBillingContactAndAddress: ContactAndAddress?, alternateBilling: Party?, role: FreightShipmentRoleType?, collectTermsType: FreightCollectTermsType?, declaredValuePerUnit: Money?, declaredValueUnits: String?, liabilityCoverageDetail: LiabilityCoverageDetail?, coupons: String?, totalHandlingUnits: UInt?, clientDiscountPercent: Decimal?, palletWeight: Weight?, shipmentDimensions: Dimensions?, comment: String?, specialServicePayments: FreightSpecialServicePayment?, hazardousMaterialsOfferor: String?, lineItems: [FreightShipmentLineItem])
 	{
 		_fedExFreightAccountNumber = fedExFreightAccountNumber
 		_fedExFreightBillingContactAndAddress = fedExFreightBillingContactAndAddress
@@ -1223,7 +1223,7 @@ struct FreightShipmentDetail : CustomStringConvertible
 	func comment() -> String { return (_comment == nil ? "" : "<Comment>\(_comment!)</Comment>") }
 	func specialServicePayments() -> String { return (_specialServicePayments == nil ? "" : "<SpecialServicePayments>\(_specialServicePayments!)</SpecialServicePayments>") }
 	func hazardousMaterialsOfferor() -> String { return (_hazardousMaterialsOfferor == nil ? "" : "<HazardousMaterialsOfferor>\(_hazardousMaterialsOfferor!)</HazardousMaterialsOfferor>") }
-	func lineItems() -> String { return (_lineItems == nil ? "" : "<LineItems>\(_lineItems!)</LineItems>") }
+	func lineItems() -> String { return "\((_lineItems.map{ "<LineItems>\($0)</LineItems>" } as [String]).joined())" }
 }
 
 struct LiabilityCoverageDetail : CustomStringConvertible
