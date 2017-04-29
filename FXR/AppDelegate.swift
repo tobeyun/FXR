@@ -120,6 +120,16 @@ extension String {
 	}
 }
 
+extension AppDelegate {
+	func isFreight() -> Bool {
+		guard let _ = lineItems.items as? [FreightShipmentLineItem] else {
+			return false
+		}
+	
+		return true
+	}
+}
+
 @NSApplicationMain
 class AppDelegate: NSObject
 {
@@ -147,6 +157,7 @@ class AppDelegate: NSObject
 	@IBOutlet weak var freightItemHeight: NSTextField!
 	
 	// local vars
+	var cityState = (city: "", state: "", zip: "")
 	var xmlParser = XMLParser()
 	var pathStack = Stack<String>()
 	var soapStack = Stack<SoapElement>()
@@ -260,6 +271,9 @@ class AppDelegate: NSObject
 	
 	@IBAction func quickRate(_ sender: Any)
 	{
+		let rpli: RequestedPackageLineItem?
+		let fsd: FreightShipmentDetail?
+		
 		if (senderZip.stringValue == "" || recipientZip.stringValue == "" || packageWeight.stringValue == "") {
 			return
 		}
@@ -278,77 +292,59 @@ class AppDelegate: NSObject
 			region: nil,
 			localization: nil)
 		
-		let shp = Party(
-			accountNumber: nil,
-			tins: nil,
-			contact: nil,
-			address: Address(
-				streetLines: UserDefaults.standard.string(forKey: "address"),
-				city: UserDefaults.standard.string(forKey: "city"),
-				stateOrProvinceCode: UserDefaults.standard.string(forKey: "state"),
-				postalCode: senderZip.stringValue,
-				urbanizationCode: nil,
-				countryCode: "US",
-				countryName: nil,
-				residential: false
+		if isFreight() {
+			fsd = FreightShipmentDetail(
+				fedExFreightAccountNumber: KeychainManager.queryData(itemKey: "ltlaccount") as? String ?? "",
+				fedExFreightBillingContactAndAddress: ContactAndAddress(
+					contact: nil,
+					address: Address(
+						streetLines: UserDefaults.standard.string(forKey: "ltladdress"),
+						city: UserDefaults.standard.string(forKey: "ltlcity"),
+						stateOrProvinceCode: UserDefaults.standard.string(forKey: "ltlstate"),
+						postalCode: UserDefaults.standard.string(forKey: "ltlzip"),
+						urbanizationCode: nil,
+						countryCode: "US",
+						countryName: nil,
+						residential: false
+					)
+				),
+				alternateBilling: nil,
+				role: FreightShipmentRoleType(rawValue: (UserDefaults.standard.integer(forKey: "ltlthirdparty") == 0 ? "SHIPPER" : "CONSIGNEE")),
+				collectTermsType: FreightCollectTermsType.STANDARD,
+				declaredValuePerUnit: nil, //Money?,
+				declaredValueUnits: nil, //String?,
+				liabilityCoverageDetail: nil, //LiabilityCoverageDetail?,
+				coupons: nil, //String?,
+				totalHandlingUnits: nil, //UInt?,
+				clientDiscountPercent: nil, //Decimal?,
+				palletWeight: Weight(units: WeightUnits.LB, value: 100.0),
+				shipmentDimensions: nil, //Dimensions?,
+				comment: nil, //String?,
+				specialServicePayments: nil, //FreightSpecialServicePayment?,
+				hazardousMaterialsOfferor: nil, //String?,
+				lineItems: lineItems.items as! [FreightShipmentLineItem]
 			)
-		)
-		
-		//let fsd = nil //FreightShipmentDetail(
-//			fedExFreightAccountNumber: KeychainManager.queryData(itemKey: "ltlaccount") as? String ?? "",
-//			fedExFreightBillingContactAndAddress: ContactAndAddress(
-//				contact: nil,
-//				address: Address(
-//					streetLines: UserDefaults.standard.string(forKey: "ltladdress"),
-//					city: UserDefaults.standard.string(forKey: "ltlcity"),
-//					stateOrProvinceCode: UserDefaults.standard.string(forKey: "ltlstate"),
-//					postalCode: UserDefaults.standard.string(forKey: "ltlzip"),
-//					urbanizationCode: nil,
-//					countryCode: "US",
-//					countryName: nil,
-//					residential: false
-//				)
-//			),
-//			alternateBilling: nil, //Party?,
-//			role: FreightShipmentRoleType(rawValue: (UserDefaults.standard.integer(forKey: "ltlthirdparty") == 0 ? "SHIPPER" : "CONSIGNEE")),
-//			collectTermsType: FreightCollectTermsType.STANDARD,
-//			declaredValuePerUnit: nil, //Money?,
-//			declaredValueUnits: nil, //String?,
-//			liabilityCoverageDetail: nil, //LiabilityCoverageDetail?,
-//			coupons: nil, //String?,
-//			totalHandlingUnits: nil, //UInt?,
-//			clientDiscountPercent: nil, //Decimal?,
-//			palletWeight: Weight(units: WeightUnits.LB, value: 100.0),
-//			shipmentDimensions: nil, //Dimensions?,
-//			comment: nil, //String?,
-//			specialServicePayments: nil, //FreightSpecialServicePayment?,
-//			hazardousMaterialsOfferor: nil, //String?,
-//			lineItems: FreightShipmentLineItem(
-//				freightClass: FreightClassType.CLASS_050,
-//				packaging: PhysicalPackagingType.PALLET,
-//				pieces: 1,
-//				description: "test",
-//				weight: Weight(units: WeightUnits.LB, value: 100.0),
-//				dimensions: nil, //Dimensions?,
-//				volume: nil //Volume?
-//			)
-//		)
-		
-		let rpli = RequestedPackageLineItem(
-			sequenceNumber: 1,
-			groupNumber: 1,
-			groupPackageCount: 1,
-			variableHandlingChargeDetail: nil,
-			insuredValue: nil,
-			weight: Weight(units: WeightUnits.LB, value: Float(packageWeight.stringValue)!),
-			dimensions: nil,
-			physicalPackaging: PhysicalPackagingType.BOX,
-			itemDescription: nil,
-			itemDescriptionForClearance: nil,
-			customerReferences: nil,
-			specialServicesRequested: nil,
-			contentRecords: nil
-		)
+			
+			rpli = nil
+		} else {
+			rpli = RequestedPackageLineItem(
+				sequenceNumber: 1,
+				groupNumber: 1,
+				groupPackageCount: 1,
+				variableHandlingChargeDetail: nil,
+				insuredValue: nil,
+				weight: Weight(units: WeightUnits.LB, value: Float(packageWeight.stringValue)!),
+				dimensions: nil,
+				physicalPackaging: PhysicalPackagingType.BOX,
+				itemDescription: nil,
+				itemDescriptionForClearance: nil,
+				customerReferences: nil,
+				specialServicesRequested: nil,
+				contentRecords: nil
+			)
+			
+			fsd = nil
+		}
 		
 		let web = RateRequest(
 			webAuthenticationDetail: wad,
@@ -368,15 +364,15 @@ class AppDelegate: NSObject
 				totalInsuredValue: nil,
 				preferredCurrency: nil,
 				shipmentAuthorizationDetail: nil,
-				shipper: shp,
+				shipper: getParty(),
 				recipient: Party(
 					accountNumber: nil,
 					tins: nil,
 					contact: nil,
 					address: Address(
 						streetLines: nil,
-						city: nil,
-						stateOrProvinceCode: nil,
+						city: cityState.city,
+						stateOrProvinceCode: cityState.state,
 						postalCode: recipientZip.stringValue,
 						urbanizationCode: nil,
 						countryCode: "US",
@@ -386,10 +382,13 @@ class AppDelegate: NSObject
 				recipientLocationNumber: nil,
 				origin: nil,
 				soldTo: nil,
-				shippingChargesPayment: nil,
+				shippingChargesPayment: Payment(
+					paymentType: PaymentType.SENDER,
+					payor: Payor(responsibleParty: getParty())
+				),
 				specialServicesRequested: nil,
 				expressFreightDetail: nil,
-				freightShipmentDetail: nil,
+				freightShipmentDetail: fsd,
 				deliveryInstructions: nil,
 				variableHandlingChargeDetail: nil,
 				customsClearanceDetail: nil,
@@ -408,17 +407,71 @@ class AppDelegate: NSObject
 		)
 		
 		//print("\(web)")
-		
 		callDataTask(body: "\(web)")
+	}
+	
+	override func controlTextDidEndEditing(_ obj: Notification) {
+		guard let tf = obj.object as? NSTextField else { return }
+		
+		if tf.identifier == "SenderZipTextField" || tf.identifier == "RecipientZipTextField" {
+			if senderZip.stringValue.characters.count == 5 && recipientZip.stringValue.characters.count == 5 {
+				getCityStateFromUSPS(recipientZip.stringValue)
+			}
+		}
+	}
+	
+	func getCityStateFromUSPS(_ zip: String)
+	{
+		let web = "&XML=<CityStateLookupRequest USERID=\"829TOBEY1118\">" +
+					"<ZipCode ID=\"0\">" +
+					"<Zip5>\(zip)</Zip5>" +
+					"</ZipCode>" +
+					"</CityStateLookupRequest>"
+		
+		let task = URLSession.shared.dataTask(with: getUrlRequest(body: web, url2: "https://secure.shippingapis.com/ShippingAPI.dll?API=CityStateLookup"), completionHandler: completionCallback)
+
+		task.resume()
 	}
 	
 	@IBAction func freightClassPopUp(_ sender: Any) {
 		
 	}
 	
+	func getParty() -> Party
+	{
+		let pfx = (isFreight() ? "ltl" : "")
+		
+		return Party(
+			accountNumber: KeychainManager.queryData(itemKey: "\(pfx)account") as? String ?? "",
+			tins: nil,
+			contact: nil,
+			address: Address(
+				streetLines: UserDefaults.standard.string(forKey: "\(pfx)address"),
+				city: UserDefaults.standard.string(forKey: "\(pfx)city"),
+				stateOrProvinceCode: UserDefaults.standard.string(forKey: "\(pfx)state"),
+				postalCode: UserDefaults.standard.string(forKey: "\(pfx)zip"),
+				urbanizationCode: nil,
+				countryCode: "US",
+				countryName: nil,
+				residential: false
+			)
+		)
+	}
+	
 	func getUrlRequest(body: String) -> URLRequest
 	{
-		var request = URLRequest(url: URL(string: "https://wsbeta.fedex.com:443/web-services/")!)
+		var request = URLRequest(url: URL(string: UserDefaults.standard.string(forKey: "ws-url")!)!)
+		
+		request.httpMethod = "POST"
+		request.cachePolicy = NSURLRequest.CachePolicy.reloadIgnoringCacheData
+		request.httpBody = body.data(using: String.Encoding(rawValue: String.Encoding.utf8.rawValue))
+		
+		return request
+	}
+	
+	func getUrlRequest(body: String, url2: String) -> URLRequest
+	{
+		var request = URLRequest(url: URL(string: url2)!)
 		
 		request.httpMethod = "POST"
 		request.cachePolicy = NSURLRequest.CachePolicy.reloadIgnoringCacheData
@@ -470,6 +523,7 @@ class AppDelegate: NSObject
 			// init parser
 			self.xmlParser = XMLParser(data: data2!)
 			self.xmlParser.delegate = self
+			self.xmlParser.shouldResolveExternalEntities = true;
 			self.xmlParser.parse()
 			
 			print("\(CFAbsoluteTimeGetCurrent() - start)")
@@ -488,6 +542,9 @@ extension AppDelegate: NSApplicationDelegate
 		currentId = nil
 		
 		prefs = SettingsController()
+		
+		senderZip.delegate = self
+		recipientZip.delegate = self
 		
 		lineItemsTable.delegate = self
 		lineItemsTable.dataSource = self
@@ -605,6 +662,14 @@ extension AppDelegate: XMLParserDelegate
 			self.detailsView.becomeFirstResponder()
 			
 			self.progressIndicator.stopAnimation(self)
+			
+			if self.soapStack.items[0].tag == "CityStateLookupResponse" {
+				self.cityState.zip = (self.soapStack.items.filter{ $0.tag == "Zip5" }.first?.value!)!
+				self.cityState.city = (self.soapStack.items.filter{ $0.tag == "City" }.first?.value!)!
+				self.cityState.state = (self.soapStack.items.filter{ $0.tag == "State" }.first?.value)!
+				
+				self.detailsView.tableColumns[0].title = "Name - \(self.cityState.city), \(self.cityState.state)"
+			}
 		})
 	}
 }
