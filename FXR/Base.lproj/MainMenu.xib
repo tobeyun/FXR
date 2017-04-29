@@ -539,7 +539,7 @@
                             <autoresizingMask key="autoresizingMask"/>
                         </tableHeaderView>
                     </scrollView>
-                    <textField identifier="recipientZipTextField" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nRP-kL-8yG">
+                    <textField identifier="RecipientZipTextField" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="nRP-kL-8yG">
                         <rect key="frame" x="111" y="355" width="87" height="22"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="left" placeholderString="recipient zip" drawsBackground="YES" usesSingleLineMode="YES" id="xhk-J7-Okk">
@@ -551,7 +551,7 @@
                             <outlet property="delegate" destination="Voe-Tx-rLC" id="j7c-b8-Plv"/>
                         </connections>
                     </textField>
-                    <textField identifier="weightTextField" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VC9-gk-pmd">
+                    <textField identifier="WeightTextField" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VC9-gk-pmd">
                         <rect key="frame" x="206" y="355" width="53" height="22"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="left" placeholderString="weight" drawsBackground="YES" usesSingleLineMode="YES" id="wkW-1b-7ry">
@@ -563,7 +563,7 @@
                             <outlet property="delegate" destination="Voe-Tx-rLC" id="FbJ-k7-KJl"/>
                         </connections>
                     </textField>
-                    <textField identifier="senderZipTextField" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9oL-p6-r3N">
+                    <textField identifier="SenderZipTextField" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="9oL-p6-r3N">
                         <rect key="frame" x="20" y="355" width="83" height="22"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="left" placeholderString="sender zip" drawsBackground="YES" usesSingleLineMode="YES" id="Zs6-z6-Ppe">
