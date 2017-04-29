@@ -173,6 +173,14 @@ class AppDelegate: NSObject
 		})
 	}
 	
+	@IBAction func deleteLineItem(_ sender: Any) {
+		guard lineItemsTable.selectedRow >= 0 else { return }
+
+		lineItems.items.remove(at: lineItemsTable.selectedRow)
+		
+		lineItemsTable.reloadData()
+	}
+	
 	@IBAction func addFreightLineItemButton(_ sender: Any) {
 		lineItems.items.append(FreightShipmentLineItem(
 			freightClass: FreightClassType(rawValue: freightClassPopUp.titleOfSelectedItem!),
@@ -184,11 +192,11 @@ class AppDelegate: NSObject
 				length: UInt(freightItemLength.stringValue) ?? 0,
 				width: UInt(freightItemWidth.stringValue) ?? 0,
 				height: UInt(freightItemHeight.stringValue) ?? 0,
-				units: LinearUnits(rawValue: linearUnitsPopUp.titleOfSelectedItem)!
+				units: LinearUnits(rawValue: linearUnitsPopUp.titleOfSelectedItem)
 			),
-			volume: Volume(units: VolumeUnits.CUBIC_FT, value: Float(freightVolume.stringValue) ?? 0)
-			)
+			volume: Volume(units: VolumeUnits.CUBIC_FT, value: Float(freightVolume.stringValue) ?? 0))
 		)
+		
 		
 		DispatchQueue.main.async(execute: { () -> Void in
 			self.lineItemsTable.reloadData()
@@ -712,7 +720,8 @@ extension AppDelegate: NSTableViewDelegate
 		return nil
 	}
 	
-	func tableViewDoubleClick(_ sender:AnyObject) {
+	func tableViewDoubleClick(_ sender: AnyObject)
+	{
 		guard lineItemsTable.selectedRow >= 0,
 			let item = lineItems.items[lineItemsTable.selectedRow] as? FreightShipmentLineItem else {
 			
