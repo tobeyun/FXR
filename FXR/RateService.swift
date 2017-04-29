@@ -2911,7 +2911,7 @@ struct Dimensions : CustomStringConvertible
 	
 	var description: String { return "\(length())\(width())\(height())\(units())" }
 	
-	init(length: UInt, width: UInt, height: UInt, units: LinearUnits)
+	init(length: UInt?, width: UInt?, height: UInt?, units: LinearUnits?)
 	{
 		_length = length
 		_width = width
