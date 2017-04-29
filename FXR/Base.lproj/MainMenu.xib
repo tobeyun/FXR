@@ -188,9 +188,12 @@
                                 </connections>
                             </menuItem>
                             <menuItem title="Delete" id="uRz-4n-M8U">
+                                <string key="keyEquivalent" base64-UTF8="YES">
+CA
+</string>
                                 <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
-                                    <action selector="delete:" target="-1" id="y2R-mc-9qf"/>
+                                    <action selector="deleteLineItem:" target="Voe-Tx-rLC" id="kz3-BF-fnI"/>
                                 </connections>
                             </menuItem>
                             <menuItem title="Select All" keyEquivalent="a" id="K6r-HM-UYC">
