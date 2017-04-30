@@ -830,20 +830,8 @@ DQ
                             <action selector="addFreightLineItemButton:" target="Voe-Tx-rLC" id="q6A-x2-AEP"/>
                         </connections>
                     </button>
-                    <box horizontalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="C06-xw-YW8">
-                        <rect key="frame" x="187" y="212" width="5" height="22"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    </box>
-                    <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="ZV3-CO-kkE">
-                        <rect key="frame" x="67" y="269" width="401" height="5"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    </box>
-                    <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="gn2-sW-Abo">
-                        <rect key="frame" x="67" y="340" width="401" height="5"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    </box>
                     <textField identifier="TrackingNumber" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xwN-Vi-UEE">
-                        <rect key="frame" x="476" y="354" width="226" height="22"/>
+                        <rect key="frame" x="476" y="354" width="256" height="22"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="tracking number" drawsBackground="YES" id="j4I-zO-vFL">
                             <font key="font" metaFont="system"/>
@@ -855,7 +843,7 @@ DQ
                         </connections>
                     </textField>
                     <button identifier="TrackButton" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="Tx2-DT-jb7">
-                        <rect key="frame" x="755" y="348" width="81" height="32"/>
+                        <rect key="frame" x="734" y="348" width="102" height="32"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="push" title="track" bezelStyle="rounded" alignment="center" borderStyle="border" imageScaling="proportionallyDown" inset="2" id="Y7k-77-hlg">
                             <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
@@ -865,14 +853,14 @@ DQ
                             <action selector="quickTrack:" target="Voe-Tx-rLC" id="fMf-r6-O3v"/>
                         </connections>
                     </button>
-                    <button identifier="AddTrackButton" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="zWJ-aK-iTy">
-                        <rect key="frame" x="710" y="355" width="43" height="17"/>
+                    <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="wk4-6h-a8y">
+                        <rect key="frame" x="67" y="340" width="401" height="5"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <buttonCell key="cell" type="inline" title="add" bezelStyle="inline" alignment="center" borderStyle="border" inset="2" id="pfB-TW-VnU">
-                            <behavior key="behavior" pushIn="YES" lightByBackground="YES" lightByGray="YES"/>
-                            <font key="font" metaFont="smallSystemBold"/>
-                        </buttonCell>
-                    </button>
+                    </box>
+                    <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="T3B-Md-YS5">
+                        <rect key="frame" x="66" y="269" width="401" height="5"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    </box>
                 </subviews>
             </view>
             <point key="canvasLocation" x="324" y="179.5"/>
