@@ -278,7 +278,7 @@ class AppDelegate: NSObject
 	}
 	
 	@IBAction func addTrackLineItem(_ sender: Any) {
-		//lineItems.items.append()
+		lineItems.items.append(trackingNumber.stringValue)
 		
 		DispatchQueue.main.async(execute: { () -> Void in
 			self.lineItemsTable.reloadData()
@@ -760,6 +760,13 @@ extension AppDelegate: NSOutlineViewDelegate
 			
 			if (soapElement.tag == "Notifications") {
 				return soapStack.items.filter{ $0.parent == soapElement.id && $0.tag == "Message" }.last?.value
+			}
+			
+			if (soapElement.tag == "CompletedTrackDetails") {
+				outlineView.selectRowIndexes(IndexSet(integer: 5), byExtendingSelection: false)
+				outlineView.expandItem(item)
+		
+				return drillDown(parent: soapElement, path: "TrackDetails|StatusDetail|Description")?.value
 			}
 			
 			return soapElement.value
