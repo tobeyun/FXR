@@ -30,7 +30,6 @@
                 <outlet property="linearUnitsPopUp" destination="EGn-5i-tbY" id="thV-RJ-d8l"/>
                 <outlet property="packageWeight" destination="VC9-gk-pmd" id="MWS-fL-LJJ"/>
                 <outlet property="progressIndicator" destination="Vev-8s-cMk" id="c0c-aQ-VjJ"/>
-                <outlet property="rateButton" destination="dpZ-ID-co7" id="O3Y-YD-lsM"/>
                 <outlet property="recipientZip" destination="nRP-kL-8yG" id="RBR-AF-LOY"/>
                 <outlet property="residentialCheck" destination="RUi-3A-Rdc" id="NiG-PQ-M9S"/>
                 <outlet property="senderZip" destination="9oL-p6-r3N" id="tNa-n5-FS9"/>
