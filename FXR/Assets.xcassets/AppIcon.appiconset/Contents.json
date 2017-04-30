@@ -9,7 +9,7 @@
     {
       "size" : "16x16",
       "idiom" : "mac",
-      "filename" : "Deliver Food_32-1.png",
+      "filename" : "Deliver Food_16x2.png",
       "scale" : "2x"
     },
     {
@@ -21,7 +21,7 @@
     {
       "size" : "32x32",
       "idiom" : "mac",
-      "filename" : "Deliver Food_64.png",
+      "filename" : "Deliver Food_32x2.png",
       "scale" : "2x"
     },
     {
@@ -33,7 +33,7 @@
     {
       "size" : "128x128",
       "idiom" : "mac",
-      "filename" : "Deliver Food_256-1.png",
+      "filename" : "Deliver Food_128x2.png",
       "scale" : "2x"
     },
     {
@@ -45,7 +45,7 @@
     {
       "size" : "256x256",
       "idiom" : "mac",
-      "filename" : "Deliver Food_512-1.png",
+      "filename" : "Deliver Food_256x2.png",
       "scale" : "2x"
     },
     {
