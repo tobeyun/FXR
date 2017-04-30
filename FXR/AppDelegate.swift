@@ -141,8 +141,8 @@ class AppDelegate: NSObject
 	@IBOutlet weak var recipientZip: NSTextField!
 	@IBOutlet weak var packageWeight: NSTextField!
 	@IBOutlet weak var httpResponseLabel: NSTextField!
+	@IBOutlet weak var trackingNumber: NSTextField!
 	@IBOutlet weak var detailsView: NSOutlineView!
-	@IBOutlet weak var rateButton: NSButton!
 	@IBOutlet weak var freightClassPopUp: NSPopUpButton!
 	@IBOutlet weak var freightPkgTypePopUp: NSPopUpButton!
 	@IBOutlet weak var freightDescription: NSTextField!
@@ -238,43 +238,53 @@ class AppDelegate: NSObject
 	
 	@IBAction func quickTrack(_ sender: Any)
 	{
-//		let soapMessage = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:v12=\"http://fedex.com/ws/track/v12\"><soapenv:Header> </soapenv:Header>" +
-//			"<soapenv:Body>" +
-//			"<v12:TrackRequest>" +
-//			"<v12:WebAuthenticationDetail>" +
-//			"<v12:UserCredential>" +
-//			"<v12:Key>ATjhnRZwKmclwko3</v12:Key>" +
-//			"<v12:Password>yrsrYK0DeXj6RbbKrn51p8f8O</v12:Password>" +
-//			"</v12:UserCredential>" +
-//			"</v12:WebAuthenticationDetail>" +
-//			"<v12:ClientDetail>" +
-//			"<v12:AccountNumber>510087100</v12:AccountNumber>" +
-//			"<v12:MeterNumber>118784833</v12:MeterNumber>" +
-//			"<v12:Localization>" +
-//			"<v12:LanguageCode>EN</v12:LanguageCode>" +
-//			"<v12:LocaleCode>us</v12:LocaleCode>" +
-//			"</v12:Localization>" +
-//			"</v12:ClientDetail>" +
-//			"<v12:TransactionDetail>" +
-//			"<v12:CustomerTransactionId>Track By Number_v12</v12:CustomerTransactionId>" +
-//			"</v12:TransactionDetail>" +
-//			"<v12:Version>" +
-//			"<v12:ServiceId>trck</v12:ServiceId>" +
-//			"<v12:Major>12</v12:Major>" +
-//			"<v12:Intermediate>0</v12:Intermediate>" +
-//			"<v12:Minor>0</v12:Minor>" +
-//			"</v12:Version>" +
-//			"<v12:SelectionDetails>" +
-//			"<v12:PackageIdentifier>" +
-//			"<v12:Type>TRACKING_NUMBER_OR_DOORTAG</v12:Type>" +
-//			"<v12:Value>715976975942</v12:Value>" +
-//			"</v12:PackageIdentifier>" +
-//			"</v12:SelectionDetails>" +
-//			"</v12:TrackRequest>" +
-//			"</soapenv:Body>" +
-//		"</soapenv:Envelope>"
-//		
-//		callDataTask(body: soapMessage)
+		let soapMessage = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:v12=\"http://fedex.com/ws/track/v12\"><soapenv:Header> </soapenv:Header>" +
+			"<soapenv:Body>" +
+			"<v12:TrackRequest>" +
+			"<v12:WebAuthenticationDetail>" +
+			"<v12:UserCredential>" +
+			"<v12:Key>\(KeychainManager.queryData(itemKey: "key") as? String ?? "")</v12:Key>" +
+			"<v12:Password>\(KeychainManager.queryData(itemKey: "password") as? String ?? "")</v12:Password>" +
+			"</v12:UserCredential>" +
+			"</v12:WebAuthenticationDetail>" +
+			"<v12:ClientDetail>" +
+			"<v12:AccountNumber>\(KeychainManager.queryData(itemKey: "account") as? String ?? "")</v12:AccountNumber>" +
+			"<v12:MeterNumber>\(KeychainManager.queryData(itemKey: "meter") as? String ?? "")</v12:MeterNumber>" +
+			"<v12:Localization>" +
+			"<v12:LanguageCode>EN</v12:LanguageCode>" +
+			"<v12:LocaleCode>us</v12:LocaleCode>" +
+			"</v12:Localization>" +
+			"</v12:ClientDetail>" +
+			"<v12:TransactionDetail>" +
+			"<v12:CustomerTransactionId>Track By Number_v12</v12:CustomerTransactionId>" +
+			"</v12:TransactionDetail>" +
+			"<v12:Version>" +
+			"<v12:ServiceId>trck</v12:ServiceId>" +
+			"<v12:Major>12</v12:Major>" +
+			"<v12:Intermediate>0</v12:Intermediate>" +
+			"<v12:Minor>0</v12:Minor>" +
+			"</v12:Version>" +
+			"<v12:SelectionDetails>" +
+			"<v12:PackageIdentifier>" +
+			"<v12:Type>TRACKING_NUMBER_OR_DOORTAG</v12:Type>" +
+			"<v12:Value>\(trackingNumber.stringValue)</v12:Value>" +
+			"</v12:PackageIdentifier>" +
+			"</v12:SelectionDetails>" +
+			"</v12:TrackRequest>" +
+			"</soapenv:Body>" +
+		"</soapenv:Envelope>"
+		
+		callDataTask(body: soapMessage)
+	}
+	
+	@IBAction func addTrackLineItem(_ sender: Any) {
+		//lineItems.items.append()
+		
+		DispatchQueue.main.async(execute: { () -> Void in
+			self.lineItemsTable.reloadData()
+			
+			self.trackingNumber.stringValue = ""
+		})
 	}
 	
 	@IBAction func quickRate(_ sender: Any)
