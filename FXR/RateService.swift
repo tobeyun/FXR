@@ -1182,11 +1182,11 @@ struct FreightShipmentDetail : CustomStringConvertible
 	fileprivate let _comment: String?
 	fileprivate let _specialServicePayments: FreightSpecialServicePayment?
 	fileprivate let _hazardousMaterialsOfferor: String?
-	fileprivate let _lineItems: FreightShipmentLineItem?
+	fileprivate let _lineItems: [FreightShipmentLineItem]
 	
 	var description: String { return "\(fedExFreightAccountNumber())\(fedExFreightBillingContactAndAddress())\(alternateBilling())\(role())\(collectTermsType())\(declaredValuePerUnit())\(declaredValueUnits())\(liabilityCoverageDetail())\(coupons())\(totalHandlingUnits())\(clientDiscountPercent())\(palletWeight())\(shipmentDimensions())\(comment())\(specialServicePayments())\(hazardousMaterialsOfferor())\(lineItems())" }
 	
-	init(fedExFreightAccountNumber: String?, fedExFreightBillingContactAndAddress: ContactAndAddress?, alternateBilling: Party?, role: FreightShipmentRoleType?, collectTermsType: FreightCollectTermsType?, declaredValuePerUnit: Money?, declaredValueUnits: String?, liabilityCoverageDetail: LiabilityCoverageDetail?, coupons: String?, totalHandlingUnits: UInt?, clientDiscountPercent: Decimal?, palletWeight: Weight?, shipmentDimensions: Dimensions?, comment: String?, specialServicePayments: FreightSpecialServicePayment?, hazardousMaterialsOfferor: String?, lineItems: FreightShipmentLineItem?)
+	init(fedExFreightAccountNumber: String?, fedExFreightBillingContactAndAddress: ContactAndAddress?, alternateBilling: Party?, role: FreightShipmentRoleType?, collectTermsType: FreightCollectTermsType?, declaredValuePerUnit: Money?, declaredValueUnits: String?, liabilityCoverageDetail: LiabilityCoverageDetail?, coupons: String?, totalHandlingUnits: UInt?, clientDiscountPercent: Decimal?, palletWeight: Weight?, shipmentDimensions: Dimensions?, comment: String?, specialServicePayments: FreightSpecialServicePayment?, hazardousMaterialsOfferor: String?, lineItems: [FreightShipmentLineItem])
 	{
 		_fedExFreightAccountNumber = fedExFreightAccountNumber
 		_fedExFreightBillingContactAndAddress = fedExFreightBillingContactAndAddress
@@ -1223,7 +1223,7 @@ struct FreightShipmentDetail : CustomStringConvertible
 	func comment() -> String { return (_comment == nil ? "" : "<Comment>\(_comment!)</Comment>") }
 	func specialServicePayments() -> String { return (_specialServicePayments == nil ? "" : "<SpecialServicePayments>\(_specialServicePayments!)</SpecialServicePayments>") }
 	func hazardousMaterialsOfferor() -> String { return (_hazardousMaterialsOfferor == nil ? "" : "<HazardousMaterialsOfferor>\(_hazardousMaterialsOfferor!)</HazardousMaterialsOfferor>") }
-	func lineItems() -> String { return (_lineItems == nil ? "" : "<LineItems>\(_lineItems!)</LineItems>") }
+	func lineItems() -> String { return "\((_lineItems.map{ "<LineItems>\($0)</LineItems>" } as [String]).joined())" }
 }
 
 struct LiabilityCoverageDetail : CustomStringConvertible
@@ -1262,13 +1262,13 @@ struct FreightSpecialServicePayment : CustomStringConvertible
 
 struct FreightShipmentLineItem : CustomStringConvertible
 {
-	fileprivate let _freightClass: FreightClassType?
-	fileprivate let _packaging: PhysicalPackagingType?
-	fileprivate let _pieces: UInt?
-	fileprivate let _description: String?
-	fileprivate let _weight: Weight?
-	fileprivate let _dimensions: Dimensions?
-	fileprivate let _volume: Volume?
+	let _freightClass: FreightClassType?
+	let _packaging: PhysicalPackagingType?
+	let _pieces: UInt?
+	let _description: String?
+	let _weight: Weight?
+	let _dimensions: Dimensions?
+	let _volume: Volume?
 	
 	var description: String { return "\(freightClass())\(packaging())\(pieces())\(description_())\(weight())\(dimensions())\(volume())" }
 	
@@ -1283,23 +1283,23 @@ struct FreightShipmentLineItem : CustomStringConvertible
 		_volume = volume
 	}
 	
-	func freightClass() -> String { return (_freightClass == nil ? "" : "<FreightClass>\(_freightClass!)</FreightClass>") }
-	func packaging() -> String { return (_packaging == nil ? "" : "<Packaging>\(_packaging!)</Packaging>") }
-	func pieces() -> String { return (_pieces == nil ? "" : "<Pieces>\(_pieces!)</Pieces>") }
-	func description_() -> String { return (_description == nil ? "" : "<Description>\(_description!)</Description>") }
-	func weight() -> String { return (_weight == nil ? "" : "<Weight>\(_weight!)</Weight>") }
-	func dimensions() -> String { return (_dimensions == nil ? "" : "<Dimensions>\(_dimensions!)</Dimensions>") }
-	func volume() -> String { return (_volume == nil ? "" : "<Volume>\(_volume!)</Volume>") }
+	fileprivate func freightClass() -> String { return (_freightClass == nil ? "" : "<FreightClass>\(_freightClass!)</FreightClass>") }
+	fileprivate func packaging() -> String { return (_packaging == nil ? "" : "<Packaging>\(_packaging!)</Packaging>") }
+	fileprivate func pieces() -> String { return (_pieces == nil ? "" : "<Pieces>\(_pieces!)</Pieces>") }
+	fileprivate func description_() -> String { return (_description == nil ? "" : "<Description>\(_description!)</Description>") }
+	fileprivate func weight() -> String { return (_weight == nil ? "" : "<Weight>\(_weight!)</Weight>") }
+	fileprivate func dimensions() -> String { return (_dimensions == nil ? "" : "<Dimensions>\(_dimensions!)</Dimensions>") }
+	fileprivate func volume() -> String { return (_volume == nil ? "" : "<Volume>\(_volume!)</Volume>") }
 }
 
 struct Volume : CustomStringConvertible
 {
 	fileprivate let _units: VolumeUnits?
-	fileprivate let _value: Decimal?
+	fileprivate let _value: Float?
 	
 	var description: String { return "\(units())\(value())" }
 	
-	init(units: VolumeUnits, value: Decimal)
+	init(units: VolumeUnits?, value: Float?)
 	{
 		_units = units
 		_value = value
@@ -2911,7 +2911,7 @@ struct Dimensions : CustomStringConvertible
 	
 	var description: String { return "\(length())\(width())\(height())\(units())" }
 	
-	init(length: UInt, width: UInt, height: UInt, units: LinearUnits)
+	init(length: UInt?, width: UInt?, height: UInt?, units: LinearUnits?)
 	{
 		_length = length
 		_width = width

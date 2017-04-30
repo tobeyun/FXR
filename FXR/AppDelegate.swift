@@ -120,6 +120,16 @@ extension String {
 	}
 }
 
+extension AppDelegate {
+	func isFreight() -> Bool {
+		guard let _ = lineItems.items as? [FreightShipmentLineItem] else {
+			return false
+		}
+	
+		return true
+	}
+}
+
 @NSApplicationMain
 class AppDelegate: NSObject
 {
@@ -133,13 +143,27 @@ class AppDelegate: NSObject
 	@IBOutlet weak var httpResponseLabel: NSTextField!
 	@IBOutlet weak var detailsView: NSOutlineView!
 	@IBOutlet weak var rateButton: NSButton!
+	@IBOutlet weak var freightClassPopUp: NSPopUpButton!
+	@IBOutlet weak var freightPkgTypePopUp: NSPopUpButton!
+	@IBOutlet weak var freightDescription: NSTextField!
+	@IBOutlet weak var freightQuantity: NSTextField!
+	@IBOutlet weak var freightVolume: NSTextField!
+	@IBOutlet weak var residentialCheck: NSButton!
+	@IBOutlet weak var lineItemsTable: NSTableView!
+	@IBOutlet weak var linearUnitsPopUp: NSPopUpButton!
+	@IBOutlet weak var freightItemWeight: NSTextField!
+	@IBOutlet weak var freightItemLength: NSTextField!
+	@IBOutlet weak var freightItemWidth: NSTextField!
+	@IBOutlet weak var freightItemHeight: NSTextField!
 	
-	//var rateRequest: RateRequest
+	// local vars
+	var cityState = (city: "", state: "", zip: "")
 	var xmlParser = XMLParser()
 	var pathStack = Stack<String>()
 	var soapStack = Stack<SoapElement>()
 	var parentStack = Stack<SoapElement>()
 	var currentId: Int? = nil
+	var lineItems = Stack<Any>()
 	
 	var prefs: SettingsController? = nil
 	
@@ -149,18 +173,67 @@ class AppDelegate: NSObject
 		})
 	}
 	
+	@IBAction func deleteLineItem(_ sender: Any) {
+		guard lineItemsTable.selectedRow >= 0 else { return }
+
+		lineItems.items.remove(at: lineItemsTable.selectedRow)
+		
+		lineItemsTable.reloadData()
+	}
+	
+	@IBAction func addFreightLineItemButton(_ sender: Any) {
+		lineItems.items.append(FreightShipmentLineItem(
+			freightClass: FreightClassType(rawValue: freightClassPopUp.titleOfSelectedItem!),
+			packaging: PhysicalPackagingType(rawValue: freightPkgTypePopUp.titleOfSelectedItem!),
+			pieces: UInt(freightQuantity.stringValue) ?? 0,
+			description: freightDescription.stringValue,
+			weight: Weight(units: WeightUnits.LB, value: Float(freightItemWeight.stringValue) ?? 0),
+			dimensions: Dimensions(
+				length: UInt(freightItemLength.stringValue) ?? 0,
+				width: UInt(freightItemWidth.stringValue) ?? 0,
+				height: UInt(freightItemHeight.stringValue) ?? 0,
+				units: LinearUnits(rawValue: linearUnitsPopUp.titleOfSelectedItem)
+			),
+			volume: Volume(units: VolumeUnits.CUBIC_FT, value: Float(freightVolume.stringValue) ?? 0))
+		)
+		
+		
+		DispatchQueue.main.async(execute: { () -> Void in
+			self.lineItemsTable.reloadData()
+			
+			self.freightClassPopUp.selectItem(at: 0)
+			self.freightPkgTypePopUp.selectItem(at: 0)
+			self.freightDescription.stringValue = ""
+			self.freightQuantity.stringValue = ""
+			self.freightVolume.stringValue = ""
+			self.freightItemWeight.stringValue = ""
+			self.freightItemWidth.stringValue = ""
+			self.freightItemHeight.stringValue = ""
+			self.freightItemLength.stringValue = ""
+			self.linearUnitsPopUp.selectItem(at: 0)
+		})
+	}
+	
 	@IBAction func freightDisclosure(_ sender: NSButton) {
 		var windowFrame = window.frame
 		
+//		outlineViewTopConstraint.isActive = (sender.state == 0)
+//		lineItemTableBottomConstraint.isActive = (sender.state == 1)
+		
+		let toAdd = CGFloat(100) * ((sender.state == 1) ? 1 : -1)
+		
 		let oldWidth = windowFrame.size.width
 		let oldHeight = windowFrame.size.height
-		let toAdd = CGFloat(100)
-		let newWidth = oldWidth + toAdd
+		
+		let newWidth = oldWidth // + toAdd
 		let newHeight = oldHeight + toAdd
 		
 		windowFrame.size = NSMakeSize(newWidth, newHeight)
+		windowFrame.origin.y -= toAdd
 		
-		window.setFrame(windowFrame, display: true)
+		window.setFrame(windowFrame, display: true, animate: true)
+		
+		//outlineViewTopConstraint.animator().constant += toAdd
 	}
 	
 	@IBAction func quickTrack(_ sender: Any)
@@ -206,30 +279,91 @@ class AppDelegate: NSObject
 	
 	@IBAction func quickRate(_ sender: Any)
 	{
+		let rpli: RequestedPackageLineItem?
+		let fsd: FreightShipmentDetail?
+		
 		if (senderZip.stringValue == "" || recipientZip.stringValue == "" || packageWeight.stringValue == "") {
 			return
 		}
 		
+		let wad = WebAuthenticationDetail(
+			parentCredential: nil,
+			userCredential: WebAuthenticationCredential(
+				key: KeychainManager.queryData(itemKey: "key") as? String ?? "",
+				password: KeychainManager.queryData(itemKey: "password") as? String ?? "")
+		)
+		
+		let cd = ClientDetail(
+			accountNumber: KeychainManager.queryData(itemKey: "account") as? String ?? "",
+			meterNumber: KeychainManager.queryData(itemKey: "meter") as? String ?? "",
+			integratorId: nil,
+			region: nil,
+			localization: nil)
+		
+		if isFreight() {
+			fsd = FreightShipmentDetail(
+				fedExFreightAccountNumber: KeychainManager.queryData(itemKey: "ltlaccount") as? String ?? "",
+				fedExFreightBillingContactAndAddress: ContactAndAddress(
+					contact: nil,
+					address: Address(
+						streetLines: UserDefaults.standard.string(forKey: "ltladdress"),
+						city: UserDefaults.standard.string(forKey: "ltlcity"),
+						stateOrProvinceCode: UserDefaults.standard.string(forKey: "ltlstate"),
+						postalCode: UserDefaults.standard.string(forKey: "ltlzip"),
+						urbanizationCode: nil,
+						countryCode: "US",
+						countryName: nil,
+						residential: false
+					)
+				),
+				alternateBilling: nil,
+				role: FreightShipmentRoleType(rawValue: (UserDefaults.standard.integer(forKey: "ltlthirdparty") == 0 ? "SHIPPER" : "CONSIGNEE")),
+				collectTermsType: FreightCollectTermsType.STANDARD,
+				declaredValuePerUnit: nil, //Money?,
+				declaredValueUnits: nil, //String?,
+				liabilityCoverageDetail: nil, //LiabilityCoverageDetail?,
+				coupons: nil, //String?,
+				totalHandlingUnits: nil, //UInt?,
+				clientDiscountPercent: nil, //Decimal?,
+				palletWeight: Weight(units: WeightUnits.LB, value: 100.0),
+				shipmentDimensions: nil, //Dimensions?,
+				comment: nil, //String?,
+				specialServicePayments: nil, //FreightSpecialServicePayment?,
+				hazardousMaterialsOfferor: nil, //String?,
+				lineItems: lineItems.items as! [FreightShipmentLineItem]
+			)
+			
+			rpli = nil
+		} else {
+			rpli = RequestedPackageLineItem(
+				sequenceNumber: 1,
+				groupNumber: 1,
+				groupPackageCount: 1,
+				variableHandlingChargeDetail: nil,
+				insuredValue: nil,
+				weight: Weight(units: WeightUnits.LB, value: Float(packageWeight.stringValue)!),
+				dimensions: nil,
+				physicalPackaging: PhysicalPackagingType.BOX,
+				itemDescription: nil,
+				itemDescriptionForClearance: nil,
+				customerReferences: nil,
+				specialServicesRequested: nil,
+				contentRecords: nil
+			)
+			
+			fsd = nil
+		}
+		
 		let web = RateRequest(
-			webAuthenticationDetail: WebAuthenticationDetail(
-				parentCredential: nil,
-				userCredential: WebAuthenticationCredential(
-					key: KeychainManager.queryData(itemKey: "key") as? String ?? "",
-					password: KeychainManager.queryData(itemKey: "password") as? String ?? "")
-			),
-			clientDetail: ClientDetail(
-				accountNumber: KeychainManager.queryData(itemKey: "account") as? String ?? "",
-				meterNumber: KeychainManager.queryData(itemKey: "meter") as? String ?? "",
-				integratorId: nil,
-				region: nil,
-				localization: nil),
+			webAuthenticationDetail: wad,
+			clientDetail: cd,
 			transactionDetail: TransactionDetail(customerTransactionId: "FXR TEST", localization: nil),
 			returnTransAndCommit: true,
 			carrierCodes: nil,
 			variableOptions: nil,
 			consolidationKey: nil,
 			requestedShipment: RequestedShipment(
-				shipTimestamp: Date().addingTimeInterval(86400),
+				shipTimestamp: Date(), //.addingTimeInterval(86400),
 				dropoffType: DropoffType.REGULAR_PICKUP,
 				serviceType: nil, //ServiceType.GROUND_HOME_DELIVERY,
 				packagingType: PackagingType.YOUR_PACKAGING,
@@ -238,42 +372,31 @@ class AppDelegate: NSObject
 				totalInsuredValue: nil,
 				preferredCurrency: nil,
 				shipmentAuthorizationDetail: nil,
-				shipper: Party(
-					accountNumber: nil,
-					tins: nil,
-					contact: nil,
-					address: Address(
-						streetLines: nil,
-						city: nil,
-						stateOrProvinceCode: nil,
-						postalCode: senderZip.stringValue,
-						urbanizationCode: nil,
-						countryCode: "US",
-						countryName: nil,
-						residential: false
-					)
-				),
+				shipper: getParty(),
 				recipient: Party(
 					accountNumber: nil,
 					tins: nil,
 					contact: nil,
 					address: Address(
 						streetLines: nil,
-						city: nil,
-						stateOrProvinceCode: nil,
+						city: cityState.city,
+						stateOrProvinceCode: cityState.state,
 						postalCode: recipientZip.stringValue,
 						urbanizationCode: nil,
 						countryCode: "US",
 						countryName: nil,
-						residential: false)
+						residential: residentialCheck.state == 1)
 				),
 				recipientLocationNumber: nil,
 				origin: nil,
 				soldTo: nil,
-				shippingChargesPayment: nil,
+				shippingChargesPayment: Payment(
+					paymentType: PaymentType.SENDER,
+					payor: Payor(responsibleParty: getParty())
+				),
 				specialServicesRequested: nil,
 				expressFreightDetail: nil,
-				freightShipmentDetail: nil,
+				freightShipmentDetail: fsd,
 				deliveryInstructions: nil,
 				variableHandlingChargeDetail: nil,
 				customsClearanceDetail: nil,
@@ -287,32 +410,76 @@ class AppDelegate: NSObject
 				packageCount: 1,
 				shipmentOnlyFields: ShipmentOnlyFieldsType.WEIGHT,
 				configurationData: nil,
-				requestedPackageLineItems: RequestedPackageLineItem(
-					sequenceNumber: 1,
-					groupNumber: 1,
-					groupPackageCount: 1,
-					variableHandlingChargeDetail: nil,
-					insuredValue: nil,
-					weight: Weight(units: WeightUnits.LB, value: 20.0),
-					dimensions: nil,
-					physicalPackaging: PhysicalPackagingType.BOX,
-					itemDescription: nil,
-					itemDescriptionForClearance: nil,
-					customerReferences: nil,
-					specialServicesRequested: nil,
-					contentRecords: nil
-				)
+				requestedPackageLineItems: rpli
 			)
 		)
 		
 		//print("\(web)")
-		
 		callDataTask(body: "\(web)")
+	}
+	
+	override func controlTextDidEndEditing(_ obj: Notification) {
+		guard let tf = obj.object as? NSTextField else { return }
+		
+		if tf.identifier == "SenderZipTextField" || tf.identifier == "RecipientZipTextField" {
+			if senderZip.stringValue.characters.count == 5 && recipientZip.stringValue.characters.count == 5 {
+				getCityStateFromUSPS(recipientZip.stringValue)
+			}
+		}
+	}
+	
+	func getCityStateFromUSPS(_ zip: String)
+	{
+		let web = "&XML=<CityStateLookupRequest USERID=\"829TOBEY1118\">" +
+					"<ZipCode ID=\"0\">" +
+					"<Zip5>\(zip)</Zip5>" +
+					"</ZipCode>" +
+					"</CityStateLookupRequest>"
+		
+		let task = URLSession.shared.dataTask(with: getUrlRequest(body: web, url2: "https://secure.shippingapis.com/ShippingAPI.dll?API=CityStateLookup"), completionHandler: completionCallback)
+
+		task.resume()
+	}
+	
+	@IBAction func freightClassPopUp(_ sender: Any) {
+		
+	}
+	
+	func getParty() -> Party
+	{
+		let pfx = (isFreight() ? "ltl" : "")
+		
+		return Party(
+			accountNumber: KeychainManager.queryData(itemKey: "\(pfx)account") as? String ?? "",
+			tins: nil,
+			contact: nil,
+			address: Address(
+				streetLines: UserDefaults.standard.string(forKey: "\(pfx)address"),
+				city: UserDefaults.standard.string(forKey: "\(pfx)city"),
+				stateOrProvinceCode: UserDefaults.standard.string(forKey: "\(pfx)state"),
+				postalCode: UserDefaults.standard.string(forKey: "\(pfx)zip"),
+				urbanizationCode: nil,
+				countryCode: "US",
+				countryName: nil,
+				residential: false
+			)
+		)
 	}
 	
 	func getUrlRequest(body: String) -> URLRequest
 	{
-		var request = URLRequest(url: URL(string: "https://wsbeta.fedex.com:443/web-services/")!)
+		var request = URLRequest(url: URL(string: UserDefaults.standard.string(forKey: "ws-url")!)!)
+		
+		request.httpMethod = "POST"
+		request.cachePolicy = NSURLRequest.CachePolicy.reloadIgnoringCacheData
+		request.httpBody = body.data(using: String.Encoding(rawValue: String.Encoding.utf8.rawValue))
+		
+		return request
+	}
+	
+	func getUrlRequest(body: String, url2: String) -> URLRequest
+	{
+		var request = URLRequest(url: URL(string: url2)!)
 		
 		request.httpMethod = "POST"
 		request.cachePolicy = NSURLRequest.CachePolicy.reloadIgnoringCacheData
@@ -364,6 +531,7 @@ class AppDelegate: NSObject
 			// init parser
 			self.xmlParser = XMLParser(data: data2!)
 			self.xmlParser.delegate = self
+			self.xmlParser.shouldResolveExternalEntities = true;
 			self.xmlParser.parse()
 			
 			print("\(CFAbsoluteTimeGetCurrent() - start)")
@@ -383,13 +551,26 @@ extension AppDelegate: NSApplicationDelegate
 		
 		prefs = SettingsController()
 		
-		detailsTable.delegate = self
-		detailsTable.dataSource = self
-		detailsTable.reloadData()
+		senderZip.delegate = self
+		recipientZip.delegate = self
+		
+		lineItemsTable.delegate = self
+		lineItemsTable.dataSource = self
+		lineItemsTable.target = self
+		lineItemsTable.reloadData()
+		lineItemsTable.doubleAction = #selector(tableViewDoubleClick(_:))
 		
 		detailsView.delegate = self
 		detailsView.dataSource = self
 		detailsView.reloadData()
+		
+//		freightClassType.delegate = self
+//		freightClassType.dataSource = self
+//		freightClassType.reloadData()
+		
+		freightClassPopUp.addItems(withTitles: FreightClassType.values)
+		freightPkgTypePopUp.addItems(withTitles: PhysicalPackagingType.values)
+		linearUnitsPopUp.addItems(withTitles: LinearUnits.values)
 		
 		progressIndicator.isDisplayedWhenStopped = false
 		
@@ -481,7 +662,7 @@ extension AppDelegate: XMLParserDelegate
 //		print("\(self.soapStack.items.filter{ $0.value == nil })")
 		
 		DispatchQueue.main.async(execute: { () -> Void in
-			self.detailsTable.reloadData()
+			//self.detailsTable.reloadData()
 			self.detailsView.reloadData()
 			self.httpResponseLabel.stringValue = "Status: Parsing Complete"
 			
@@ -489,6 +670,14 @@ extension AppDelegate: XMLParserDelegate
 			self.detailsView.becomeFirstResponder()
 			
 			self.progressIndicator.stopAnimation(self)
+			
+			if self.soapStack.items[0].tag == "CityStateLookupResponse" {
+				self.cityState.zip = (self.soapStack.items.filter{ $0.tag == "Zip5" }.first?.value!)!
+				self.cityState.city = (self.soapStack.items.filter{ $0.tag == "City" }.first?.value!)!
+				self.cityState.state = (self.soapStack.items.filter{ $0.tag == "State" }.first?.value)!
+				
+				self.detailsView.tableColumns[0].title = "Name - \(self.cityState.city), \(self.cityState.state)"
+			}
 		})
 	}
 }
@@ -497,34 +686,50 @@ extension AppDelegate: NSTableViewDataSource
 {
 	func numberOfRows(in tableView: NSTableView) -> Int
 	{
-//		if (valueStack.items.count == 0)
-//		{
-//			return 0
-//		}
-//		else if (self.rateReply.highestSeverity() == NotificationSeverityType.FAILURE)
-//		{
-//			return self.rateReply.notifications().count
-//		}
-//		else
-//		{
-//			return (rateReply.rateReplyDetails()?.count)! // valueStack.find("RateReply|RateReplyDetails|ServiceType|").count
-//		}
-		
-		return 0
+		return lineItems.items.count
 	}
 }
 
 extension AppDelegate: NSTableViewDelegate
 {
-	func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any?
-	{
-		// get record to display
-//		let svc = rateReply.rateReplyDetails()?[row].serviceType()?.rawValue
-//		
-//		if (tableColumn?.identifier == "NameCol") { return "Service" }
-//		else if (tableColumn?.identifier == "ValueCol") { return svc }
+	func tableView(_ tableView: NSTableView, dataCellFor tableColumn: NSTableColumn?, row: Int) -> NSCell? {
+//		if (tableColumn?.identifier == "ModifyColumn") {
+//			let cell = NSCell()
+//			
+//			cell.image = NSImage(named: "NSActionTemplate")
+//			
+//			return cell
+//		}
 		
 		return nil
+	}
+	
+	func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any?
+	{
+		if (tableColumn?.identifier == "ValueColumn") {
+			// get record to display
+			if let lineItem = lineItems.items[row] as? FreightShipmentLineItem {
+				return lineItem._description
+			}
+			
+			if let lineItem = lineItems.items[row] as? RequestedPackageLineItem {
+				return lineItem.itemdescription_()
+			}
+		}
+		
+		return nil
+	}
+	
+	func tableViewDoubleClick(_ sender: AnyObject)
+	{
+		guard lineItemsTable.selectedRow >= 0,
+			let item = lineItems.items[lineItemsTable.selectedRow] as? FreightShipmentLineItem else {
+			
+				return
+		}
+		
+		freightDescription.stringValue = item._description!
+		//freightClassPopUp.select(NSMenuItem(title: item.description_(), action: nil, keyEquivalent: ""))
 	}
 }
 
@@ -565,10 +770,6 @@ extension AppDelegate: NSOutlineViewDelegate
 		return nil
 	}
 	
-//	func outlineView(_ outlineView: NSOutlineView, toolTipFor cell: NSCell, rect: NSRectPointer, tableColumn: NSTableColumn?, item: Any, mouseLocation: NSPoint) -> String {
-//		return cell.stringValue
-//	}
-	
 	func drillDown(parent: SoapElement, path: String) -> SoapElement? {
 //		print(parent)
 //		print(path)
@@ -583,12 +784,6 @@ extension AppDelegate: NSOutlineViewDelegate
 		}
 		
 		return soapStack.items.filter{ $0.parent == parent.id && $0.tag == path.components(separatedBy: "|").last! }.last
-		
-//		let ratedShipmentDetails = soapStack.items.filter{ $0.parent == parent.id && $0.tag == "RatedShipmentDetails" }.last?.id
-//		let shipmentRateDetail = soapStack.items.filter{ $0.parent == ratedShipmentDetails && $0.tag == "ShipmentRateDetail" }.last?.id
-//		let totalNetCharge = soapStack.items.filter{ $0.parent == shipmentRateDetail && $0.tag == "TotalNetCharge" }.last?.id
-//		
-//		return soapStack.items.filter{ $0.parent == totalNetCharge && $0.tag == "Amount" }.last!
 	}
 }
 
@@ -621,5 +816,16 @@ extension AppDelegate: NSOutlineViewDataSource
 		
 		// else return child elements
 		return soapStack.items.filter{ $0.parent == soapElement.id }[index]
+	}
+}
+
+extension AppDelegate: NSComboBoxDelegate, NSComboBoxDataSource
+{
+	func numberOfItems(in comboBox: NSComboBox) -> Int {
+		return FreightClassType.values.count
+	}
+	
+	func comboBox(_ comboBox: NSComboBox, objectValueForItemAt index: Int) -> Any? {
+		return FreightClassType.values[index]
 	}
 }

@@ -508,24 +508,43 @@ enum EdtTaxType: String
 
 enum FreightClassType: String
 {
-	case CLASS_050
-	case CLASS_055
-	case CLASS_060
-	case CLASS_065
-	case CLASS_070
-	case CLASS_077_5
-	case CLASS_085
-	case CLASS_092_5
-	case CLASS_100
-	case CLASS_110
-	case CLASS_125
-	case CLASS_150
-	case CLASS_175
-	case CLASS_200
-	case CLASS_250
-	case CLASS_300
-	case CLASS_400
-	case CLASS_500
+	case CLASS_050 = "Class 050"
+	case CLASS_055 = "Class 055"
+	case CLASS_060 = "Class 060"
+	case CLASS_065 = "Class 065"
+	case CLASS_070 = "Class 070"
+	case CLASS_077_5 = "Class 077.5"
+	case CLASS_085 = "Class 085"
+	case CLASS_092_5 = "Class 092.5"
+	case CLASS_100 = "Class 100"
+	case CLASS_110 = "Class 110"
+	case CLASS_125 = "Class 125"
+	case CLASS_150 = "Class 150"
+	case CLASS_175 = "Class 175"
+	case CLASS_200 = "Class 200"
+	case CLASS_250 = "Class 250"
+	case CLASS_300 = "Class 300"
+	case CLASS_400 = "Class 400"
+	case CLASS_500 = "Class 500"
+	
+	static let values = [CLASS_050.rawValue,
+	                     CLASS_055.rawValue,
+	                     CLASS_060.rawValue,
+	                     CLASS_065.rawValue,
+	                     CLASS_070.rawValue,
+	                     CLASS_077_5.rawValue,
+	                     CLASS_085.rawValue,
+	                     CLASS_092_5.rawValue,
+	                     CLASS_100.rawValue,
+	                     CLASS_110.rawValue,
+	                     CLASS_125.rawValue,
+	                     CLASS_150.rawValue,
+	                     CLASS_175.rawValue,
+	                     CLASS_200.rawValue,
+	                     CLASS_250.rawValue,
+	                     CLASS_300.rawValue,
+	                     CLASS_400.rawValue,
+	                     CLASS_500.rawValue]
 }
 
 enum VolumeUnits: String
@@ -1051,6 +1070,8 @@ enum LinearUnits: String
 {
 	case CM
 	case IN
+	
+	static let values = [CM.rawValue, IN.rawValue]
 }
 
 enum PhysicalPackagingType: String
@@ -1078,6 +1099,30 @@ enum PhysicalPackagingType: String
 	case SKID
 	case TANK
 	case TUBE
+	
+	static let values = [BAG.rawValue,
+	                     BARREL.rawValue,
+	                     BASKET.rawValue,
+	                     BOX.rawValue,
+	                     BUCKET.rawValue,
+	                     BUNDLE.rawValue,
+	                     CARTON.rawValue,
+	                     CASE.rawValue,
+	                     CONTAINER.rawValue,
+	                     CRATE.rawValue,
+	                     CYLINDER.rawValue,
+	                     DRUM.rawValue,
+	                     ENVELOPE.rawValue,
+	                     HAMPER.rawValue,
+	                     OTHER.rawValue,
+	                     PAIL.rawValue,
+	                     PALLET.rawValue,
+	                     PIECE.rawValue,
+	                     REEL.rawValue,
+	                     ROLL.rawValue,
+	                     SKID.rawValue,
+	                     TANK.rawValue,
+	                     TUBE.rawValue]
 }
 
 enum PackageSpecialServiceType: String

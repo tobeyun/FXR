@@ -14,6 +14,7 @@ class SettingsController: NSWindowController, NSWindowDelegate
 	@IBOutlet weak var meterNumber: NSTextField!
 	@IBOutlet weak var webCredentialKey: NSTextField!
 	@IBOutlet weak var webCredentialPassword: NSTextField!
+	@IBOutlet weak var productionCheckBox: NSButton!
 	@IBOutlet weak var companyName: NSTextField!
 	@IBOutlet weak var addressLine: NSTextField!
 	@IBOutlet weak var city: NSTextField!
@@ -44,6 +45,8 @@ class SettingsController: NSWindowController, NSWindowDelegate
 		webCredentialKey.stringValue = "\((KeychainManager.queryData(itemKey: "key")) as? String ?? "")"
 		webCredentialPassword.stringValue = "\((KeychainManager.queryData(itemKey: "password")) as? String ?? "")"
 		
+		productionCheckBox.state = UserDefaults.standard.integer(forKey: "production")
+		
 		companyName.stringValue = "\((UserDefaults.standard.string(forKey: "company")) ?? "")"
 		addressLine.stringValue = "\((UserDefaults.standard.string(forKey: "address")) ?? "")"
 		city.stringValue = "\((UserDefaults.standard.string(forKey: "city")) ?? "")"
@@ -60,17 +63,38 @@ class SettingsController: NSWindowController, NSWindowDelegate
 	}
 	
 	func windowWillClose(_ notification: Notification) {
-		KeychainManager.deleteData(itemKey: "key")
-		KeychainManager.deleteData(itemKey: "password")
-		KeychainManager.deleteData(itemKey: "meter")
-		KeychainManager.deleteData(itemKey: "account")
-		KeychainManager.deleteData(itemKey: "ltlaccount")
+		if (KeychainManager.queryData(itemKey: "key")?.stringValue != webCredentialKey.stringValue) {
+			KeychainManager.deleteData(itemKey: "key")
+			KeychainManager.addData(itemKey: "key", itemValue: webCredentialKey.stringValue)
+		}
 		
-		KeychainManager.addData(itemKey: "key", itemValue: webCredentialKey.stringValue)
-		KeychainManager.addData(itemKey: "password", itemValue: webCredentialPassword.stringValue)
-		KeychainManager.addData(itemKey: "meter", itemValue: meterNumber.stringValue)
-		KeychainManager.addData(itemKey: "account", itemValue: accountNumber.stringValue)
-		KeychainManager.addData(itemKey: "ltlaccount", itemValue: accountNumber.stringValue)
+		if (KeychainManager.queryData(itemKey: "password")?.stringValue != webCredentialPassword.stringValue) {
+			KeychainManager.deleteData(itemKey: "password")
+			KeychainManager.addData(itemKey: "password", itemValue: webCredentialPassword.stringValue)
+		}
+		
+		if (KeychainManager.queryData(itemKey: "meter")?.stringValue != webCredentialKey.stringValue) {
+			KeychainManager.deleteData(itemKey: "meter")
+			KeychainManager.addData(itemKey: "meter", itemValue: meterNumber.stringValue)
+		}
+		
+		
+		if (KeychainManager.queryData(itemKey: "account")?.stringValue != accountNumber.stringValue) {
+			KeychainManager.deleteData(itemKey: "account")
+			KeychainManager.addData(itemKey: "account", itemValue: accountNumber.stringValue)
+		}
+		
+		if (KeychainManager.queryData(itemKey: "ltlaccount")?.stringValue != webCredentialKey.stringValue) {
+			KeychainManager.deleteData(itemKey: "ltlaccount")
+			KeychainManager.addData(itemKey: "ltlaccount", itemValue: ltlAccountNumber.stringValue)
+		}
+		
+		UserDefaults.standard.set(productionCheckBox.stringValue, forKey: "production")
+		UserDefaults.standard.set("https://wsbeta.fedex.com:443/web-services/", forKey: "ws-url")
+		
+		if (UserDefaults.standard.integer(forKey: "production") == 1) {
+			UserDefaults.standard.set("https://ws.fedex.com:443/web-services/", forKey: "ws-url")
+		}
 		
 		UserDefaults.standard.set(companyName.stringValue, forKey: "company")
 		UserDefaults.standard.set(addressLine.stringValue, forKey: "address")
