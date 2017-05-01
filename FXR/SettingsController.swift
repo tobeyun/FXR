@@ -14,7 +14,6 @@ class SettingsController: NSWindowController, NSWindowDelegate
 	@IBOutlet weak var meterNumber: NSTextField!
 	@IBOutlet weak var webCredentialKey: NSTextField!
 	@IBOutlet weak var webCredentialPassword: NSTextField!
-	@IBOutlet weak var productionCheckBox: NSButton!
 	@IBOutlet weak var companyName: NSTextField!
 	@IBOutlet weak var addressLine: NSTextField!
 	@IBOutlet weak var city: NSTextField!
@@ -44,8 +43,6 @@ class SettingsController: NSWindowController, NSWindowDelegate
 		meterNumber.stringValue = "\((KeychainManager.queryData(itemKey: "meter")) as? String ?? "")"
 		webCredentialKey.stringValue = "\((KeychainManager.queryData(itemKey: "key")) as? String ?? "")"
 		webCredentialPassword.stringValue = "\((KeychainManager.queryData(itemKey: "password")) as? String ?? "")"
-		
-		productionCheckBox.state = UserDefaults.standard.integer(forKey: "production")
 		
 		companyName.stringValue = "\((UserDefaults.standard.string(forKey: "company")) ?? "")"
 		addressLine.stringValue = "\((UserDefaults.standard.string(forKey: "address")) ?? "")"
@@ -89,12 +86,7 @@ class SettingsController: NSWindowController, NSWindowDelegate
 			KeychainManager.addData(itemKey: "ltlaccount", itemValue: ltlAccountNumber.stringValue)
 		}
 		
-		UserDefaults.standard.set(productionCheckBox.stringValue, forKey: "production")
-		UserDefaults.standard.set("https://wsbeta.fedex.com:443/web-services/", forKey: "ws-url")
-		
-		if (UserDefaults.standard.integer(forKey: "production") == 1) {
-			UserDefaults.standard.set("https://ws.fedex.com:443/web-services/", forKey: "ws-url")
-		}
+		UserDefaults.standard.set("https://ws.fedex.com:443/web-services/", forKey: "ws-url")
 		
 		UserDefaults.standard.set(companyName.stringValue, forKey: "company")
 		UserDefaults.standard.set(addressLine.stringValue, forKey: "address")
