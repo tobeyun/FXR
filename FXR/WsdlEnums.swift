@@ -446,6 +446,45 @@ enum ShipmentSpecialServiceType: String
 	case SATURDAY_PICKUP
 	case THIRD_PARTY_CONSIGNEE
 	case TOP_LOAD
+	
+	static let values = [BROKER_SELECT_OPTION.rawValue,
+	                     CALL_BEFORE_DELIVERY.rawValue,
+	                     COD.rawValue,
+	                     CUSTOM_DELIVERY_WINDOW.rawValue,
+	                     CUT_FLOWERS.rawValue,
+	                     DANGEROUS_GOODS.rawValue,
+	                     DO_NOT_BREAK_DOWN_PALLETS.rawValue,
+	                     DO_NOT_STACK_PALLETS.rawValue,
+	                     DRY_ICE.rawValue,
+	                     EAST_COAST_SPECIAL.rawValue,
+	                     ELECTRONIC_TRADE_DOCUMENTS.rawValue,
+	                     EVENT_NOTIFICATION.rawValue,
+	                     EXTREME_LENGTH.rawValue,
+	                     FEDEX_ONE_RATE.rawValue,
+	                     FOOD.rawValue,
+	                     FREIGHT_GUARANTEE.rawValue,
+	                     FREIGHT_TO_COLLECT.rawValue,
+	                     FUTURE_DAY_SHIPMENT.rawValue,
+	                     HOLD_AT_LOCATION.rawValue,
+	                     HOME_DELIVERY_PREMIUM.rawValue,
+	                     INSIDE_DELIVERY.rawValue,
+	                     INSIDE_PICKUP.rawValue,
+	                     INTERNATIONAL_CONTROLLED_EXPORT_SERVICE.rawValue,
+	                     INTERNATIONAL_TRAFFIC_IN_ARMS_REGULATIONS.rawValue,
+	                     LIFTGATE_DELIVERY.rawValue,
+	                     LIFTGATE_PICKUP.rawValue,
+	                     LIMITED_ACCESS_DELIVERY.rawValue,
+	                     LIMITED_ACCESS_PICKUP.rawValue,
+	                     PENDING_SHIPMENT.rawValue,
+	                     PHARMACY_DELIVERY.rawValue,
+	                     POISON.rawValue,
+	                     PROTECTION_FROM_FREEZING.rawValue,
+	                     RETURNS_CLEARANCE.rawValue,
+	                     RETURN_SHIPMENT.rawValue,
+	                     SATURDAY_DELIVERY.rawValue,
+	                     SATURDAY_PICKUP.rawValue,
+	                     THIRD_PARTY_CONSIGNEE.rawValue,
+	                     TOP_LOAD.rawValue]
 }
 
 enum FreightShipmentRoleType: String
@@ -1135,6 +1174,15 @@ enum PackageSpecialServiceType: String
 	case NON_STANDARD_CONTAINER
 	case PRIORITY_ALERT
 	case SIGNATURE_OPTION
+	
+	static let values = [ALCOHOL.rawValue,
+	                     APPOINTMENT_DELIVERY.rawValue,
+	                     COD.rawValue,
+	                     DANGEROUS_GOODS.rawValue,
+	                     DRY_ICE.rawValue,
+	                     NON_STANDARD_CONTAINER.rawValue,
+	                     PRIORITY_ALERT.rawValue,
+	                     SIGNATURE_OPTION.rawValue]
 }
 
 enum RateTypeBasisType: String
