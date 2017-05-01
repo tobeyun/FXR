@@ -171,7 +171,13 @@ class AppDelegate: NSObject
 	
 	@IBAction func OpenPreferences(_ sender: Any) {
 		DispatchQueue.main.async(execute: { () -> Void in
-			NSApplication.shared().runModal(for: (self.prefs?.window)!)
+			NSApplication.shared().runModal(for: SettingsController().window!)
+		})
+	}
+	
+	@IBAction func ViewEULA(_ sender: Any) {
+		DispatchQueue.main.async(execute: { () -> Void in
+			NSApplication.shared().runModal(for: EulaController().window!)
 		})
 	}
 	
@@ -553,6 +559,13 @@ class AppDelegate: NSObject
 
 extension AppDelegate: NSApplicationDelegate
 {
+	func applicationWillFinishLaunching(_ notification: Notification)
+	{
+		if ("\(KeychainManager.queryData(itemKey: "eula")!)" != "1") {
+			NSApplication.shared().runModal(for: EulaController().window!)
+		}
+	}
+	
 	func applicationDidFinishLaunching(_ aNotification: Notification)
 	{
 		// Insert code here to initialize your application

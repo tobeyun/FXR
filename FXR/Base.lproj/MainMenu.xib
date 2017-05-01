@@ -57,6 +57,11 @@
                                     <action selector="OpenPreferences:" target="Voe-Tx-rLC" id="WZC-om-dyD"/>
                                 </connections>
                             </menuItem>
+                            <menuItem title="View EULA..." keyEquivalent="e" id="N9e-F6-IyT">
+                                <connections>
+                                    <action selector="ViewEULA:" target="Voe-Tx-rLC" id="AZH-9L-51l"/>
+                                </connections>
+                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="wFC-TO-SCJ"/>
                             <menuItem title="Services" id="NMo-om-nkz">
                                 <modifierMask key="keyEquivalentModifierMask"/>
@@ -228,7 +233,8 @@ CA
                                                 <action selector="performFindPanelAction:" target="-1" id="HTi-n9-3Zx"/>
                                             </connections>
                                         </menuItem>
-                                        <menuItem title="Use Selection for Find" tag="7" keyEquivalent="e" id="GdY-Yb-3a9">
+                                        <menuItem title="Use Selection for Find" tag="7" id="GdY-Yb-3a9">
+                                            <modifierMask key="keyEquivalentModifierMask"/>
                                             <connections>
                                                 <action selector="performFindPanelAction:" target="-1" id="3pl-aL-uBO"/>
                                             </connections>
@@ -855,11 +861,11 @@ DQ
                         </connections>
                     </button>
                     <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="wk4-6h-a8y">
-                        <rect key="frame" x="67" y="320" width="401" height="45"/>
+                        <rect key="frame" x="67" y="320" width="401" height="193"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     </box>
                     <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="T3B-Md-YS5">
-                        <rect key="frame" x="66" y="269" width="401" height="11"/>
+                        <rect key="frame" x="66" y="269" width="401" height="15"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     </box>
                     <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DG4-L5-iL0">
@@ -905,12 +911,12 @@ DQ
                                     <tableColumns>
                                         <tableColumn editable="NO" width="174" minWidth="40" maxWidth="1000" id="7wM-Zj-kR5">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border">
-                                                <font key="font" metaFont="system" size="9"/>
+                                                <font key="font" metaFont="miniSystem"/>
                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="headerColor" catalog="System" colorSpace="catalog"/>
                                             </tableHeaderCell>
                                             <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" title="Text Cell" id="dpP-ng-kXQ">
-                                                <font key="font" metaFont="system" size="9"/>
+                                                <font key="font" metaFont="miniSystem"/>
                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
@@ -929,7 +935,7 @@ DQ
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                         <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="NO" id="p8V-wZ-9Tn">
-                            <rect key="frame" x="224" y="17" width="15" height="102"/>
+                            <rect key="frame" x="-15" y="1" width="16" height="0.0"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                     </scrollView>
