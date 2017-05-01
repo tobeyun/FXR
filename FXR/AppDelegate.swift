@@ -143,6 +143,7 @@ class AppDelegate: NSObject
 	@IBOutlet weak var httpResponseLabel: NSTextField!
 	@IBOutlet weak var trackingNumber: NSTextField!
 	@IBOutlet weak var detailsView: NSOutlineView!
+	@IBOutlet weak var specialServicesTable: NSTableView!
 	@IBOutlet weak var freightClassPopUp: NSPopUpButton!
 	@IBOutlet weak var freightPkgTypePopUp: NSPopUpButton!
 	@IBOutlet weak var freightDescription: NSTextField!
@@ -164,6 +165,7 @@ class AppDelegate: NSObject
 	var parentStack = Stack<SoapElement>()
 	var currentId: Int? = nil
 	var lineItems = Stack<Any>()
+	var specialServices = Stack<ShipmentSpecialServiceType>()
 	
 	var prefs: SettingsController? = nil
 	
@@ -574,6 +576,10 @@ extension AppDelegate: NSApplicationDelegate
 		detailsView.dataSource = self
 		detailsView.reloadData()
 		
+		specialServicesTable.delegate = self
+		specialServicesTable.dataSource = self
+		specialServicesTable.reloadData()
+		
 //		freightClassType.delegate = self
 //		freightClassType.dataSource = self
 //		freightClassType.reloadData()
@@ -696,7 +702,15 @@ extension AppDelegate: NSTableViewDataSource
 {
 	func numberOfRows(in tableView: NSTableView) -> Int
 	{
-		return lineItems.items.count
+		if (tableView.identifier == "LineItemsTable") {
+			return lineItems.items.count
+		}
+		
+		if (tableView.identifier == "SpecialServicesTable") {
+			return ShipmentSpecialServiceType.values.count
+		}
+		
+		return 0
 	}
 }
 
@@ -716,15 +730,21 @@ extension AppDelegate: NSTableViewDelegate
 	
 	func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any?
 	{
-		if (tableColumn?.identifier == "ValueColumn") {
-			// get record to display
-			if let lineItem = lineItems.items[row] as? FreightShipmentLineItem {
-				return lineItem._description
+		if (tableView.identifier == "LineItemsTable") {
+			if (tableColumn?.identifier == "ValueColumn") {
+				// get record to display
+				if let lineItem = lineItems.items[row] as? FreightShipmentLineItem {
+					return lineItem._description
+				}
+				
+				if let lineItem = lineItems.items[row] as? RequestedPackageLineItem {
+					return lineItem.itemdescription_()
+				}
 			}
-			
-			if let lineItem = lineItems.items[row] as? RequestedPackageLineItem {
-				return lineItem.itemdescription_()
-			}
+		}
+		
+		if (tableView.identifier == "SpecialServicesTable") {
+			return ShipmentSpecialServiceType.values[row]
 		}
 		
 		return nil
@@ -839,10 +859,10 @@ extension AppDelegate: NSOutlineViewDataSource
 extension AppDelegate: NSComboBoxDelegate, NSComboBoxDataSource
 {
 	func numberOfItems(in comboBox: NSComboBox) -> Int {
-		return FreightClassType.values.count
+		return ShipmentSpecialServiceType.values.count
 	}
 	
 	func comboBox(_ comboBox: NSComboBox, objectValueForItemAt index: Int) -> Any? {
-		return FreightClassType.values[index]
+		return ShipmentSpecialServiceType.values[index]
 	}
 }
