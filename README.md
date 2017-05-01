@@ -4,9 +4,10 @@ FedEx has created a desktop rating tool that has been very successful (i.e. popu
 
 ![Screen Shot](/images/ScreenShot.png)
 
-To use FXR, you will need to register as a Corporate Developer at https://www.fedex.com/us/developer and enter the relevant information in Preferences or request credentails below:
+To use FXR, you will need to contact your assigned sales executive to request the necessary credentials.
 
-![Prefs](/images/prefs.png)
+#### FedEx End User Requirements
+Use of this application requires acceptance of the FedEx Web Services End User License Agreement. This agreement can be found [here](http://images.fedex.com/us/developer/products/wsla_corp.pdf).
 
 ## Install
 Please install FXR from the [Mac App Store](https://itunes.apple.com/us/app/fxr/id1229799985?mt=12)
