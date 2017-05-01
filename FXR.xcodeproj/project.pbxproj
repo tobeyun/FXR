@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		553312741EB7A39C003FB9AF /* EULA.xib in Resources */ = {isa = PBXBuildFile; fileRef = 553312731EB7A39C003FB9AF /* EULA.xib */; };
+		553312761EB7A3AB003FB9AF /* EulaController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 553312751EB7A3AB003FB9AF /* EulaController.swift */; };
 		55391EA71EA8F3F900B7748C /* KeychainManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55391EA61EA8F3F900B7748C /* KeychainManager.swift */; };
 		55391EAD1EAA290C00B7748C /* Settings.xib in Resources */ = {isa = PBXBuildFile; fileRef = 55391EAC1EAA290C00B7748C /* Settings.xib */; };
 		55391EAF1EAA2B4B00B7748C /* TrackingService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55391EAE1EAA2B4B00B7748C /* TrackingService.swift */; };
@@ -22,6 +24,8 @@
 
 /* Begin PBXFileReference section */
 		551DBFF81EAE593C005D0E2D /* FXR.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FXR.entitlements; sourceTree = "<group>"; };
+		553312731EB7A39C003FB9AF /* EULA.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = EULA.xib; sourceTree = "<group>"; };
+		553312751EB7A3AB003FB9AF /* EulaController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = EulaController.swift; sourceTree = "<group>"; };
 		55391EA61EA8F3F900B7748C /* KeychainManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
 		55391EAC1EAA290C00B7748C /* Settings.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Settings.xib; sourceTree = "<group>"; };
 		55391EAE1EAA2B4B00B7748C /* TrackingService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TrackingService.swift; sourceTree = "<group>"; };
@@ -76,6 +80,8 @@
 				55391EB21EAA448700B7748C /* GlobalStructs.swift */,
 				5544F1FE1E8076BF00FD44E0 /* Assets.xcassets */,
 				5544F2001E8076BF00FD44E0 /* MainMenu.xib */,
+				553312731EB7A39C003FB9AF /* EULA.xib */,
+				553312751EB7A3AB003FB9AF /* EulaController.swift */,
 				55391EAC1EAA290C00B7748C /* Settings.xib */,
 				558D1A131EAAF39F00C15A7E /* SettingsController.swift */,
 				5544F2031E8076BF00FD44E0 /* Info.plist */,
@@ -151,6 +157,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				5544F1FF1E8076BF00FD44E0 /* Assets.xcassets in Resources */,
+				553312741EB7A39C003FB9AF /* EULA.xib in Resources */,
 				5544F20C1E8295F600FD44E0 /* .gitignore in Resources */,
 				5544F2021E8076BF00FD44E0 /* MainMenu.xib in Resources */,
 				55391EAD1EAA290C00B7748C /* Settings.xib in Resources */,
@@ -182,6 +189,7 @@
 			files = (
 				5544F1FD1E8076BF00FD44E0 /* AppDelegate.swift in Sources */,
 				556DED171EA71B3A00CD11C0 /* WsdlEnums.swift in Sources */,
+				553312761EB7A3AB003FB9AF /* EulaController.swift in Sources */,
 				556DED161EA71B3A00CD11C0 /* RateService.swift in Sources */,
 				558D1A141EAAF39F00C15A7E /* SettingsController.swift in Sources */,
 				55391EAF1EAA2B4B00B7748C /* TrackingService.swift in Sources */,
