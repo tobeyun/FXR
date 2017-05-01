@@ -556,7 +556,7 @@ struct Payor : CustomStringConvertible
 
 struct ShipmentSpecialServicesRequested : CustomStringConvertible
 {
-	fileprivate let _specialServiceTypes: ShipmentSpecialServiceType?
+	fileprivate let _specialServiceTypes: [ShipmentSpecialServiceType]
 	fileprivate let _codDetail: CodDetail?
 	fileprivate let _deliveryOnInvoiceAcceptanceDetail: DeliveryOnInvoiceAcceptanceDetail?
 	fileprivate let _holdAtLocationDetail: HoldAtLocationDetail?
@@ -574,7 +574,7 @@ struct ShipmentSpecialServicesRequested : CustomStringConvertible
 	
 	var description: String { return "\(specialServiceTypes())\(codDetail())\(deliveryOnInvoiceAcceptanceDetail())\(holdAtLocationDetail())\(eventNotificationDetail())\(returnShipmentDetail())\(pendingShipmentDetail())\(internationalControlledExportDetail())\(internationalTrafficInArmsRegulationsDetail())\(shipmentDryIceDetail())\(homeDeliveryPremiumDetail())\(flatbedTrailerDetail())\(freightGuaranteeDetail())\(etdDetail())\(customDeliveryWindowDetail())" }
 	
-	init(specialServiceTypes: ShipmentSpecialServiceType?, codDetail: CodDetail?, deliveryOnInvoiceAcceptanceDetail: DeliveryOnInvoiceAcceptanceDetail?, holdAtLocationDetail: HoldAtLocationDetail?, eventNotificationDetail: ShipmentEventNotificationDetail?, returnShipmentDetail: ReturnShipmentDetail?, pendingShipmentDetail: PendingShipmentDetail?, internationalControlledExportDetail: InternationalControlledExportDetail?, internationalTrafficInArmsRegulationsDetail: InternationalTrafficInArmsRegulationsDetail?, shipmentDryIceDetail: ShipmentDryIceDetail?, homeDeliveryPremiumDetail: HomeDeliveryPremiumDetail?, flatbedTrailerDetail: FlatbedTrailerDetail?, freightGuaranteeDetail: FreightGuaranteeDetail?, etdDetail: EtdDetail?, customDeliveryWindowDetail: CustomDeliveryWindowDetail?)
+	init(specialServiceTypes: [ShipmentSpecialServiceType], codDetail: CodDetail?, deliveryOnInvoiceAcceptanceDetail: DeliveryOnInvoiceAcceptanceDetail?, holdAtLocationDetail: HoldAtLocationDetail?, eventNotificationDetail: ShipmentEventNotificationDetail?, returnShipmentDetail: ReturnShipmentDetail?, pendingShipmentDetail: PendingShipmentDetail?, internationalControlledExportDetail: InternationalControlledExportDetail?, internationalTrafficInArmsRegulationsDetail: InternationalTrafficInArmsRegulationsDetail?, shipmentDryIceDetail: ShipmentDryIceDetail?, homeDeliveryPremiumDetail: HomeDeliveryPremiumDetail?, flatbedTrailerDetail: FlatbedTrailerDetail?, freightGuaranteeDetail: FreightGuaranteeDetail?, etdDetail: EtdDetail?, customDeliveryWindowDetail: CustomDeliveryWindowDetail?)
 	{
 		_specialServiceTypes = specialServiceTypes
 		_codDetail = codDetail
@@ -593,7 +593,8 @@ struct ShipmentSpecialServicesRequested : CustomStringConvertible
 		_customDeliveryWindowDetail = customDeliveryWindowDetail
 	}
 	
-	func specialServiceTypes() -> String { return (_specialServiceTypes == nil ? "" : "<SpecialServiceTypes>\(_specialServiceTypes!)</SpecialServiceTypes>") }
+	func specialServiceTypes() -> String { return "\((_specialServiceTypes.map{ "<SpecialServiceTypes>\($0)</SpecialServiceTypes>" } as [String]).joined())" }
+	//func specialServiceTypes() -> String { return (_specialServiceTypes == nil ? "" : "<SpecialServiceTypes>\(_specialServiceTypes!)</SpecialServiceTypes>") }
 	func codDetail() -> String { return (_codDetail == nil ? "" : "<CodDetail>\(_codDetail!)</CodDetail>") }
 	func deliveryOnInvoiceAcceptanceDetail() -> String { return (_deliveryOnInvoiceAcceptanceDetail == nil ? "" : "<DeliveryOnInvoiceAcceptanceDetail>\(_deliveryOnInvoiceAcceptanceDetail!)</DeliveryOnInvoiceAcceptanceDetail>") }
 	func holdAtLocationDetail() -> String { return (_holdAtLocationDetail == nil ? "" : "<HoldAtLocationDetail>\(_holdAtLocationDetail!)</HoldAtLocationDetail>") }
