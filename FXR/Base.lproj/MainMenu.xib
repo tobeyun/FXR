@@ -28,7 +28,11 @@
                 <outlet property="httpResponseLabel" destination="eT1-9D-YDT" id="qMO-rC-FZG"/>
                 <outlet property="lineItemsTable" destination="dk2-k3-OH4" id="0Ob-99-BhA"/>
                 <outlet property="linearUnitsPopUp" destination="EGn-5i-tbY" id="thV-RJ-d8l"/>
+                <outlet property="packageHeight" destination="DJ1-vo-YFB" id="7d4-r1-TcJ"/>
+                <outlet property="packageLength" destination="DG4-L5-iL0" id="OBk-FF-rnS"/>
+                <outlet property="packageLinearUnits" destination="7Ne-b0-TPU" id="a54-qZ-5hn"/>
                 <outlet property="packageWeight" destination="VC9-gk-pmd" id="MWS-fL-LJJ"/>
+                <outlet property="packageWidth" destination="mAc-8h-dLM" id="kcJ-Mp-Xoz"/>
                 <outlet property="progressIndicator" destination="Vev-8s-cMk" id="c0c-aQ-VjJ"/>
                 <outlet property="recipientZip" destination="nRP-kL-8yG" id="RBR-AF-LOY"/>
                 <outlet property="residentialCheck" destination="RUi-3A-Rdc" id="NiG-PQ-M9S"/>
@@ -704,7 +708,7 @@ DQ
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     </progressIndicator>
                     <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="PhB-V9-6NK">
-                        <rect key="frame" x="67" y="212" width="52" height="22"/>
+                        <rect key="frame" x="67" y="212" width="56" height="22"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" placeholderString="volume" drawsBackground="YES" id="RIj-Ud-apr">
                             <font key="font" metaFont="system"/>
@@ -778,7 +782,7 @@ DQ
                         </popUpButtonCell>
                     </popUpButton>
                     <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="85x-RU-Grl">
-                        <rect key="frame" x="127" y="212" width="54" height="22"/>
+                        <rect key="frame" x="131" y="212" width="54" height="22"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" placeholderString="weight" drawsBackground="YES" id="QIh-EU-SKb">
                             <font key="font" metaFont="system"/>
@@ -787,7 +791,7 @@ DQ
                         </textFieldCell>
                     </textField>
                     <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="D4q-iv-EnR">
-                        <rect key="frame" x="198" y="212" width="40" height="22"/>
+                        <rect key="frame" x="207" y="212" width="35" height="22"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" placeholderString="L" drawsBackground="YES" id="8vG-y0-NKP">
                             <font key="font" metaFont="system"/>
@@ -796,7 +800,7 @@ DQ
                         </textFieldCell>
                     </textField>
                     <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NiN-JO-FvV">
-                        <rect key="frame" x="246" y="212" width="40" height="22"/>
+                        <rect key="frame" x="250" y="212" width="35" height="22"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" placeholderString="W" drawsBackground="YES" id="7jW-ZM-sBG">
                             <font key="font" metaFont="system"/>
@@ -805,7 +809,7 @@ DQ
                         </textFieldCell>
                     </textField>
                     <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Zq7-FP-phe">
-                        <rect key="frame" x="294" y="212" width="40" height="22"/>
+                        <rect key="frame" x="293" y="212" width="35" height="22"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" placeholderString="H" drawsBackground="YES" id="zAJ-um-oA4">
                             <font key="font" metaFont="system"/>
@@ -813,7 +817,7 @@ DQ
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
                         </textFieldCell>
                     </textField>
-                    <popUpButton identifier="LinearUnitsPopUp" verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EGn-5i-tbY">
+                    <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="EGn-5i-tbY">
                         <rect key="frame" x="338" y="210" width="82" height="26"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <popUpButtonCell key="cell" type="push" title="Units" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="Yt1-JS-oKK" id="EUi-zW-2s3">
@@ -861,11 +865,7 @@ DQ
                         </connections>
                     </button>
                     <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="wk4-6h-a8y">
-                        <rect key="frame" x="67" y="320" width="401" height="161"/>
-                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                    </box>
-                    <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="T3B-Md-YS5">
-                        <rect key="frame" x="66" y="269" width="401" height="56"/>
+                        <rect key="frame" x="67" y="320" width="401" height="191"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     </box>
                     <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DG4-L5-iL0">
@@ -939,6 +939,19 @@ DQ
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                     </scrollView>
+                    <popUpButton verticalHuggingPriority="750" fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="7Ne-b0-TPU">
+                        <rect key="frame" x="338" y="309" width="82" height="26"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <popUpButtonCell key="cell" type="push" title="Units" bezelStyle="rounded" alignment="left" lineBreakMode="truncatingTail" state="on" borderStyle="borderAndBezel" imageScaling="proportionallyDown" inset="2" selectedItem="HQP-XH-PYf" id="ibE-Z9-Gex">
+                            <behavior key="behavior" lightByBackground="YES" lightByGray="YES"/>
+                            <font key="font" metaFont="menu"/>
+                            <menu key="menu" id="M9U-NH-HxN">
+                                <items>
+                                    <menuItem title="Units" state="on" id="HQP-XH-PYf"/>
+                                </items>
+                            </menu>
+                        </popUpButtonCell>
+                    </popUpButton>
                 </subviews>
             </view>
             <point key="canvasLocation" x="324" y="179.5"/>
