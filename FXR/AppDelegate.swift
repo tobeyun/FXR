@@ -144,6 +144,10 @@ class AppDelegate: NSObject
 	@IBOutlet weak var trackingNumber: NSTextField!
 	@IBOutlet weak var detailsView: NSOutlineView!
 	@IBOutlet weak var specialServicesTable: NSTableView!
+	@IBOutlet weak var packageLength: NSTextField!
+	@IBOutlet weak var packageWidth: NSTextField!
+	@IBOutlet weak var packageHeight: NSTextField!
+	@IBOutlet weak var packageLinearUnits: NSPopUpButton!
 	@IBOutlet weak var freightClassPopUp: NSPopUpButton!
 	@IBOutlet weak var freightPkgTypePopUp: NSPopUpButton!
 	@IBOutlet weak var freightDescription: NSTextField!
@@ -347,7 +351,12 @@ class AppDelegate: NSObject
 				variableHandlingChargeDetail: nil,
 				insuredValue: nil,
 				weight: Weight(units: WeightUnits.LB, value: Float(packageWeight.stringValue)!),
-				dimensions: nil,
+				dimensions: Dimensions(
+					length: UInt(packageLength.stringValue) ?? 0,
+					width: UInt(packageWidth.stringValue) ?? 0,
+					height: UInt(packageHeight.stringValue) ?? 0,
+					units: LinearUnits(rawValue: packageLinearUnits.titleOfSelectedItem)
+				),
 				physicalPackaging: PhysicalPackagingType.BOX,
 				itemDescription: nil,
 				itemDescriptionForClearance: nil,
@@ -426,8 +435,6 @@ class AppDelegate: NSObject
 				requestedPackageLineItems: rpli
 			)
 		)
-		
-		//print("\(specialServicesTable.selectedRowIndexes.map{ ShipmentSpecialServiceType.values[$0] })")
 		
 		//print("\(web)")
 		callDataTask(body: "\(web)")
@@ -588,6 +595,7 @@ extension AppDelegate: NSApplicationDelegate
 		specialServicesTable.dataSource = self
 		specialServicesTable.reloadData()
 		
+		packageLinearUnits.addItems(withTitles: LinearUnits.values)
 		freightClassPopUp.addItems(withTitles: FreightClassType.values)
 		freightPkgTypePopUp.addItems(withTitles: PhysicalPackagingType.values)
 		linearUnitsPopUp.addItems(withTitles: LinearUnits.values)
