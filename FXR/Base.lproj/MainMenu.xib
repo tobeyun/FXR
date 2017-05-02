@@ -952,6 +952,14 @@ DQ
                             </menu>
                         </popUpButtonCell>
                     </popUpButton>
+                    <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="65J-ql-6eH">
+                        <rect key="frame" x="67" y="340" width="401" height="5"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    </box>
+                    <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="rdA-UP-8F3">
+                        <rect key="frame" x="67" y="269" width="401" height="5"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                    </box>
                 </subviews>
             </view>
             <point key="canvasLocation" x="324" y="179.5"/>
