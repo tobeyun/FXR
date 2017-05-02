@@ -122,10 +122,10 @@ extension String {
 
 extension AppDelegate {
 	func isFreight() -> Bool {
-		guard let _ = lineItems.items as? [FreightShipmentLineItem] else {
+		guard let _ = lineItems.items.first as? FreightShipmentLineItem else {
 			return false
 		}
-	
+		
 		return true
 	}
 }
@@ -165,9 +165,6 @@ class AppDelegate: NSObject
 	var parentStack = Stack<SoapElement>()
 	var currentId: Int? = nil
 	var lineItems = Stack<Any>()
-	var specialServices = Stack<ShipmentSpecialServiceType>()
-	
-	var prefs: SettingsController? = nil
 	
 	@IBAction func OpenPreferences(_ sender: Any) {
 		DispatchQueue.main.async(execute: { () -> Void in
@@ -222,27 +219,27 @@ class AppDelegate: NSObject
 		})
 	}
 	
-	@IBAction func freightDisclosure(_ sender: NSButton) {
-		var windowFrame = window.frame
-		
+//	@IBAction func freightDisclosure(_ sender: NSButton) {
+//		var windowFrame = window.frame
+//		
 //		outlineViewTopConstraint.isActive = (sender.state == 0)
 //		lineItemTableBottomConstraint.isActive = (sender.state == 1)
-		
-		let toAdd = CGFloat(100) * ((sender.state == 1) ? 1 : -1)
-		
-		let oldWidth = windowFrame.size.width
-		let oldHeight = windowFrame.size.height
-		
-		let newWidth = oldWidth // + toAdd
-		let newHeight = oldHeight + toAdd
-		
-		windowFrame.size = NSMakeSize(newWidth, newHeight)
-		windowFrame.origin.y -= toAdd
-		
-		window.setFrame(windowFrame, display: true, animate: true)
-		
-		//outlineViewTopConstraint.animator().constant += toAdd
-	}
+//		
+//		let toAdd = CGFloat(100) * ((sender.state == 1) ? 1 : -1)
+//		
+//		let oldWidth = windowFrame.size.width
+//		let oldHeight = windowFrame.size.height
+//		
+//		let newWidth = oldWidth // + toAdd
+//		let newHeight = oldHeight + toAdd
+//		
+//		windowFrame.size = NSMakeSize(newWidth, newHeight)
+//		windowFrame.origin.y -= toAdd
+//		
+//		window.setFrame(windowFrame, display: true, animate: true)
+//		
+//		outlineViewTopConstraint.animator().constant += toAdd
+//	}
 	
 	@IBAction func quickTrack(_ sender: Any)
 	{
@@ -283,16 +280,6 @@ class AppDelegate: NSObject
 		"</soapenv:Envelope>"
 		
 		callDataTask(body: soapMessage)
-	}
-	
-	@IBAction func addTrackLineItem(_ sender: Any) {
-		lineItems.items.append(trackingNumber.stringValue)
-		
-		DispatchQueue.main.async(execute: { () -> Void in
-			self.lineItemsTable.reloadData()
-			
-			self.trackingNumber.stringValue = ""
-		})
 	}
 	
 	@IBAction func quickRate(_ sender: Any)
@@ -365,7 +352,15 @@ class AppDelegate: NSObject
 				itemDescription: nil,
 				itemDescriptionForClearance: nil,
 				customerReferences: nil,
-				specialServicesRequested: nil,
+				specialServicesRequested: PackageSpecialServicesRequested(
+					specialServiceTypes: specialServicesTable.selectedRowIndexes.map{ PackageSpecialServiceType(rawValue: PackageSpecialServiceType.values[$0])! },
+					codDetail: nil, //CodDetail?,
+					dangerousGoodsDetail: nil, //DangerousGoodsDetail?,
+					dryIceWeight: nil, //Weight?,
+					signatureOptionDetail: nil, //SignatureOptionDetail?,
+					priorityAlertDetail: nil, //PriorityAlertDetail?,
+					alcoholDetail: nil //AlcoholDetail?),
+				),
 				contentRecords: nil
 			)
 			
@@ -431,6 +426,8 @@ class AppDelegate: NSObject
 				requestedPackageLineItems: rpli
 			)
 		)
+		
+		//print("\(specialServicesTable.selectedRowIndexes.map{ ShipmentSpecialServiceType.values[$0] })")
 		
 		//print("\(web)")
 		callDataTask(body: "\(web)")
@@ -574,8 +571,6 @@ extension AppDelegate: NSApplicationDelegate
 		
 		currentId = nil
 		
-		prefs = SettingsController()
-		
 		senderZip.delegate = self
 		recipientZip.delegate = self
 		
@@ -592,10 +587,6 @@ extension AppDelegate: NSApplicationDelegate
 		specialServicesTable.delegate = self
 		specialServicesTable.dataSource = self
 		specialServicesTable.reloadData()
-		
-//		freightClassType.delegate = self
-//		freightClassType.dataSource = self
-//		freightClassType.reloadData()
 		
 		freightClassPopUp.addItems(withTitles: FreightClassType.values)
 		freightPkgTypePopUp.addItems(withTitles: PhysicalPackagingType.values)
@@ -720,7 +711,7 @@ extension AppDelegate: NSTableViewDataSource
 		}
 		
 		if (tableView.identifier == "SpecialServicesTable") {
-			return ShipmentSpecialServiceType.values.count
+			return PackageSpecialServiceType.values.count
 		}
 		
 		return 0
@@ -757,7 +748,7 @@ extension AppDelegate: NSTableViewDelegate
 		}
 		
 		if (tableView.identifier == "SpecialServicesTable") {
-			return ShipmentSpecialServiceType.values[row]
+			return PackageSpecialServiceType.values[row]
 		}
 		
 		return nil
@@ -872,10 +863,10 @@ extension AppDelegate: NSOutlineViewDataSource
 extension AppDelegate: NSComboBoxDelegate, NSComboBoxDataSource
 {
 	func numberOfItems(in comboBox: NSComboBox) -> Int {
-		return ShipmentSpecialServiceType.values.count
+		return PackageSpecialServiceType.values.count
 	}
 	
 	func comboBox(_ comboBox: NSComboBox, objectValueForItemAt index: Int) -> Any? {
-		return ShipmentSpecialServiceType.values[index]
+		return PackageSpecialServiceType.values[index]
 	}
 }
