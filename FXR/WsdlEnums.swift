@@ -408,44 +408,44 @@ enum CustomDeliveryWindowType: String
 
 enum ShipmentSpecialServiceType: String
 {
-	case BROKER_SELECT_OPTION
-	case CALL_BEFORE_DELIVERY
-	case COD
-	case CUSTOM_DELIVERY_WINDOW
-	case CUT_FLOWERS
-	case DANGEROUS_GOODS
-	case DO_NOT_BREAK_DOWN_PALLETS
-	case DO_NOT_STACK_PALLETS
-	case DRY_ICE
-	case EAST_COAST_SPECIAL
-	case ELECTRONIC_TRADE_DOCUMENTS
-	case EVENT_NOTIFICATION
-	case EXTREME_LENGTH
-	case FEDEX_ONE_RATE
-	case FOOD
-	case FREIGHT_GUARANTEE
-	case FREIGHT_TO_COLLECT
-	case FUTURE_DAY_SHIPMENT
-	case HOLD_AT_LOCATION
-	case HOME_DELIVERY_PREMIUM
-	case INSIDE_DELIVERY
-	case INSIDE_PICKUP
-	case INTERNATIONAL_CONTROLLED_EXPORT_SERVICE
-	case INTERNATIONAL_TRAFFIC_IN_ARMS_REGULATIONS
-	case LIFTGATE_DELIVERY
-	case LIFTGATE_PICKUP
-	case LIMITED_ACCESS_DELIVERY
-	case LIMITED_ACCESS_PICKUP
-	case PENDING_SHIPMENT
-	case PHARMACY_DELIVERY
-	case POISON
-	case PROTECTION_FROM_FREEZING
-	case RETURNS_CLEARANCE
-	case RETURN_SHIPMENT
-	case SATURDAY_DELIVERY
-	case SATURDAY_PICKUP
-	case THIRD_PARTY_CONSIGNEE
-	case TOP_LOAD
+	case BROKER_SELECT_OPTION = "Broker Select Option"
+	case CALL_BEFORE_DELIVERY = "Call Before Delivery"
+	case COD = "COD"
+	case CUSTOM_DELIVERY_WINDOW = "Custom Delivery Window"
+	case CUT_FLOWERS = "Cut Flowers"
+	case DANGEROUS_GOODS = "Dangerous Goods"
+	case DO_NOT_BREAK_DOWN_PALLETS = "Do Not Break Down Pallets"
+	case DO_NOT_STACK_PALLETS = "Do Not Stack Pallets"
+	case DRY_ICE = "Dry Ice"
+	case EAST_COAST_SPECIAL = "East Coast Special"
+	case ELECTRONIC_TRADE_DOCUMENTS = "Electronic Trade Documents"
+	case EVENT_NOTIFICATION = "Event Notification"
+	case EXTREME_LENGTH = "Extreme Length"
+	case FEDEX_ONE_RATE = "FedEx One Rate"
+	case FOOD = "Food"
+	case FREIGHT_GUARANTEE = "Freight Guarantee"
+	case FREIGHT_TO_COLLECT = "Freight to Collect"
+	case FUTURE_DAY_SHIPMENT = "Future Day Shipment"
+	case HOLD_AT_LOCATION = "Hold at Location"
+	case HOME_DELIVERY_PREMIUM = "Home Delivery Premium"
+	case INSIDE_DELIVERY = "Inside Delivery"
+	case INSIDE_PICKUP = "Inside Pickup"
+	case INTERNATIONAL_CONTROLLED_EXPORT_SERVICE = "International Controlled Export Service"
+	case INTERNATIONAL_TRAFFIC_IN_ARMS_REGULATIONS = "International Traffic in Arms Regulations"
+	case LIFTGATE_DELIVERY = "Liftgate Delivery"
+	case LIFTGATE_PICKUP = "Liftgate Pickup"
+	case LIMITED_ACCESS_DELIVERY = "Limited Access Delivery"
+	case LIMITED_ACCESS_PICKUP = "Limited Access Pickup"
+	case PENDING_SHIPMENT = "Pending Shipment"
+	case PHARMACY_DELIVERY = "Pharmacy Delivery"
+	case POISON = "Poison"
+	case PROTECTION_FROM_FREEZING = "Protection from Freezing"
+	case RETURNS_CLEARANCE = "Returns Clearance"
+	case RETURN_SHIPMENT = "Return Shipment"
+	case SATURDAY_DELIVERY = "Saturday Delivery"
+	case SATURDAY_PICKUP = "Saturday Pickup"
+	case THIRD_PARTY_CONSIGNEE = "Third Party Consignee"
+	case TOP_LOAD = "Top Load"
 	
 	static let values = [BROKER_SELECT_OPTION.rawValue,
 	                     CALL_BEFORE_DELIVERY.rawValue,
@@ -588,8 +588,10 @@ enum FreightClassType: String
 
 enum VolumeUnits: String
 {
-	case CUBIC_FT
-	case CUBIC_M
+	case CUBIC_FT = "Cubic FT"
+	case CUBIC_M = "Cubic M"
+	
+	static let values = [CUBIC_FT.rawValue, CUBIC_M.rawValue]
 }
 
 enum RateElementBasisType: String
