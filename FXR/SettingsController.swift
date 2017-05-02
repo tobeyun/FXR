@@ -86,7 +86,7 @@ class SettingsController: NSWindowController, NSWindowDelegate
 			KeychainManager.addData(itemKey: "ltlaccount", itemValue: ltlAccountNumber.stringValue)
 		}
 		
-		UserDefaults.standard.set("https://ws.fedex.com:443/web-services/", forKey: "ws-url")
+		UserDefaults.standard.set("https://wsbeta.fedex.com:443/web-services/", forKey: "ws-url")
 		
 		UserDefaults.standard.set(companyName.stringValue, forKey: "company")
 		UserDefaults.standard.set(addressLine.stringValue, forKey: "address")

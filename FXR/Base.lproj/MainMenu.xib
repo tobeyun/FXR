@@ -462,14 +462,14 @@ CA
                 <rect key="frame" x="0.0" y="0.0" width="850" height="397"/>
                 <autoresizingMask key="autoresizingMask"/>
                 <subviews>
-                    <scrollView identifier="LineItemsTable" fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XXk-nl-hLX">
+                    <scrollView fixedFrame="YES" autohidesScrollers="YES" horizontalLineScroll="19" horizontalPageScroll="10" verticalLineScroll="19" verticalPageScroll="10" usesPredominantAxisScrolling="NO" translatesAutoresizingMaskIntoConstraints="NO" id="XXk-nl-hLX">
                         <rect key="frame" x="476" y="212" width="354" height="131"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
                         <clipView key="contentView" ambiguous="YES" id="b1p-5H-dNy">
                             <rect key="frame" x="1" y="0.0" width="352" height="130"/>
                             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                             <subviews>
-                                <tableView verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" headerView="3Gc-TX-fsD" id="dk2-k3-OH4">
+                                <tableView identifier="LineItemsTable" verticalHuggingPriority="750" allowsExpansionToolTips="YES" columnAutoresizingStyle="lastColumnOnly" alternatingRowBackgroundColors="YES" columnSelection="YES" multipleSelection="NO" autosaveColumns="NO" headerView="3Gc-TX-fsD" id="dk2-k3-OH4">
                                     <rect key="frame" x="0.0" y="0.0" width="352" height="107"/>
                                     <autoresizingMask key="autoresizingMask"/>
                                     <size key="intercellSpacing" width="3" height="2"/>
@@ -861,11 +861,11 @@ DQ
                         </connections>
                     </button>
                     <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="wk4-6h-a8y">
-                        <rect key="frame" x="67" y="320" width="401" height="193"/>
+                        <rect key="frame" x="67" y="320" width="401" height="161"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     </box>
                     <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="T3B-Md-YS5">
-                        <rect key="frame" x="66" y="269" width="401" height="15"/>
+                        <rect key="frame" x="66" y="269" width="401" height="56"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     </box>
                     <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="DG4-L5-iL0">
