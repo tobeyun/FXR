@@ -144,6 +144,7 @@ class AppDelegate: NSObject
 	@IBOutlet weak var trackingNumber: NSTextField!
 	@IBOutlet weak var detailsView: NSOutlineView!
 	@IBOutlet weak var specialServicesTable: NSTableView!
+	@IBOutlet weak var packageDescription: NSTextField!
 	@IBOutlet weak var packageLength: NSTextField!
 	@IBOutlet weak var packageWidth: NSTextField!
 	@IBOutlet weak var packageHeight: NSTextField!
@@ -190,7 +191,59 @@ class AppDelegate: NSObject
 		lineItemsTable.reloadData()
 	}
 	
+	@IBAction func addPackageLineItemButton(_ sender: Any) {
+		addPackageLineItem()
+	}
+	
+	func addPackageLineItem()
+	{
+		lineItems.items.append(RequestedPackageLineItem(
+			sequenceNumber: 1,
+			groupNumber: 1,
+			groupPackageCount: 1,
+			variableHandlingChargeDetail: nil,
+			insuredValue: nil,
+			weight: Weight(units: WeightUnits.LB, value: Float(packageWeight.stringValue)!),
+			dimensions: Dimensions(
+				length: UInt(packageLength.stringValue) ?? 0,
+				width: UInt(packageWidth.stringValue) ?? 0,
+				height: UInt(packageHeight.stringValue) ?? 0,
+				units: LinearUnits(rawValue: packageLinearUnits.titleOfSelectedItem)
+			),
+			physicalPackaging: PhysicalPackagingType.BOX,
+			itemDescription: packageDescription.stringValue,
+			itemDescriptionForClearance: nil,
+			customerReferences: nil,
+			specialServicesRequested: PackageSpecialServicesRequested(
+				specialServiceTypes: specialServicesTable.selectedRowIndexes.map{ PackageSpecialServiceType(rawValue: PackageSpecialServiceType.values[$0])! },
+				codDetail: nil, //CodDetail?,
+				dangerousGoodsDetail: nil, //DangerousGoodsDetail?,
+				dryIceWeight: nil, //Weight?,
+				signatureOptionDetail: nil, //SignatureOptionDetail?,
+				priorityAlertDetail: nil, //PriorityAlertDetail?,
+				alcoholDetail: nil //AlcoholDetail?),
+			),
+			contentRecords: nil
+			)
+		)
+		
+		DispatchQueue.main.async(execute: { () -> Void in
+			self.lineItemsTable.reloadData()
+			
+			self.specialServicesTable.deselectAll(nil)
+			self.packageWidth.stringValue = ""
+			self.packageHeight.stringValue = ""
+			self.packageLength.stringValue = ""
+			self.packageLinearUnits.selectItem(at: 0)
+		})
+	}
+	
 	@IBAction func addFreightLineItemButton(_ sender: Any) {
+		addFreightLineItem()
+	}
+	
+	func addFreightLineItem()
+	{
 		lineItems.items.append(FreightShipmentLineItem(
 			freightClass: FreightClassType(rawValue: freightClassPopUp.titleOfSelectedItem!),
 			packaging: PhysicalPackagingType(rawValue: freightPkgTypePopUp.titleOfSelectedItem!),
@@ -205,7 +258,6 @@ class AppDelegate: NSObject
 			),
 			volume: Volume(units: VolumeUnits.CUBIC_FT, value: Float(freightVolume.stringValue) ?? 0))
 		)
-		
 		
 		DispatchQueue.main.async(execute: { () -> Void in
 			self.lineItemsTable.reloadData()
@@ -288,12 +340,23 @@ class AppDelegate: NSObject
 	
 	@IBAction func quickRate(_ sender: Any)
 	{
-		let rpli: RequestedPackageLineItem?
+		if (lineItems.items.count == 0) {
+			addPackageLineItem()
+		} else if (lineItems.items.first is FreightShipmentLineItem && packageWeight.stringValue != "") {
+			addFreightLineItem()
+		} else if (lineItems.items.first is RequestedPackageLineItem && packageWeight.stringValue != "") {
+			addPackageLineItem()
+		}
+		
+		packageWeight.stringValue = ""
+	}
+	
+	func rateShipment()
+	{
+		let rpli: [RequestedPackageLineItem]?
 		let fsd: FreightShipmentDetail?
 		
-		if (senderZip.stringValue == "" || recipientZip.stringValue == "" || packageWeight.stringValue == "") {
-			return
-		}
+		if (lineItems.items.count == 0) { return }
 		
 		let wad = WebAuthenticationDetail(
 			parentCredential: nil,
@@ -334,7 +397,7 @@ class AppDelegate: NSObject
 				coupons: nil, //String?,
 				totalHandlingUnits: nil, //UInt?,
 				clientDiscountPercent: nil, //Decimal?,
-				palletWeight: Weight(units: WeightUnits.LB, value: 100.0),
+				palletWeight: nil,
 				shipmentDimensions: nil, //Dimensions?,
 				comment: nil, //String?,
 				specialServicePayments: nil, //FreightSpecialServicePayment?,
@@ -344,34 +407,7 @@ class AppDelegate: NSObject
 			
 			rpli = nil
 		} else {
-			rpli = RequestedPackageLineItem(
-				sequenceNumber: 1,
-				groupNumber: 1,
-				groupPackageCount: 1,
-				variableHandlingChargeDetail: nil,
-				insuredValue: nil,
-				weight: Weight(units: WeightUnits.LB, value: Float(packageWeight.stringValue)!),
-				dimensions: Dimensions(
-					length: UInt(packageLength.stringValue) ?? 0,
-					width: UInt(packageWidth.stringValue) ?? 0,
-					height: UInt(packageHeight.stringValue) ?? 0,
-					units: LinearUnits(rawValue: packageLinearUnits.titleOfSelectedItem)
-				),
-				physicalPackaging: PhysicalPackagingType.BOX,
-				itemDescription: nil,
-				itemDescriptionForClearance: nil,
-				customerReferences: nil,
-				specialServicesRequested: PackageSpecialServicesRequested(
-					specialServiceTypes: specialServicesTable.selectedRowIndexes.map{ PackageSpecialServiceType(rawValue: PackageSpecialServiceType.values[$0])! },
-					codDetail: nil, //CodDetail?,
-					dangerousGoodsDetail: nil, //DangerousGoodsDetail?,
-					dryIceWeight: nil, //Weight?,
-					signatureOptionDetail: nil, //SignatureOptionDetail?,
-					priorityAlertDetail: nil, //PriorityAlertDetail?,
-					alcoholDetail: nil //AlcoholDetail?),
-				),
-				contentRecords: nil
-			)
+			rpli = lineItems.items as? [RequestedPackageLineItem]
 			
 			fsd = nil
 		}
@@ -390,7 +426,7 @@ class AppDelegate: NSObject
 				serviceType: nil, //ServiceType.GROUND_HOME_DELIVERY,
 				packagingType: PackagingType.YOUR_PACKAGING,
 				variationOptions: nil,
-				totalWeight: Weight(units: WeightUnits.LB, value: Float(packageWeight.stringValue)!),
+				totalWeight: Weight(units: WeightUnits.LB, value: (lineItems.items as! [RequestedPackageLineItem]).reduce(Float(0), { $0 + $1._weight!._value! })),
 				totalInsuredValue: nil,
 				preferredCurrency: nil,
 				shipmentAuthorizationDetail: nil,
@@ -429,10 +465,10 @@ class AppDelegate: NSObject
 				shippingDocumentSpecification: nil,
 				rateRequestTypes: RateRequestType.LIST,
 				edtRequestType: EdtRequestType.NONE,
-				packageCount: 1,
+				packageCount: lineItems.items.count,
 				shipmentOnlyFields: ShipmentOnlyFieldsType.WEIGHT,
 				configurationData: nil,
-				requestedPackageLineItems: rpli
+				requestedPackageLineItems: rpli!
 			)
 		)
 		
@@ -461,10 +497,6 @@ class AppDelegate: NSObject
 		let task = URLSession.shared.dataTask(with: getUrlRequest(body: web, url2: "https://secure.shippingapis.com/ShippingAPI.dll?API=CityStateLookup"), completionHandler: completionCallback)
 
 		task.resume()
-	}
-	
-	@IBAction func freightClassPopUp(_ sender: Any) {
-		
 	}
 	
 	func getParty() -> Party
@@ -715,6 +747,10 @@ extension AppDelegate: NSTableViewDataSource
 	func numberOfRows(in tableView: NSTableView) -> Int
 	{
 		if (tableView.identifier == "LineItemsTable") {
+			rateShipment()
+		}
+		
+		if (tableView.identifier == "LineItemsTable") {
 			return lineItems.items.count
 		}
 		
@@ -728,18 +764,6 @@ extension AppDelegate: NSTableViewDataSource
 
 extension AppDelegate: NSTableViewDelegate
 {
-	func tableView(_ tableView: NSTableView, dataCellFor tableColumn: NSTableColumn?, row: Int) -> NSCell? {
-//		if (tableColumn?.identifier == "ModifyColumn") {
-//			let cell = NSCell()
-//			
-//			cell.image = NSImage(named: "NSActionTemplate")
-//			
-//			return cell
-//		}
-		
-		return nil
-	}
-	
 	func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any?
 	{
 		if (tableView.identifier == "LineItemsTable") {
@@ -750,7 +774,7 @@ extension AppDelegate: NSTableViewDelegate
 				}
 				
 				if let lineItem = lineItems.items[row] as? RequestedPackageLineItem {
-					return lineItem.itemdescription_()
+					return "\(lineItem._weight!._value!) \(lineItem._weight!._units!) - \(lineItem._itemDescription!)"
 				}
 			}
 		}
