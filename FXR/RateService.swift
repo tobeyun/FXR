@@ -261,11 +261,11 @@ struct RequestedShipment : CustomStringConvertible
 	fileprivate let _packageCount: Int?
 	fileprivate let _shipmentOnlyFields: ShipmentOnlyFieldsType?
 	fileprivate let _configurationData: ShipmentConfigurationData?
-	fileprivate let _requestedPackageLineItems: [RequestedPackageLineItem]
+	fileprivate let _requestedPackageLineItems: [RequestedPackageLineItem]?
 
 	var description: String { return "\(shipTimestamp())\(dropoffType())\(serviceType())\(packagingType())\(variationOptions())\(totalWeight())\(totalInsuredValue())\(preferredCurrency())\(shipmentAuthorizationDetail())\(shipper())\(recipient())\(recipientLocationNumber())\(origin())\(soldTo())\(shippingChargesPayment())\(specialServicesRequested())\(expressFreightDetail())\(freightShipmentDetail())\(deliveryInstructions())\(variableHandlingChargeDetail())\(customsClearanceDetail())\(pickupDetail())\(smartPostDetail())\(blockInsightVisibility())\(labelSpecification())\(shippingDocumentSpecification())\(rateRequestTypes())\(edtRequestType())\(packageCount())\(shipmentOnlyFields())\(configurationData())\(requestedPackageLineItems())" }
 	
-	init(shipTimestamp: Date?, dropoffType: DropoffType?, serviceType: ServiceType?, packagingType: PackagingType?, variationOptions: ShipmentVariationOptionDetail?, totalWeight: Weight?, totalInsuredValue: Money?, preferredCurrency: String?, shipmentAuthorizationDetail: ShipmentAuthorizationDetail?, shipper: Party?, recipient: Party?, recipientLocationNumber: String?, origin: ContactAndAddress?, soldTo: Party?, shippingChargesPayment: Payment?, specialServicesRequested: ShipmentSpecialServicesRequested?, expressFreightDetail: ExpressFreightDetail?, freightShipmentDetail: FreightShipmentDetail?, deliveryInstructions: String?, variableHandlingChargeDetail: VariableHandlingChargeDetail?, customsClearanceDetail: CustomsClearanceDetail?, pickupDetail: PickupDetail?, smartPostDetail: SmartPostShipmentDetail?, blockInsightVisibility: Bool?, labelSpecification: LabelSpecification?, shippingDocumentSpecification: ShippingDocumentSpecification?, rateRequestTypes: RateRequestType?, edtRequestType: EdtRequestType?, packageCount: Int?, shipmentOnlyFields: ShipmentOnlyFieldsType?, configurationData: ShipmentConfigurationData?, requestedPackageLineItems: [RequestedPackageLineItem])
+	init(shipTimestamp: Date?, dropoffType: DropoffType?, serviceType: ServiceType?, packagingType: PackagingType?, variationOptions: ShipmentVariationOptionDetail?, totalWeight: Weight?, totalInsuredValue: Money?, preferredCurrency: String?, shipmentAuthorizationDetail: ShipmentAuthorizationDetail?, shipper: Party?, recipient: Party?, recipientLocationNumber: String?, origin: ContactAndAddress?, soldTo: Party?, shippingChargesPayment: Payment?, specialServicesRequested: ShipmentSpecialServicesRequested?, expressFreightDetail: ExpressFreightDetail?, freightShipmentDetail: FreightShipmentDetail?, deliveryInstructions: String?, variableHandlingChargeDetail: VariableHandlingChargeDetail?, customsClearanceDetail: CustomsClearanceDetail?, pickupDetail: PickupDetail?, smartPostDetail: SmartPostShipmentDetail?, blockInsightVisibility: Bool?, labelSpecification: LabelSpecification?, shippingDocumentSpecification: ShippingDocumentSpecification?, rateRequestTypes: RateRequestType?, edtRequestType: EdtRequestType?, packageCount: Int?, shipmentOnlyFields: ShipmentOnlyFieldsType?, configurationData: ShipmentConfigurationData?, requestedPackageLineItems: [RequestedPackageLineItem]?)
 	{
 		_shipTimestamp = shipTimestamp
 		_dropoffType = dropoffType
@@ -332,15 +332,15 @@ struct RequestedShipment : CustomStringConvertible
 	func packageCount() -> String { return (_packageCount == nil ? "" : "<PackageCount>\(_packageCount!)</PackageCount>") }
 	func shipmentOnlyFields() -> String { return (_shipmentOnlyFields == nil ? "" : "<ShipmentOnlyFields>\(_shipmentOnlyFields!)</ShipmentOnlyFields>") }
 	func configurationData() -> String { return (_configurationData == nil ? "" : "<ConfigurationData>\(_configurationData!)</ConfigurationData>") }
-	func requestedPackageLineItems() -> String { return "\((_requestedPackageLineItems.map{ "<RequestedPackageLineItems>\($0)</RequestedPackageLineItems>" } as [String]).joined())" }
+	func requestedPackageLineItems() -> String { return (_requestedPackageLineItems == nil ? "" : "\((_requestedPackageLineItems?.map{ "<RequestedPackageLineItems>\($0)</RequestedPackageLineItems>" } as [String]?)!.joined())") }
 	//func requestedPackageLineItems() -> String { return (_requestedPackageLineItems == nil ? "" : "<RequestedPackageLineItems>\(_requestedPackageLineItems!)</RequestedPackageLineItems>") }
 }
 
 struct RequestedPackageLineItem : CustomStringConvertible
 {
 	let _sequenceNumber: Int?
-	let _groupNumber: UInt?
-	let _groupPackageCount: UInt?
+	let _groupNumber: Int?
+	let _groupPackageCount: Int?
 	let _variableHandlingChargeDetail: VariableHandlingChargeDetail?
 	let _insuredValue: Money?
 	let _weight: Weight?
@@ -354,7 +354,7 @@ struct RequestedPackageLineItem : CustomStringConvertible
 	
 	var description: String { return "\(sequenceNumber())\(groupNumber())\(groupPackageCount())\(variableHandlingChargeDetail())\(insuredValue())\(weight())\(dimensions())\(physicalPackaging())\(itemDescription())\(itemDescriptionForClearance())\(customerReferences())\(specialServicesRequested())\(contentRecords())" }
 	
-	init(sequenceNumber: Int?, groupNumber: UInt?, groupPackageCount: UInt?, variableHandlingChargeDetail: VariableHandlingChargeDetail?, insuredValue: Money?, weight: Weight?, dimensions: Dimensions?, physicalPackaging: PhysicalPackagingType?, itemDescription: String?, itemDescriptionForClearance: String?, customerReferences: CustomerReference?, specialServicesRequested: PackageSpecialServicesRequested?, contentRecords: ContentRecord?)
+	init(sequenceNumber: Int?, groupNumber: Int?, groupPackageCount: Int?, variableHandlingChargeDetail: VariableHandlingChargeDetail?, insuredValue: Money?, weight: Weight?, dimensions: Dimensions?, physicalPackaging: PhysicalPackagingType?, itemDescription: String?, itemDescriptionForClearance: String?, customerReferences: CustomerReference?, specialServicesRequested: PackageSpecialServicesRequested?, contentRecords: ContentRecord?)
 	{
 		_sequenceNumber = sequenceNumber
 		_groupNumber = groupNumber
@@ -2905,14 +2905,14 @@ struct RadioactivityDetail : CustomStringConvertible
 
 struct Dimensions : CustomStringConvertible
 {
-	fileprivate let _length: UInt?
-	fileprivate let _width: UInt?
-	fileprivate let _height: UInt?
+	fileprivate let _length: Int?
+	fileprivate let _width: Int?
+	fileprivate let _height: Int?
 	fileprivate let _units: LinearUnits?
 	
 	var description: String { return "\(length())\(width())\(height())\(units())" }
 	
-	init(length: UInt?, width: UInt?, height: UInt?, units: LinearUnits?)
+	init(length: Int?, width: Int?, height: Int?, units: LinearUnits?)
 	{
 		_length = length
 		_width = width
