@@ -135,7 +135,6 @@ class AppDelegate: NSObject
 {
 	// app outlets
 	@IBOutlet weak var window: NSWindow!
-	@IBOutlet weak var detailsTable: NSTableView!
 	@IBOutlet weak var progressIndicator: NSProgressIndicator!
 	@IBOutlet weak var senderZip: NSTextField!
 	@IBOutlet weak var recipientZip: NSTextField!
@@ -144,23 +143,23 @@ class AppDelegate: NSObject
 	@IBOutlet weak var trackingNumber: NSTextField!
 	@IBOutlet weak var detailsView: NSOutlineView!
 	@IBOutlet weak var specialServicesTable: NSTableView!
-	@IBOutlet weak var packageDescription: NSTextField!
 	@IBOutlet weak var packageLength: NSTextField!
 	@IBOutlet weak var packageWidth: NSTextField!
 	@IBOutlet weak var packageHeight: NSTextField!
 	@IBOutlet weak var packageLinearUnits: NSPopUpButton!
 	@IBOutlet weak var freightClassPopUp: NSPopUpButton!
 	@IBOutlet weak var freightPkgTypePopUp: NSPopUpButton!
-	@IBOutlet weak var freightDescription: NSTextField!
 	@IBOutlet weak var freightQuantity: NSTextField!
 	@IBOutlet weak var freightVolume: NSTextField!
 	@IBOutlet weak var residentialCheck: NSButton!
 	@IBOutlet weak var lineItemsTable: NSTableView!
 	@IBOutlet weak var linearUnitsPopUp: NSPopUpButton!
+	@IBOutlet weak var freightVolumeUnitsPopUp: NSPopUpButton!
 	@IBOutlet weak var freightItemWeight: NSTextField!
 	@IBOutlet weak var freightItemLength: NSTextField!
 	@IBOutlet weak var freightItemWidth: NSTextField!
 	@IBOutlet weak var freightItemHeight: NSTextField!
+	@IBOutlet weak var itemDetailTabView: NSTabView!
 	
 	// local vars
 	var cityState = (city: "", state: "", zip: "")
@@ -188,15 +187,30 @@ class AppDelegate: NSObject
 
 		lineItems.items.remove(at: lineItemsTable.selectedRow)
 		
+		if (lineItems.items.count == 0) {
+			lineItemsTable.tableColumns[0].title = ""
+			
+			parentStack.items.removeAll()
+			soapStack.items.removeAll()
+			
+			detailsView.reloadData()
+		}
+		
 		lineItemsTable.reloadData()
 	}
 	
 	@IBAction func addPackageLineItemButton(_ sender: Any) {
 		addPackageLineItem()
+		
+		lineItemsTable.tableColumns[0].title = "PARCEL"
+		
+		lineItemsTable.reloadData()
 	}
 	
 	func addPackageLineItem()
 	{
+		if (lineItems.items.first is FreightShipmentLineItem) { lineItems.items.removeAll() }
+		
 		lineItems.items.append(RequestedPackageLineItem(
 			sequenceNumber: 1,
 			groupNumber: 1,
@@ -205,13 +219,13 @@ class AppDelegate: NSObject
 			insuredValue: nil,
 			weight: Weight(units: WeightUnits.LB, value: Float(packageWeight.stringValue)!),
 			dimensions: Dimensions(
-				length: UInt(packageLength.stringValue) ?? 0,
-				width: UInt(packageWidth.stringValue) ?? 0,
-				height: UInt(packageHeight.stringValue) ?? 0,
+				length: Int(packageLength.stringValue),
+				width: Int(packageWidth.stringValue),
+				height: Int(packageHeight.stringValue),
 				units: LinearUnits(rawValue: packageLinearUnits.titleOfSelectedItem)
 			),
 			physicalPackaging: PhysicalPackagingType.BOX,
-			itemDescription: packageDescription.stringValue,
+			itemDescription: nil,
 			itemDescriptionForClearance: nil,
 			customerReferences: nil,
 			specialServicesRequested: PackageSpecialServicesRequested(
@@ -227,52 +241,51 @@ class AppDelegate: NSObject
 			)
 		)
 		
-		DispatchQueue.main.async(execute: { () -> Void in
-			self.lineItemsTable.reloadData()
-			
-			self.specialServicesTable.deselectAll(nil)
-			self.packageWidth.stringValue = ""
-			self.packageHeight.stringValue = ""
-			self.packageLength.stringValue = ""
-			self.packageLinearUnits.selectItem(at: 0)
-		})
+		specialServicesTable.deselectAll(nil)
+		packageWeight.stringValue = ""
+		packageWidth.stringValue = ""
+		packageHeight.stringValue = ""
+		packageLength.stringValue = ""
+		packageLinearUnits.selectItem(withTitle: "IN")
 	}
 	
 	@IBAction func addFreightLineItemButton(_ sender: Any) {
 		addFreightLineItem()
+		
+		lineItemsTable.tableColumns[0].title = "FREIGHT"
+		
+		lineItemsTable.reloadData()
 	}
 	
 	func addFreightLineItem()
 	{
+		if (lineItems.items.first is RequestedPackageLineItem) { lineItems.items.removeAll() }
+		
 		lineItems.items.append(FreightShipmentLineItem(
 			freightClass: FreightClassType(rawValue: freightClassPopUp.titleOfSelectedItem!),
 			packaging: PhysicalPackagingType(rawValue: freightPkgTypePopUp.titleOfSelectedItem!),
 			pieces: UInt(freightQuantity.stringValue) ?? 0,
-			description: freightDescription.stringValue,
+			description: nil,
 			weight: Weight(units: WeightUnits.LB, value: Float(freightItemWeight.stringValue) ?? 0),
 			dimensions: Dimensions(
-				length: UInt(freightItemLength.stringValue) ?? 0,
-				width: UInt(freightItemWidth.stringValue) ?? 0,
-				height: UInt(freightItemHeight.stringValue) ?? 0,
+				length: Int(freightItemLength.stringValue),
+				width: Int(freightItemWidth.stringValue),
+				height: Int(freightItemHeight.stringValue),
 				units: LinearUnits(rawValue: linearUnitsPopUp.titleOfSelectedItem)
 			),
-			volume: Volume(units: VolumeUnits.CUBIC_FT, value: Float(freightVolume.stringValue) ?? 0))
+			volume: Volume(units: VolumeUnits(rawValue: freightVolumeUnitsPopUp.titleOfSelectedItem), value: Float(freightVolume.stringValue) ?? 0))
 		)
 		
-		DispatchQueue.main.async(execute: { () -> Void in
-			self.lineItemsTable.reloadData()
-			
-			self.freightClassPopUp.selectItem(at: 0)
-			self.freightPkgTypePopUp.selectItem(at: 0)
-			self.freightDescription.stringValue = ""
-			self.freightQuantity.stringValue = ""
-			self.freightVolume.stringValue = ""
-			self.freightItemWeight.stringValue = ""
-			self.freightItemWidth.stringValue = ""
-			self.freightItemHeight.stringValue = ""
-			self.freightItemLength.stringValue = ""
-			self.linearUnitsPopUp.selectItem(at: 0)
-		})
+		freightClassPopUp.selectItem(at: 0)
+		freightPkgTypePopUp.selectItem(at: 0)
+		freightQuantity.stringValue = ""
+		freightVolume.stringValue = ""
+		freightItemWeight.stringValue = ""
+		freightItemWidth.stringValue = ""
+		freightItemHeight.stringValue = ""
+		freightItemLength.stringValue = ""
+		linearUnitsPopUp.selectItem(withTitle: "IN")
+		freightVolumeUnitsPopUp.selectItem(withTitle: "Cubic FT")
 	}
 	
 //	@IBAction func freightDisclosure(_ sender: NSButton) {
@@ -336,19 +349,6 @@ class AppDelegate: NSObject
 		"</soapenv:Envelope>"
 		
 		callDataTask(body: soapMessage)
-	}
-	
-	@IBAction func quickRate(_ sender: Any)
-	{
-		if (lineItems.items.count == 0) {
-			addPackageLineItem()
-		} else if (lineItems.items.first is FreightShipmentLineItem && packageWeight.stringValue != "") {
-			addFreightLineItem()
-		} else if (lineItems.items.first is RequestedPackageLineItem && packageWeight.stringValue != "") {
-			addPackageLineItem()
-		}
-		
-		packageWeight.stringValue = ""
 	}
 	
 	func rateShipment()
@@ -426,7 +426,7 @@ class AppDelegate: NSObject
 				serviceType: nil, //ServiceType.GROUND_HOME_DELIVERY,
 				packagingType: PackagingType.YOUR_PACKAGING,
 				variationOptions: nil,
-				totalWeight: Weight(units: WeightUnits.LB, value: (lineItems.items as! [RequestedPackageLineItem]).reduce(Float(0), { $0 + $1._weight!._value! })),
+				totalWeight: Weight(units: WeightUnits.LB, value: getTotalWeight()),
 				totalInsuredValue: nil,
 				preferredCurrency: nil,
 				shipmentAuthorizationDetail: nil,
@@ -468,7 +468,7 @@ class AppDelegate: NSObject
 				packageCount: lineItems.items.count,
 				shipmentOnlyFields: ShipmentOnlyFieldsType.WEIGHT,
 				configurationData: nil,
-				requestedPackageLineItems: rpli!
+				requestedPackageLineItems: rpli
 			)
 		)
 		
@@ -479,8 +479,8 @@ class AppDelegate: NSObject
 	override func controlTextDidEndEditing(_ obj: Notification) {
 		guard let tf = obj.object as? NSTextField else { return }
 		
-		if tf.identifier == "SenderZipTextField" || tf.identifier == "RecipientZipTextField" {
-			if senderZip.stringValue.characters.count == 5 && recipientZip.stringValue.characters.count == 5 {
+		if tf.identifier == "RecipientZipTextField" {
+			if recipientZip.stringValue.characters.count == 5 {
 				getCityStateFromUSPS(recipientZip.stringValue)
 			}
 		}
@@ -497,6 +497,15 @@ class AppDelegate: NSObject
 		let task = URLSession.shared.dataTask(with: getUrlRequest(body: web, url2: "https://secure.shippingapis.com/ShippingAPI.dll?API=CityStateLookup"), completionHandler: completionCallback)
 
 		task.resume()
+	}
+	
+	func getTotalWeight() -> Float
+	{
+		if isFreight() {
+			return (lineItems.items as! [FreightShipmentLineItem]).reduce(Float(0), { $0 + $1._weight!._value! })
+		} else {
+			return (lineItems.items as! [RequestedPackageLineItem]).reduce(Float(0), { $0 + $1._weight!._value! })
+		}
 	}
 	
 	func getParty() -> Party
@@ -610,9 +619,6 @@ extension AppDelegate: NSApplicationDelegate
 		
 		currentId = nil
 		
-		senderZip.delegate = self
-		recipientZip.delegate = self
-		
 		lineItemsTable.delegate = self
 		lineItemsTable.dataSource = self
 		lineItemsTable.target = self
@@ -627,10 +633,17 @@ extension AppDelegate: NSApplicationDelegate
 		specialServicesTable.dataSource = self
 		specialServicesTable.reloadData()
 		
-		packageLinearUnits.addItems(withTitles: LinearUnits.values)
 		freightClassPopUp.addItems(withTitles: FreightClassType.values)
 		freightPkgTypePopUp.addItems(withTitles: PhysicalPackagingType.values)
+		freightVolumeUnitsPopUp.addItems(withTitles: VolumeUnits.values)
+		packageLinearUnits.addItems(withTitles: LinearUnits.values)
 		linearUnitsPopUp.addItems(withTitles: LinearUnits.values)
+		
+		packageLinearUnits.selectItem(withTitle: "IN")
+		linearUnitsPopUp.selectItem(withTitle: "IN")
+		freightVolumeUnitsPopUp.selectItem(withTitle: "Cubic FT")
+		
+		itemDetailTabView.selectTabViewItem(at: 0)
 		
 		progressIndicator.isDisplayedWhenStopped = false
 		
@@ -770,11 +783,11 @@ extension AppDelegate: NSTableViewDelegate
 			if (tableColumn?.identifier == "ValueColumn") {
 				// get record to display
 				if let lineItem = lineItems.items[row] as? FreightShipmentLineItem {
-					return lineItem._description
+					return "\(lineItem._weight!._value!) \(lineItem._weight!._units!)"
 				}
 				
 				if let lineItem = lineItems.items[row] as? RequestedPackageLineItem {
-					return "\(lineItem._weight!._value!) \(lineItem._weight!._units!) - \(lineItem._itemDescription!)"
+					return "\(lineItem._weight!._value!) \(lineItem._weight!._units!)"
 				}
 			}
 		}
@@ -788,14 +801,11 @@ extension AppDelegate: NSTableViewDelegate
 	
 	func tableViewDoubleClick(_ sender: AnyObject)
 	{
-		guard lineItemsTable.selectedRow >= 0,
-			let item = lineItems.items[lineItemsTable.selectedRow] as? FreightShipmentLineItem else {
-			
-				return
-		}
-		
-		freightDescription.stringValue = item._description!
-		//freightClassPopUp.select(NSMenuItem(title: item.description_(), action: nil, keyEquivalent: ""))
+//		guard lineItemsTable.selectedRow >= 0,
+//			let item = lineItems.items[lineItemsTable.selectedRow] as? FreightShipmentLineItem else {
+//			
+//				return
+//		}
 	}
 }
 
