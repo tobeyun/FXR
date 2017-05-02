@@ -594,7 +594,6 @@ struct ShipmentSpecialServicesRequested : CustomStringConvertible
 	}
 	
 	func specialServiceTypes() -> String { return "\((_specialServiceTypes.map{ "<SpecialServiceTypes>\($0)</SpecialServiceTypes>" } as [String]).joined())" }
-	//func specialServiceTypes() -> String { return (_specialServiceTypes == nil ? "" : "<SpecialServiceTypes>\(_specialServiceTypes!)</SpecialServiceTypes>") }
 	func codDetail() -> String { return (_codDetail == nil ? "" : "<CodDetail>\(_codDetail!)</CodDetail>") }
 	func deliveryOnInvoiceAcceptanceDetail() -> String { return (_deliveryOnInvoiceAcceptanceDetail == nil ? "" : "<DeliveryOnInvoiceAcceptanceDetail>\(_deliveryOnInvoiceAcceptanceDetail!)</DeliveryOnInvoiceAcceptanceDetail>") }
 	func holdAtLocationDetail() -> String { return (_holdAtLocationDetail == nil ? "" : "<HoldAtLocationDetail>\(_holdAtLocationDetail!)</HoldAtLocationDetail>") }
@@ -2945,7 +2944,7 @@ struct CustomerReference : CustomStringConvertible
 
 struct PackageSpecialServicesRequested : CustomStringConvertible
 {
-	fileprivate let _specialServiceTypes: PackageSpecialServiceType?
+	fileprivate let _specialServiceTypes: [PackageSpecialServiceType]
 	fileprivate let _codDetail: CodDetail?
 	fileprivate let _dangerousGoodsDetail: DangerousGoodsDetail?
 	fileprivate let _dryIceWeight: Weight?
@@ -2955,7 +2954,7 @@ struct PackageSpecialServicesRequested : CustomStringConvertible
 	
 	var description: String { return "\(specialServiceTypes())\(codDetail())\(dangerousGoodsDetail())\(dryIceWeight())\(signatureOptionDetail())\(priorityAlertDetail())\(alcoholDetail())" }
 	
-	init(specialServiceTypes: PackageSpecialServiceType, codDetail: CodDetail, dangerousGoodsDetail: DangerousGoodsDetail, dryIceWeight: Weight, signatureOptionDetail: SignatureOptionDetail, priorityAlertDetail: PriorityAlertDetail, alcoholDetail: AlcoholDetail)
+	init(specialServiceTypes: [PackageSpecialServiceType], codDetail: CodDetail?, dangerousGoodsDetail: DangerousGoodsDetail?, dryIceWeight: Weight?, signatureOptionDetail: SignatureOptionDetail?, priorityAlertDetail: PriorityAlertDetail?, alcoholDetail: AlcoholDetail?)
 	{
 		_specialServiceTypes = specialServiceTypes
 		_codDetail = codDetail
@@ -2966,7 +2965,7 @@ struct PackageSpecialServicesRequested : CustomStringConvertible
 		_alcoholDetail = alcoholDetail
 	}
 	
-	func specialServiceTypes() -> String { return (_specialServiceTypes == nil ? "" : "<SpecialServiceTypes>\(_specialServiceTypes!)</SpecialServiceTypes>") }
+	func specialServiceTypes() -> String { return "\((_specialServiceTypes.map{ "<SpecialServiceTypes>\($0)</SpecialServiceTypes>" } as [String]).joined())" }
 	func codDetail() -> String { return (_codDetail == nil ? "" : "<CodDetail>\(_codDetail!)</CodDetail>") }
 	func dangerousGoodsDetail() -> String { return (_dangerousGoodsDetail == nil ? "" : "<DangerousGoodsDetail>\(_dangerousGoodsDetail!)</DangerousGoodsDetail>") }
 	func dryIceWeight() -> String { return (_dryIceWeight == nil ? "" : "<DryIceWeight>\(_dryIceWeight!)</DryIceWeight>") }
