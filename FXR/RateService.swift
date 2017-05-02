@@ -258,14 +258,14 @@ struct RequestedShipment : CustomStringConvertible
 	fileprivate let _shippingDocumentSpecification: ShippingDocumentSpecification?
 	fileprivate let _rateRequestTypes: RateRequestType?
 	fileprivate let _edtRequestType: EdtRequestType?
-	fileprivate let _packageCount: UInt?
+	fileprivate let _packageCount: Int?
 	fileprivate let _shipmentOnlyFields: ShipmentOnlyFieldsType?
 	fileprivate let _configurationData: ShipmentConfigurationData?
-	fileprivate let _requestedPackageLineItems: RequestedPackageLineItem?
+	fileprivate let _requestedPackageLineItems: [RequestedPackageLineItem]
 
 	var description: String { return "\(shipTimestamp())\(dropoffType())\(serviceType())\(packagingType())\(variationOptions())\(totalWeight())\(totalInsuredValue())\(preferredCurrency())\(shipmentAuthorizationDetail())\(shipper())\(recipient())\(recipientLocationNumber())\(origin())\(soldTo())\(shippingChargesPayment())\(specialServicesRequested())\(expressFreightDetail())\(freightShipmentDetail())\(deliveryInstructions())\(variableHandlingChargeDetail())\(customsClearanceDetail())\(pickupDetail())\(smartPostDetail())\(blockInsightVisibility())\(labelSpecification())\(shippingDocumentSpecification())\(rateRequestTypes())\(edtRequestType())\(packageCount())\(shipmentOnlyFields())\(configurationData())\(requestedPackageLineItems())" }
 	
-	init(shipTimestamp: Date?, dropoffType: DropoffType?, serviceType: ServiceType?, packagingType: PackagingType?, variationOptions: ShipmentVariationOptionDetail?, totalWeight: Weight?, totalInsuredValue: Money?, preferredCurrency: String?, shipmentAuthorizationDetail: ShipmentAuthorizationDetail?, shipper: Party?, recipient: Party?, recipientLocationNumber: String?, origin: ContactAndAddress?, soldTo: Party?, shippingChargesPayment: Payment?, specialServicesRequested: ShipmentSpecialServicesRequested?, expressFreightDetail: ExpressFreightDetail?, freightShipmentDetail: FreightShipmentDetail?, deliveryInstructions: String?, variableHandlingChargeDetail: VariableHandlingChargeDetail?, customsClearanceDetail: CustomsClearanceDetail?, pickupDetail: PickupDetail?, smartPostDetail: SmartPostShipmentDetail?, blockInsightVisibility: Bool?, labelSpecification: LabelSpecification?, shippingDocumentSpecification: ShippingDocumentSpecification?, rateRequestTypes: RateRequestType?, edtRequestType: EdtRequestType?, packageCount: UInt?, shipmentOnlyFields: ShipmentOnlyFieldsType?, configurationData: ShipmentConfigurationData?, requestedPackageLineItems: RequestedPackageLineItem?)
+	init(shipTimestamp: Date?, dropoffType: DropoffType?, serviceType: ServiceType?, packagingType: PackagingType?, variationOptions: ShipmentVariationOptionDetail?, totalWeight: Weight?, totalInsuredValue: Money?, preferredCurrency: String?, shipmentAuthorizationDetail: ShipmentAuthorizationDetail?, shipper: Party?, recipient: Party?, recipientLocationNumber: String?, origin: ContactAndAddress?, soldTo: Party?, shippingChargesPayment: Payment?, specialServicesRequested: ShipmentSpecialServicesRequested?, expressFreightDetail: ExpressFreightDetail?, freightShipmentDetail: FreightShipmentDetail?, deliveryInstructions: String?, variableHandlingChargeDetail: VariableHandlingChargeDetail?, customsClearanceDetail: CustomsClearanceDetail?, pickupDetail: PickupDetail?, smartPostDetail: SmartPostShipmentDetail?, blockInsightVisibility: Bool?, labelSpecification: LabelSpecification?, shippingDocumentSpecification: ShippingDocumentSpecification?, rateRequestTypes: RateRequestType?, edtRequestType: EdtRequestType?, packageCount: Int?, shipmentOnlyFields: ShipmentOnlyFieldsType?, configurationData: ShipmentConfigurationData?, requestedPackageLineItems: [RequestedPackageLineItem])
 	{
 		_shipTimestamp = shipTimestamp
 		_dropoffType = dropoffType
@@ -332,26 +332,27 @@ struct RequestedShipment : CustomStringConvertible
 	func packageCount() -> String { return (_packageCount == nil ? "" : "<PackageCount>\(_packageCount!)</PackageCount>") }
 	func shipmentOnlyFields() -> String { return (_shipmentOnlyFields == nil ? "" : "<ShipmentOnlyFields>\(_shipmentOnlyFields!)</ShipmentOnlyFields>") }
 	func configurationData() -> String { return (_configurationData == nil ? "" : "<ConfigurationData>\(_configurationData!)</ConfigurationData>") }
-	func requestedPackageLineItems() -> String { return (_requestedPackageLineItems == nil ? "" : "<RequestedPackageLineItems>\(_requestedPackageLineItems!)</RequestedPackageLineItems>") }
+	func requestedPackageLineItems() -> String { return "\((_requestedPackageLineItems.map{ "<RequestedPackageLineItems>\($0)</RequestedPackageLineItems>" } as [String]).joined())" }
+	//func requestedPackageLineItems() -> String { return (_requestedPackageLineItems == nil ? "" : "<RequestedPackageLineItems>\(_requestedPackageLineItems!)</RequestedPackageLineItems>") }
 }
 
 struct RequestedPackageLineItem : CustomStringConvertible
 {
-	fileprivate let _sequenceNumber: Int?
-	fileprivate let _groupNumber: UInt?
-	fileprivate let _groupPackageCount: UInt?
-	fileprivate let _variableHandlingChargeDetail: VariableHandlingChargeDetail?
-	fileprivate let _insuredValue: Money?
-	fileprivate let _weight: Weight?
-	fileprivate let _dimensions: Dimensions?
-	fileprivate let _physicalPackaging: PhysicalPackagingType?
-	fileprivate let _itemDescription: String?
-	fileprivate let _itemDescriptionForClearance: String?
-	fileprivate let _customerReferences: CustomerReference?
-	fileprivate let _specialServicesRequested: PackageSpecialServicesRequested?
-	fileprivate let _contentRecords: ContentRecord?
+	let _sequenceNumber: Int?
+	let _groupNumber: UInt?
+	let _groupPackageCount: UInt?
+	let _variableHandlingChargeDetail: VariableHandlingChargeDetail?
+	let _insuredValue: Money?
+	let _weight: Weight?
+	let _dimensions: Dimensions?
+	let _physicalPackaging: PhysicalPackagingType?
+	let _itemDescription: String?
+	let _itemDescriptionForClearance: String?
+	let _customerReferences: CustomerReference?
+	let _specialServicesRequested: PackageSpecialServicesRequested?
+	let _contentRecords: ContentRecord?
 	
-	var description: String { return "\(sequenceNumber())\(groupNumber())\(groupPackageCount())\(variableHandlingChargeDetail())\(insuredValue())\(weight())\(dimensions())\(physicalPackaging())\(itemdescription_())\(itemDescriptionForClearance())\(customerReferences())\(specialServicesRequested())\(contentRecords())" }
+	var description: String { return "\(sequenceNumber())\(groupNumber())\(groupPackageCount())\(variableHandlingChargeDetail())\(insuredValue())\(weight())\(dimensions())\(physicalPackaging())\(itemDescription())\(itemDescriptionForClearance())\(customerReferences())\(specialServicesRequested())\(contentRecords())" }
 	
 	init(sequenceNumber: Int?, groupNumber: UInt?, groupPackageCount: UInt?, variableHandlingChargeDetail: VariableHandlingChargeDetail?, insuredValue: Money?, weight: Weight?, dimensions: Dimensions?, physicalPackaging: PhysicalPackagingType?, itemDescription: String?, itemDescriptionForClearance: String?, customerReferences: CustomerReference?, specialServicesRequested: PackageSpecialServicesRequested?, contentRecords: ContentRecord?)
 	{
@@ -370,19 +371,19 @@ struct RequestedPackageLineItem : CustomStringConvertible
 		_contentRecords = contentRecords
 	}
 	
-	func sequenceNumber() -> String { return (_sequenceNumber == nil ? "" : "<SequenceNumber>\(_sequenceNumber!)</SequenceNumber>") }
-	func groupNumber() -> String { return (_groupNumber == nil ? "" : "<GroupNumber>\(_groupNumber!)</GroupNumber>") }
-	func groupPackageCount() -> String { return (_groupPackageCount == nil ? "" : "<GroupPackageCount>\(_groupPackageCount!)</GroupPackageCount>") }
-	func variableHandlingChargeDetail() -> String { return (_variableHandlingChargeDetail == nil ? "" : "<VariableHandlingChargeDetail>\(_variableHandlingChargeDetail!)</VariableHandlingChargeDetail>") }
-	func insuredValue() -> String { return (_insuredValue == nil ? "" : "<InsuredValue>\(_insuredValue!)</InsuredValue>") }
-	func weight() -> String { return (_weight == nil ? "" : "<Weight>\(_weight!)</Weight>") }
-	func dimensions() -> String { return (_dimensions == nil ? "" : "<Dimensions>\(_dimensions!)</Dimensions>") }
-	func physicalPackaging() -> String { return (_physicalPackaging == nil ? "" : "<PhysicalPackaging>\(_physicalPackaging!)</PhysicalPackaging>") }
-	func itemdescription_() -> String { return (_itemDescription == nil ? "" : "<ItemDescription>\(_itemDescription!)</ItemDescription>") }
-	func itemDescriptionForClearance() -> String { return (_itemDescriptionForClearance == nil ? "" : "<ItemDescriptionForClearance>\(_itemDescriptionForClearance!)</ItemDescriptionForClearance>") }
-	func customerReferences() -> String { return (_customerReferences == nil ? "" : "<CustomerReferences>\(_customerReferences!)</CustomerReferences>") }
-	func specialServicesRequested() -> String { return (_specialServicesRequested == nil ? "" : "<SpecialServicesRequested>\(_specialServicesRequested!)</SpecialServicesRequested>") }
-	func contentRecords() -> String { return (_contentRecords == nil ? "" : "<ContentRecords>\(_contentRecords!)</ContentRecords>") }
+	fileprivate func sequenceNumber() -> String { return (_sequenceNumber == nil ? "" : "<SequenceNumber>\(_sequenceNumber!)</SequenceNumber>") }
+	fileprivate func groupNumber() -> String { return (_groupNumber == nil ? "" : "<GroupNumber>\(_groupNumber!)</GroupNumber>") }
+	fileprivate func groupPackageCount() -> String { return (_groupPackageCount == nil ? "" : "<GroupPackageCount>\(_groupPackageCount!)</GroupPackageCount>") }
+	fileprivate func variableHandlingChargeDetail() -> String { return (_variableHandlingChargeDetail == nil ? "" : "<VariableHandlingChargeDetail>\(_variableHandlingChargeDetail!)</VariableHandlingChargeDetail>") }
+	fileprivate func insuredValue() -> String { return (_insuredValue == nil ? "" : "<InsuredValue>\(_insuredValue!)</InsuredValue>") }
+	fileprivate func weight() -> String { return (_weight == nil ? "" : "<Weight>\(_weight!)</Weight>") }
+	fileprivate func dimensions() -> String { return (_dimensions == nil ? "" : "<Dimensions>\(_dimensions!)</Dimensions>") }
+	fileprivate func physicalPackaging() -> String { return (_physicalPackaging == nil ? "" : "<PhysicalPackaging>\(_physicalPackaging!)</PhysicalPackaging>") }
+	fileprivate func itemDescription() -> String { return (_itemDescription == nil ? "" : "<ItemDescription>\(_itemDescription!)</ItemDescription>") }
+	fileprivate func itemDescriptionForClearance() -> String { return (_itemDescriptionForClearance == nil ? "" : "<ItemDescriptionForClearance>\(_itemDescriptionForClearance!)</ItemDescriptionForClearance>") }
+	fileprivate func customerReferences() -> String { return (_customerReferences == nil ? "" : "<CustomerReferences>\(_customerReferences!)</CustomerReferences>") }
+	fileprivate func specialServicesRequested() -> String { return (_specialServicesRequested == nil ? "" : "<SpecialServicesRequested>\(_specialServicesRequested!)</SpecialServicesRequested>") }
+	fileprivate func contentRecords() -> String { return (_contentRecords == nil ? "" : "<ContentRecords>\(_contentRecords!)</ContentRecords>") }
 }
 
 struct ShipmentVariationOptionDetail : CustomStringConvertible
@@ -3897,8 +3898,8 @@ struct TrackingId : CustomStringConvertible
 
 struct Weight : CustomStringConvertible
 {
-	fileprivate let _units: WeightUnits?
-	fileprivate let _value: Float?
+	let _units: WeightUnits?
+	let _value: Float?
 	
 	var description: String { return "\(units())\(value())" }
 	
@@ -3908,8 +3909,8 @@ struct Weight : CustomStringConvertible
 		_value = value
 	}
 	
-	func units() -> String { return (_units == nil ? "" : "<Units>\(_units!)</Units>") }
-	func value() -> String { return (_value == nil ? "" : "<Value>\(_value!)</Value>") }
+	fileprivate func units() -> String { return (_units == nil ? "" : "<Units>\(_units!)</Units>") }
+	fileprivate func value() -> String { return (_value == nil ? "" : "<Value>\(_value!)</Value>") }
 }
 
 func formatDate(_ date: Date) -> String
