@@ -39,8 +39,9 @@ class EulaController: NSWindowController, NSWindowDelegate
 		
 		if affirmAgreementCheckBox.state == 0 {
 			NSApplication.shared().terminate(self)
+		} else {
+			KeychainManager.addData(itemKey: "eula", itemValue: "\(affirmAgreementCheckBox.state)")
 		}
 		
-		KeychainManager.addData(itemKey: "eula", itemValue: "\(affirmAgreementCheckBox.state)")
 	}
 }

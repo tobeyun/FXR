@@ -606,9 +606,11 @@ extension AppDelegate: NSApplicationDelegate
 {
 	func applicationWillFinishLaunching(_ notification: Notification)
 	{
-		if ("\(KeychainManager.queryData(itemKey: "eula")!)" != "1") {
-			NSApplication.shared().runModal(for: EulaController().window!)
+		if let _ = KeychainManager.queryData(itemKey: "eula") {
+			return
 		}
+		
+		NSApplication.shared().runModal(for: EulaController().window!)
 	}
 	
 	func applicationDidFinishLaunching(_ aNotification: Notification)
