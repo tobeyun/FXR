@@ -15,6 +15,8 @@
         <customObject id="-3" userLabel="Application" customClass="NSObject"/>
         <customObject id="Voe-Tx-rLC" customClass="AppDelegate" customModule="FXR" customModuleProvider="target">
             <connections>
+                <outlet property="addFreightLineItemButton" destination="nQw-pB-Rla" id="laj-sD-WtJ"/>
+                <outlet property="addPackageLineItemButton" destination="ICs-zm-RVO" id="WlE-1m-bya"/>
                 <outlet property="detailsView" destination="LKt-tL-myq" id="qOL-nf-sEk"/>
                 <outlet property="freightClassPopUp" destination="Z9c-1m-93b" id="X57-yD-Ib6"/>
                 <outlet property="freightItemHeight" destination="Zq7-FP-phe" id="SHE-uq-Ewa"/>
@@ -44,7 +46,7 @@
             </connections>
         </customObject>
         <customObject id="YLy-65-1bz" customClass="NSFontManager"/>
-        <menu title="Main Menu" systemMenu="main" id="AYu-sK-qS6">
+        <menu title="Main Menu" systemMenu="main" autoenablesItems="NO" id="AYu-sK-qS6">
             <items>
                 <menuItem title="FXR" id="1Xt-HY-uBw">
                     <modifierMask key="keyEquivalentModifierMask"/>
@@ -142,11 +144,6 @@
                                     <action selector="saveDocumentAs:" target="-1" id="mDf-zr-I0C"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Revert to Saved" keyEquivalent="r" id="KaW-ft-85H">
-                                <connections>
-                                    <action selector="revertDocumentToSaved:" target="-1" id="iJ3-Pv-kwq"/>
-                                </connections>
-                            </menuItem>
                             <menuItem isSeparatorItem="YES" id="aJh-i4-bef"/>
                             <menuItem title="Page Setup…" keyEquivalent="P" id="qIS-W8-SiK">
                                 <modifierMask key="keyEquivalentModifierMask" shift="YES" command="YES"/>
@@ -192,17 +189,10 @@
                                     <action selector="paste:" target="-1" id="Juc-Pu-6r3"/>
                                 </connections>
                             </menuItem>
-                            <menuItem title="Paste and Match Style" keyEquivalent="V" id="fCU-GX-VKI">
-                                <modifierMask key="keyEquivalentModifierMask" option="YES" command="YES"/>
-                                <connections>
-                                    <action selector="pasteAsPlainText:" target="-1" id="L9a-ma-JMf"/>
-                                </connections>
-                            </menuItem>
                             <menuItem title="Delete" id="uRz-4n-M8U">
                                 <string key="keyEquivalent" base64-UTF8="YES">
 CA
 </string>
-                                <modifierMask key="keyEquivalentModifierMask"/>
                                 <connections>
                                     <action selector="deleteLineItem:" target="Voe-Tx-rLC" id="kz3-BF-fnI"/>
                                 </connections>
@@ -515,7 +505,7 @@ CA
                             </subviews>
                         </clipView>
                         <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="0z1-qh-7JS">
-                            <rect key="frame" x="1" y="114" width="156" height="16"/>
+                            <rect key="frame" x="1" y="-16" width="0.0" height="16"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                         <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="qeE-M2-mwL">
@@ -610,7 +600,7 @@ CA
                             </subviews>
                         </clipView>
                         <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="Nq7-GK-F9v">
-                            <rect key="frame" x="1" y="167" width="710" height="16"/>
+                            <rect key="frame" x="1" y="-16" width="0.0" height="16"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                         <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="CaJ-P4-tsD">
@@ -622,7 +612,7 @@ CA
                             <autoresizingMask key="autoresizingMask"/>
                         </tableHeaderView>
                     </scrollView>
-                    <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" maxValue="100" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="Vev-8s-cMk">
+                    <progressIndicator wantsLayer="YES" horizontalHuggingPriority="750" verticalHuggingPriority="750" fixedFrame="YES" maxValue="100" displayedWhenStopped="NO" bezeled="NO" indeterminate="YES" controlSize="small" style="spinning" translatesAutoresizingMaskIntoConstraints="NO" id="Vev-8s-cMk">
                         <rect key="frame" x="20" y="2" width="16" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     </progressIndicator>
@@ -638,13 +628,13 @@ CA
                             <outlet property="delegate" destination="Voe-Tx-rLC" id="YPy-Ae-Npk"/>
                         </connections>
                     </textField>
-                    <tabView fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="wCe-av-qgw">
+                    <tabView fixedFrame="YES" initialItem="bsu-Bf-YOR" translatesAutoresizingMaskIntoConstraints="NO" id="wCe-av-qgw">
                         <rect key="frame" x="13" y="202" width="426" height="147"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <font key="font" metaFont="system" size="12"/>
+                        <font key="font" metaFont="cellTitle"/>
                         <tabViewItems>
                             <tabViewItem label="Parcel" identifier="1" id="bsu-Bf-YOR">
-                                <view key="view" ambiguous="YES" id="5a5-n8-8fo">
+                                <view key="view" id="5a5-n8-8fo">
                                     <rect key="frame" x="10" y="33" width="406" height="101"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
@@ -748,18 +738,18 @@ CA
                                                 <font key="font" metaFont="smallSystemBold"/>
                                             </buttonCell>
                                             <connections>
-                                                <action selector="addPackageLineItemButton:" target="Voe-Tx-rLC" id="ZXy-Nm-bkM"/>
+                                                <action selector="addPackageLineItemButton:" target="Voe-Tx-rLC" id="jhc-dq-T1T"/>
                                             </connections>
                                         </button>
-                                        <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="Chk-oq-5vM">
-                                            <rect key="frame" x="17" y="65" width="370" height="5"/>
+                                        <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="h2q-Oo-I6S">
+                                            <rect key="frame" x="17" y="65" width="371" height="5"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         </box>
                                     </subviews>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Freight" identifier="2" id="wEf-Az-LXf">
-                                <view key="view" id="dAJ-iE-zea">
+                                <view key="view" ambiguous="YES" id="dAJ-iE-zea">
                                     <rect key="frame" x="10" y="33" width="406" height="101"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>

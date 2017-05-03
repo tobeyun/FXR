@@ -135,6 +135,8 @@ class AppDelegate: NSObject
 {
 	// app outlets
 	@IBOutlet weak var window: NSWindow!
+	@IBOutlet weak var addPackageLineItemButton: NSButton!
+	@IBOutlet weak var addFreightLineItemButton: NSButton!
 	@IBOutlet weak var progressIndicator: NSProgressIndicator!
 	@IBOutlet weak var senderZip: NSTextField!
 	@IBOutlet weak var recipientZip: NSTextField!
@@ -200,10 +202,11 @@ class AppDelegate: NSObject
 	}
 	
 	@IBAction func addPackageLineItemButton(_ sender: Any) {
+		guard let x = Int(packageWeight.stringValue), x > 0 else { return }
+		
 		addPackageLineItem()
 		
 		lineItemsTable.tableColumns[0].title = "PARCEL"
-		
 		lineItemsTable.reloadData()
 	}
 	
@@ -250,10 +253,11 @@ class AppDelegate: NSObject
 	}
 	
 	@IBAction func addFreightLineItemButton(_ sender: Any) {
+		guard let x = Int(freightItemWeight.stringValue), x > 0 else { return }
+		
 		addFreightLineItem()
 		
 		lineItemsTable.tableColumns[0].title = "FREIGHT"
-		
 		lineItemsTable.reloadData()
 	}
 	
@@ -555,6 +559,11 @@ class AppDelegate: NSObject
 	{
 		DispatchQueue.main.async(execute: { () -> Void in
 			self.progressIndicator.startAnimation(self)
+			
+			// disable delete
+			NSApp.mainMenu?.item(withTitle: "Edit")?.submenu?.item(withTitle: "Delete")?.isEnabled = false
+			self.addPackageLineItemButton.isEnabled = false
+			self.addFreightLineItemButton.isEnabled = false
 		})
 		
 		let task = URLSession.shared.dataTask(with: getUrlRequest(body: body), completionHandler: completionCallback)
@@ -596,6 +605,13 @@ class AppDelegate: NSObject
 			self.xmlParser.delegate = self
 			self.xmlParser.shouldResolveExternalEntities = true;
 			self.xmlParser.parse()
+			
+			// enable delete
+			DispatchQueue.main.async(execute: { () -> Void in
+				//self.deleteMenu.isEnabled = true
+				self.addPackageLineItemButton.isEnabled = true
+				self.addFreightLineItemButton.isEnabled = true
+			})
 			
 			print("\(CFAbsoluteTimeGetCurrent() - start)")
 		}
@@ -644,10 +660,6 @@ extension AppDelegate: NSApplicationDelegate
 		packageLinearUnits.selectItem(withTitle: "IN")
 		linearUnitsPopUp.selectItem(withTitle: "IN")
 		freightVolumeUnitsPopUp.selectItem(withTitle: "Cubic FT")
-		
-		itemDetailTabView.selectTabViewItem(at: 0)
-		
-		progressIndicator.isDisplayedWhenStopped = false
 		
 		UserDefaults.standard.set(1, forKey: "NSInitialToolTipDelay")
 	}
@@ -746,13 +758,15 @@ extension AppDelegate: XMLParserDelegate
 			
 			self.progressIndicator.stopAnimation(self)
 			
-			if self.soapStack.items[0].tag == "CityStateLookupResponse" {
-				self.cityState.zip = (self.soapStack.items.filter{ $0.tag == "Zip5" }.first?.value!)!
-				self.cityState.city = (self.soapStack.items.filter{ $0.tag == "City" }.first?.value!)!
-				self.cityState.state = (self.soapStack.items.filter{ $0.tag == "State" }.first?.value)!
-				
-				self.detailsView.tableColumns[0].title = "Name - \(self.cityState.city), \(self.cityState.state)"
-			}
+			//if self.soapStack.items.count > 0 {
+				if self.soapStack.items.first?.tag == "CityStateLookupResponse" {
+					self.cityState.zip = (self.soapStack.items.filter{ $0.tag == "Zip5" }.first?.value!)!
+					self.cityState.city = (self.soapStack.items.filter{ $0.tag == "City" }.first?.value!)!
+					self.cityState.state = (self.soapStack.items.filter{ $0.tag == "State" }.first?.value)!
+					
+					self.detailsView.tableColumns[0].title = "Name - \(self.cityState.city), \(self.cityState.state)"
+				}
+			//}
 		})
 	}
 }
@@ -761,6 +775,7 @@ extension AppDelegate: NSTableViewDataSource
 {
 	func numberOfRows(in tableView: NSTableView) -> Int
 	{
+		// trigger when line items are added
 		if (tableView.identifier == "LineItemsTable") {
 			rateShipment()
 		}
