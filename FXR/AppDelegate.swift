@@ -636,11 +636,11 @@ extension AppDelegate: NSApplicationDelegate
 {
 	func applicationWillFinishLaunching(_ notification: Notification)
 	{
-		if let _ = KeychainManager.queryData(itemKey: "eula") {
-			return
-		}
-		
-		NSApplication.shared().runModal(for: EulaController().window!)
+//		if let _ = KeychainManager.queryData(itemKey: "eula") {
+//			return
+//		}
+//		
+//		NSApplication.shared().runModal(for: EulaController().window!)
 	}
 	
 	func applicationDidFinishLaunching(_ aNotification: Notification)
