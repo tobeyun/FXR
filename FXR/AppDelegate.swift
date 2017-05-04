@@ -292,31 +292,44 @@ class AppDelegate: NSObject
 		freightVolumeUnitsPopUp.selectItem(withTitle: "Cubic FT")
 	}
 	
-//	@IBAction func freightDisclosure(_ sender: NSButton) {
-//		var windowFrame = window.frame
-//		
-//		outlineViewTopConstraint.isActive = (sender.state == 0)
-//		lineItemTableBottomConstraint.isActive = (sender.state == 1)
-//		
-//		let toAdd = CGFloat(100) * ((sender.state == 1) ? 1 : -1)
-//		
-//		let oldWidth = windowFrame.size.width
-//		let oldHeight = windowFrame.size.height
-//		
-//		let newWidth = oldWidth // + toAdd
-//		let newHeight = oldHeight + toAdd
-//		
-//		windowFrame.size = NSMakeSize(newWidth, newHeight)
-//		windowFrame.origin.y -= toAdd
-//		
-//		window.setFrame(windowFrame, display: true, animate: true)
-//		
-//		outlineViewTopConstraint.animator().constant += toAdd
-//	}
-	
 	@IBAction func quickTrack(_ sender: Any)
 	{
-		let soapMessage = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:v12=\"http://fedex.com/ws/track/v12\"><soapenv:Header> </soapenv:Header>" +
+		let tsd = [TrackSelectionDetail(
+			carrierCode: nil,
+			operatingCompany: nil,
+			packageIdentifier: TrackPackageIdentifier(type: TrackIdentifierType.TRACKING_NUMBER_OR_DOORTAG, value: "\(trackingNumber.stringValue)"),
+			trackingNumberUniqueIdentifier: nil,
+			shipDateRangeBegin: nil,
+			shipDateRangeEnd: nil,
+			shipmentAccountNumber: nil,
+			secureSpodAccount: nil,
+			destination: nil,
+			pagingDetail: nil,
+			customerSpecifiedTimeOutValueInMilliseconds: nil)]
+		
+		let wad = WebAuthenticationDetail(
+			parentCredential: nil,
+			userCredential: WebAuthenticationCredential(
+				key: KeychainManager.queryData(itemKey: "key") as? String ?? "",
+				password: KeychainManager.queryData(itemKey: "password") as? String ?? "")
+		)
+		
+		let cd = ClientDetail(
+			accountNumber: KeychainManager.queryData(itemKey: "account") as? String ?? "",
+			meterNumber: KeychainManager.queryData(itemKey: "meter") as? String ?? "",
+			integratorId: nil,
+			region: nil,
+			localization: nil)
+		
+		let track = TrackRequest(
+			webAuthenticationDetail: wad,
+			clientDetail: cd,
+			transactionDetail: TransactionDetail(customerTransactionId: "FXR TRACK {\(Date())}", localization: nil),
+			selectionDetails: tsd,
+			transactionTimeOutValueInMilliseconds: nil,
+			processingOptions: nil)
+		
+		_ = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:v12=\"http://fedex.com/ws/track/v12\"><soapenv:Header> </soapenv:Header>" +
 			"<soapenv:Body>" +
 			"<v12:TrackRequest>" +
 			"<v12:WebAuthenticationDetail>" +
@@ -352,7 +365,8 @@ class AppDelegate: NSObject
 			"</soapenv:Body>" +
 		"</soapenv:Envelope>"
 		
-		callDataTask(body: soapMessage)
+		print("\(track)")
+		callDataTask(body: "\(track)")
 	}
 	
 	func rateShipment()
@@ -419,7 +433,7 @@ class AppDelegate: NSObject
 		let web = RateRequest(
 			webAuthenticationDetail: wad,
 			clientDetail: cd,
-			transactionDetail: TransactionDetail(customerTransactionId: "FXR TEST", localization: nil),
+			transactionDetail: TransactionDetail(customerTransactionId: "FXR RATE {\(Date())}", localization: nil),
 			returnTransAndCommit: true,
 			carrierCodes: nil,
 			variableOptions: nil,
@@ -622,11 +636,11 @@ extension AppDelegate: NSApplicationDelegate
 {
 	func applicationWillFinishLaunching(_ notification: Notification)
 	{
-		if let _ = KeychainManager.queryData(itemKey: "eula") {
-			return
-		}
-		
-		NSApplication.shared().runModal(for: EulaController().window!)
+//		if let _ = KeychainManager.queryData(itemKey: "eula") {
+//			return
+//		}
+//		
+//		NSApplication.shared().runModal(for: EulaController().window!)
 	}
 	
 	func applicationDidFinishLaunching(_ aNotification: Notification)
