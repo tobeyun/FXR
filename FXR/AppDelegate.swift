@@ -180,7 +180,7 @@ class AppDelegate: NSObject
 	
 	@IBAction func ViewEULA(_ sender: Any) {
 		DispatchQueue.main.async(execute: { () -> Void in
-			NSApplication.shared().runModal(for: EulaController().window!)
+			NSWorkspace.shared().open(URL(string: "https://git.io/v92hP")!)
 		})
 	}
 	
