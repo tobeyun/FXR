@@ -4,7 +4,7 @@ FedEx has created a desktop rating tool that has been very successful (i.e. popu
 
 ![Screen Shot](/images/ScreenShot.png)
 
-*To use FXR, you will need to contact your assigned sales executive to request the necessary credentials*.
+*To use FXR, you will need to contact your assigned sales executive to request the necessary credentials or register as a developer at (https://www.fedex.com/us/developer)*.
 
 #### FedEx End User Requirements
 Use of this application requires acceptance of the [FedEx Web Services End User License Agreement](/images/FedExWebServicesEndUserLicenseAgreement-ver7-July2015.pdf).
