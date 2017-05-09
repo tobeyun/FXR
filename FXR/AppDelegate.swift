@@ -238,7 +238,7 @@ class AppDelegate: NSObject
 			itemDescriptionForClearance: nil,
 			customerReferences: nil,
 			specialServicesRequested: PackageSpecialServicesRequested(
-				specialServiceTypes: ss.items.map{ PackageSpecialServiceType(rawValue: "\($0.0)")! },
+				specialServiceTypes: ss.items.flatMap{ PackageSpecialServiceType(rawValue: "\($0.0.rawValue)")! },
 				codDetail: ss.items.filter{ $0.0 == PackageSpecialServiceType.COD }.first?.1 as? CodDetail,
 				dangerousGoodsDetail: ss.items.filter{ $0.0 == PackageSpecialServiceType.DANGEROUS_GOODS }.first?.1 as? DangerousGoodsDetail,
 				dryIceWeight: ss.items.filter{ $0.0 == PackageSpecialServiceType.DRY_ICE }.first?.1 as? Weight,
