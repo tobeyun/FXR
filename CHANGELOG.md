@@ -11,6 +11,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - 
 
+## 1.15.216 - 2017-05-09
+### Changed
+- Updated version number to coincide with App Store release train
+
 ## 1.14.350 - 2017-05-09
 ### Changed
 - Special Services details can now be set
