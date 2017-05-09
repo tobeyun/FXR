@@ -1017,8 +1017,10 @@ enum HazardousCommodityRegulationType: String
 
 enum DangerousGoodsAccessibilityType: String
 {
-	case ACCESSIBLE
-	case INACCESSIBLE
+	case ACCESSIBLE = "Accessible"
+	case INACCESSIBLE = "Inaccessible"
+	
+	static let values = [ACCESSIBLE.rawValue, INACCESSIBLE.rawValue]
 }
 
 enum HazardousCommodityOptionType: String
@@ -1168,14 +1170,14 @@ enum PhysicalPackagingType: String
 
 enum PackageSpecialServiceType: String
 {
-	case ALCOHOL
-	case APPOINTMENT_DELIVERY
-	case COD
-	case DANGEROUS_GOODS
-	case DRY_ICE
-	case NON_STANDARD_CONTAINER
-	case PRIORITY_ALERT
-	case SIGNATURE_OPTION
+	case ALCOHOL = "Alcohol"
+	case APPOINTMENT_DELIVERY = "Appointment Delivery"
+	case COD = "COD"
+	case DANGEROUS_GOODS = "Dangerous Goods"
+	case DRY_ICE = "Dry Ice"
+	case NON_STANDARD_CONTAINER = "Non-Standard Container"
+	case PRIORITY_ALERT = "Priority Alert"
+	case SIGNATURE_OPTION = "Signature Option"
 	
 	static let values = [ALCOHOL.rawValue,
 	                     APPOINTMENT_DELIVERY.rawValue,
@@ -1209,9 +1211,11 @@ enum ChargeBasisLevelType: String
 
 enum CodCollectionType: String
 {
-	case ANY
-	case CASH
-	case GUARANTEED_FUNDS
+	case ANY = "Any"
+	case CASH = "Cash"
+	case GUARANTEED_FUNDS = "Guaranteed Funds"
+	
+	static let values = [ANY.rawValue, CASH.rawValue, GUARANTEED_FUNDS.rawValue]
 }
 
 enum CodReturnReferenceIndicatorType: String
@@ -1224,13 +1228,17 @@ enum CodReturnReferenceIndicatorType: String
 
 enum PriorityAlertEnhancementType: String
 {
-	case PRIORITY_ALERT_PLUS
+	case PRIORITY_ALERT_PLUS = "Priority Alert Plus"
+	
+	static let values = [PRIORITY_ALERT_PLUS.rawValue]
 }
 
 enum AlcoholRecipientType: String
 {
-	case CONSUMER
-	case LICENSEE
+	case CONSUMER = "Consumer"
+	case LICENSEE = "Licensee"
+	
+	static let values = [CONSUMER.rawValue, LICENSEE.rawValue]
 }
 
 enum FreightGuaranteeType: String
@@ -1486,11 +1494,13 @@ enum PackagingType: String
 
 enum SignatureOptionType: String
 {
-	case ADULT
-	case DIRECT
-	case INDIRECT
-	case NO_SIGNATURE_REQUIRED
-	case SERVICE_DEFAULT
+	case ADULT = "Adult"
+	case DIRECT = "Direct"
+	case INDIRECT = "Indirect"
+	case NO_SIGNATURE_REQUIRED = "No Signature Required"
+	case SERVICE_DEFAULT = "Service Default"
+	
+	static let values = [ADULT.rawValue, DIRECT.rawValue, INDIRECT.rawValue, NO_SIGNATURE_REQUIRED.rawValue, SERVICE_DEFAULT.rawValue]
 }
 
 enum ReturnedRateType: String
@@ -1543,4 +1553,12 @@ enum InternationalDocumentContentType: String
 {
 	case DOCUMENTS_ONLY
 	case NON_DOCUMENTS
+}
+
+enum GenericDefault: String
+{
+	case YES = "Yes"
+	case NO = "No"
+	
+	static let values = [YES.rawValue, NO.rawValue]
 }
