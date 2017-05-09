@@ -9,7 +9,7 @@
 import Cocoa
 
 typealias ValuePath = (path: String, tag: String?, value: String?)
-//typealias SoapElement = (path: String, elements: [String], count: Int, parent: String, tag: String, value: String, service: String)
+typealias svc = (PackageSpecialServiceType, Any?)
 
 struct Stack<Element> {
 	var items = [Element]()
@@ -63,17 +63,21 @@ extension Stack {
 		}
 	}
 	
-	func unique() -> [String] {
-		return Set(items.map{ ($0 as! ValuePath).path.components(separatedBy: "|").dropLast().joined(separator: "|") })
-			.sorted(by: { $0.0.components(separatedBy: "|").count < $0.1.components(separatedBy: "|").count })
-	}
-	
 	func subrange(_ index: Int) -> [String] {
 		return Set(items.map{ ($0 as! ValuePath).path.components(separatedBy: "|")[index] }).sorted(by: <)
 	}
 	
 	func getPathFromChild(_ value: String) -> Element? {
 		return items.filter{ ($0 as! ValuePath).path.components(separatedBy: "|").dropLast().last == value }.last
+	}
+	
+	func unique() -> [String] {
+		return Set(items.map{ ($0 as! ValuePath).path.components(separatedBy: "|").dropLast().joined(separator: "|") })
+			.sorted(by: { $0.0.components(separatedBy: "|").count < $0.1.components(separatedBy: "|").count })
+	}
+	
+	func update(_ value: Any?) {
+		
 	}
 }
 
@@ -171,6 +175,8 @@ class AppDelegate: NSObject
 	var parentStack = Stack<SoapElement>()
 	var currentId: Int? = nil
 	var lineItems = Stack<Any>()
+	var ss = Stack<svc>()
+
 	
 	@IBAction func OpenPreferences(_ sender: Any) {
 		DispatchQueue.main.async(execute: { () -> Void in
@@ -206,7 +212,7 @@ class AppDelegate: NSObject
 		
 		addPackageLineItem()
 		
-		lineItemsTable.tableColumns[0].title = "PARCEL"
+		//lineItemsTable.tableColumns[0].title = "PARCEL"
 		lineItemsTable.reloadData()
 	}
 	
@@ -232,19 +238,19 @@ class AppDelegate: NSObject
 			itemDescriptionForClearance: nil,
 			customerReferences: nil,
 			specialServicesRequested: PackageSpecialServicesRequested(
-				specialServiceTypes: specialServicesTable.selectedRowIndexes.map{ PackageSpecialServiceType(rawValue: PackageSpecialServiceType.values[$0])! },
-				codDetail: nil, //CodDetail?,
-				dangerousGoodsDetail: nil, //DangerousGoodsDetail?,
-				dryIceWeight: nil, //Weight?,
-				signatureOptionDetail: nil, //SignatureOptionDetail?,
-				priorityAlertDetail: nil, //PriorityAlertDetail?,
-				alcoholDetail: nil //AlcoholDetail?),
+				specialServiceTypes: ss.items.map{ PackageSpecialServiceType(rawValue: "\($0.0)")! },
+				codDetail: ss.items.filter{ $0.0 == PackageSpecialServiceType.COD }.first?.1 as? CodDetail,
+				dangerousGoodsDetail: ss.items.filter{ $0.0 == PackageSpecialServiceType.DANGEROUS_GOODS }.first?.1 as? DangerousGoodsDetail,
+				dryIceWeight: ss.items.filter{ $0.0 == PackageSpecialServiceType.DRY_ICE }.first?.1 as? Weight,
+				signatureOptionDetail: ss.items.filter{ $0.0 == PackageSpecialServiceType.SIGNATURE_OPTION }.first?.1 as? SignatureOptionDetail,
+				priorityAlertDetail: ss.items.filter{ $0.0 == PackageSpecialServiceType.PRIORITY_ALERT }.first?.1 as? PriorityAlertDetail,
+				alcoholDetail: ss.items.filter{ $0.0 == PackageSpecialServiceType.ALCOHOL }.first?.1 as? AlcoholDetail
 			),
 			contentRecords: nil
 			)
 		)
 		
-		specialServicesTable.deselectAll(nil)
+		ss.items.removeAll()
 		packageWeight.stringValue = ""
 		packageWidth.stringValue = ""
 		packageHeight.stringValue = ""
@@ -257,7 +263,7 @@ class AppDelegate: NSObject
 		
 		addFreightLineItem()
 		
-		lineItemsTable.tableColumns[0].title = "FREIGHT"
+		//lineItemsTable.tableColumns[0].title = "FREIGHT"
 		lineItemsTable.reloadData()
 	}
 	
@@ -324,48 +330,13 @@ class AppDelegate: NSObject
 		let track = TrackRequest(
 			webAuthenticationDetail: wad,
 			clientDetail: cd,
-			transactionDetail: TransactionDetail(customerTransactionId: "FXR TRACK {\(Date())}", localization: nil),
+			transactionDetail: TransactionDetail(customerTransactionId: "FXR TRACK \(Date())", localization: nil),
 			selectionDetails: tsd,
 			transactionTimeOutValueInMilliseconds: nil,
 			processingOptions: nil)
 		
-		_ = "<soapenv:Envelope xmlns:soapenv=\"http://schemas.xmlsoap.org/soap/envelope/\" xmlns:v12=\"http://fedex.com/ws/track/v12\"><soapenv:Header> </soapenv:Header>" +
-			"<soapenv:Body>" +
-			"<v12:TrackRequest>" +
-			"<v12:WebAuthenticationDetail>" +
-			"<v12:UserCredential>" +
-			"<v12:Key>\(KeychainManager.queryData(itemKey: "key") as? String ?? "")</v12:Key>" +
-			"<v12:Password>\(KeychainManager.queryData(itemKey: "password") as? String ?? "")</v12:Password>" +
-			"</v12:UserCredential>" +
-			"</v12:WebAuthenticationDetail>" +
-			"<v12:ClientDetail>" +
-			"<v12:AccountNumber>\(KeychainManager.queryData(itemKey: "account") as? String ?? "")</v12:AccountNumber>" +
-			"<v12:MeterNumber>\(KeychainManager.queryData(itemKey: "meter") as? String ?? "")</v12:MeterNumber>" +
-			"<v12:Localization>" +
-			"<v12:LanguageCode>EN</v12:LanguageCode>" +
-			"<v12:LocaleCode>us</v12:LocaleCode>" +
-			"</v12:Localization>" +
-			"</v12:ClientDetail>" +
-			"<v12:TransactionDetail>" +
-			"<v12:CustomerTransactionId>Track By Number_v12</v12:CustomerTransactionId>" +
-			"</v12:TransactionDetail>" +
-			"<v12:Version>" +
-			"<v12:ServiceId>trck</v12:ServiceId>" +
-			"<v12:Major>12</v12:Major>" +
-			"<v12:Intermediate>0</v12:Intermediate>" +
-			"<v12:Minor>0</v12:Minor>" +
-			"</v12:Version>" +
-			"<v12:SelectionDetails>" +
-			"<v12:PackageIdentifier>" +
-			"<v12:Type>TRACKING_NUMBER_OR_DOORTAG</v12:Type>" +
-			"<v12:Value>\(trackingNumber.stringValue)</v12:Value>" +
-			"</v12:PackageIdentifier>" +
-			"</v12:SelectionDetails>" +
-			"</v12:TrackRequest>" +
-			"</soapenv:Body>" +
-		"</soapenv:Envelope>"
+		//print("\(track)")
 		
-		print("\(track)")
 		callDataTask(body: "\(track)")
 	}
 	
@@ -433,7 +404,7 @@ class AppDelegate: NSObject
 		let web = RateRequest(
 			webAuthenticationDetail: wad,
 			clientDetail: cd,
-			transactionDetail: TransactionDetail(customerTransactionId: "FXR RATE {\(Date())}", localization: nil),
+			transactionDetail: TransactionDetail(customerTransactionId: "FXR RATE \(Date())", localization: nil),
 			returnTransAndCommit: true,
 			carrierCodes: nil,
 			variableOptions: nil,
@@ -490,7 +461,7 @@ class AppDelegate: NSObject
 			)
 		)
 		
-		//print("\(web)")
+		print("\(web)")
 		callDataTask(body: "\(web)")
 	}
 	
@@ -575,7 +546,6 @@ class AppDelegate: NSObject
 			self.progressIndicator.startAnimation(self)
 			
 			// disable delete
-			NSApp.mainMenu?.item(withTitle: "Edit")?.submenu?.item(withTitle: "Delete")?.isEnabled = false
 			self.addPackageLineItemButton.isEnabled = false
 			self.addFreightLineItemButton.isEnabled = false
 		})
@@ -622,7 +592,6 @@ class AppDelegate: NSObject
 			
 			// enable delete
 			DispatchQueue.main.async(execute: { () -> Void in
-				//self.deleteMenu.isEnabled = true
 				self.addPackageLineItemButton.isEnabled = true
 				self.addFreightLineItemButton.isEnabled = true
 			})
@@ -655,7 +624,6 @@ extension AppDelegate: NSApplicationDelegate
 		lineItemsTable.dataSource = self
 		lineItemsTable.target = self
 		lineItemsTable.reloadData()
-		lineItemsTable.doubleAction = #selector(tableViewDoubleClick(_:))
 		
 		detailsView.delegate = self
 		detailsView.dataSource = self
@@ -824,19 +792,129 @@ extension AppDelegate: NSTableViewDelegate
 		}
 		
 		if (tableView.identifier == "SpecialServicesTable") {
-			return PackageSpecialServiceType.values[row]
+			if (tableColumn?.identifier == "TypeColumn") {
+				return PackageSpecialServiceType.values[row]
+			}
+			
+			// display selected detail item
+			if (tableColumn?.identifier == "DetailColumn") {
+				switch (PackageSpecialServiceType.values[row])
+				{
+					case PackageSpecialServiceType.ALCOHOL.rawValue :
+						guard let alcohol = ss.items.filter({ $0.0 == PackageSpecialServiceType.ALCOHOL }).first?.1 as? AlcoholDetail,
+							alcohol._recipientType != nil else { return 0 }
+						
+						return AlcoholRecipientType.values.index(of: (alcohol._recipientType?.rawValue)!)! + 1
+					case PackageSpecialServiceType.COD.rawValue :
+						guard let cod = ss.items.filter({ $0.0 == PackageSpecialServiceType.COD }).first?.1 as? CodDetail else {
+							return 0
+						}
+						
+						return CodCollectionType.values.index(of: (cod._collectionType?.rawValue)!)! + 1
+					case PackageSpecialServiceType.APPOINTMENT_DELIVERY.rawValue :
+						return ss.items.filter{ $0.0 == PackageSpecialServiceType.APPOINTMENT_DELIVERY }.count
+					case PackageSpecialServiceType.DANGEROUS_GOODS.rawValue :
+						guard let dg = ss.items.filter({ $0.0 == PackageSpecialServiceType.DANGEROUS_GOODS }).first?.1 as? DangerousGoodsDetail else {
+							return 0
+						}
+						
+						return DangerousGoodsAccessibilityType.values.index(of: (dg._accessibility?.rawValue)!)! + 1
+//					case PackageSpecialServiceType.DRY_ICE.rawValue :
+//						guard let cod = ss.items.filter({ $0.0 == PackageSpecialServiceType.COD }).first?.1 as? CodDetail else {
+//							return 0
+//						}
+//	
+//						return (specialServices?._dryIceWeight == nil ? 0 : AlcoholRecipientType.values.index(of: (specialServices?._alcoholDetail?._recipientType?.rawValue)!)! - 1)
+					case PackageSpecialServiceType.NON_STANDARD_CONTAINER.rawValue :
+						return ss.items.filter{ $0.0 == PackageSpecialServiceType.NON_STANDARD_CONTAINER }.count
+					case PackageSpecialServiceType.PRIORITY_ALERT.rawValue :
+						guard let pa = ss.items.filter({ $0.0 == PackageSpecialServiceType.PRIORITY_ALERT }).first?.1 as? PriorityAlertDetail else {
+							return 0
+						}
+						
+						return
+							PriorityAlertEnhancementType.values.index(of: (pa._enhancementTypes?.rawValue)!)! + 1
+					case PackageSpecialServiceType.SIGNATURE_OPTION.rawValue :
+						guard let sig = ss.items.filter({ $0.0 == PackageSpecialServiceType.SIGNATURE_OPTION }).first?.1 as? SignatureOptionDetail else {
+							return 0
+						}
+						
+						return SignatureOptionType.values.index(of: (sig._optionType?.rawValue)!)! + 1
+					default: break
+				}
+			}
 		}
-		
+
 		return nil
 	}
 	
-	func tableViewDoubleClick(_ sender: AnyObject)
-	{
-//		guard lineItemsTable.selectedRow >= 0,
-//			let item = lineItems.items[lineItemsTable.selectedRow] as? FreightShipmentLineItem else {
-//			
-//				return
-//		}
+	func tableView(_ tableView: NSTableView, setObjectValue object: Any?, for tableColumn: NSTableColumn?, row: Int) {
+		if tableColumn!.identifier == "DetailColumn" {
+			// set values for dictionary
+			switch (PackageSpecialServiceType.values[row])
+			{
+				case PackageSpecialServiceType.ALCOHOL.rawValue :
+					ss.items = ss.items.filter{ $0.0 != PackageSpecialServiceType.ALCOHOL }
+					ss.push((PackageSpecialServiceType.ALCOHOL, (object as? Int) == nil || (object as! Int) == 0 ? nil : AlcoholDetail(recipientType: AlcoholRecipientType(rawValue: AlcoholRecipientType.values[object as! Int - 1])!)))
+				case PackageSpecialServiceType.COD.rawValue :
+					ss.items = ss.items.filter{ $0.0 != PackageSpecialServiceType.COD }
+					ss.push((PackageSpecialServiceType.COD, (object as? Int) == nil || (object as! Int) == 0 ? nil : CodDetail(collectionType: CodCollectionType(rawValue: CodCollectionType.values[object as! Int - 1]))))
+				case PackageSpecialServiceType.APPOINTMENT_DELIVERY.rawValue :
+					ss.items = ss.items.filter{ $0.0 != PackageSpecialServiceType.APPOINTMENT_DELIVERY }
+					ss.push((PackageSpecialServiceType.APPOINTMENT_DELIVERY, (object as? Int) == nil || (object as! Int) == 0 ? nil : GenericDefault(rawValue: GenericDefault.values[object as! Int - 1])))
+				case PackageSpecialServiceType.DANGEROUS_GOODS.rawValue :
+					ss.items = ss.items.filter{ $0.0 != PackageSpecialServiceType.DANGEROUS_GOODS }
+					ss.push((PackageSpecialServiceType.DANGEROUS_GOODS, (object as? Int) == nil || (object as! Int) == 0 ? nil : DangerousGoodsDetail(accessibility: DangerousGoodsAccessibilityType(rawValue: DangerousGoodsAccessibilityType.values[object as! Int - 1])!)))
+//				case PackageSpecialServiceType.DRY_ICE.rawValue :
+//					ss.items = ss.items.filter{ $0.0 != PackageSpecialServiceType.DRY_ICE }
+//					ss.push((object as? Int) == nil || (object as! Int) == 0 ? nil : Weight(units: WeightUnits.LB, value: <#T##Float#>)))
+				case PackageSpecialServiceType.NON_STANDARD_CONTAINER.rawValue :
+					ss.items = ss.items.filter{ $0.0 != PackageSpecialServiceType.NON_STANDARD_CONTAINER }
+					ss.push((PackageSpecialServiceType.NON_STANDARD_CONTAINER, (object as? Int) == nil || (object as! Int) == 0 ? nil : GenericDefault(rawValue: GenericDefault.values[object as! Int - 1])))
+				case PackageSpecialServiceType.PRIORITY_ALERT.rawValue :
+					ss.items = ss.items.filter{ $0.0 != PackageSpecialServiceType.PRIORITY_ALERT }
+					ss.push((PackageSpecialServiceType.PRIORITY_ALERT, (object as? Int) == nil || (object as! Int) == 0 ? nil : PriorityAlertDetail(enhancementTypes: PriorityAlertEnhancementType(rawValue: PriorityAlertEnhancementType.values[object as! Int - 1])!)))
+				case PackageSpecialServiceType.SIGNATURE_OPTION.rawValue :
+					ss.items = ss.items.filter{ $0.0 != PackageSpecialServiceType.SIGNATURE_OPTION }
+					ss.push((PackageSpecialServiceType.SIGNATURE_OPTION, (object as? Int) == nil || (object as! Int) == 0 ? nil : SignatureOptionDetail(optionType: SignatureOptionType(rawValue: SignatureOptionType.values[object as! Int - 1])!)))
+				default: break
+			}
+		}
+	}
+	
+	// fill popup buttons
+	func tableView(_ tableView: NSTableView, dataCellFor tableColumn: NSTableColumn?, row: Int) -> NSCell? {
+		if let cell = tableColumn?.dataCell(forRow: row) as? NSCell {
+			if tableColumn!.identifier == "DetailColumn" {
+				if let pcell = cell as? NSPopUpButtonCell {
+					pcell.removeAllItems()
+					pcell.addItem(withTitle: "Select")
+					
+					switch (PackageSpecialServiceType.values[row])
+					{
+						case PackageSpecialServiceType.ALCOHOL.rawValue :
+							pcell.addItems(withTitles: AlcoholRecipientType.values)
+						case PackageSpecialServiceType.COD.rawValue :
+							pcell.addItems(withTitles: CodCollectionType.values)
+						case PackageSpecialServiceType.APPOINTMENT_DELIVERY.rawValue :
+							pcell.addItems(withTitles: GenericDefault.values)
+						case PackageSpecialServiceType.DANGEROUS_GOODS.rawValue :
+							pcell.addItems(withTitles: DangerousGoodsAccessibilityType.values)
+	//					case PackageSpecialServiceType.DRY_ICE.rawValue :
+	//						pcell.addItems(withTitles: GenericDefault.values)
+						case PackageSpecialServiceType.NON_STANDARD_CONTAINER.rawValue :
+							pcell.addItems(withTitles: GenericDefault.values)
+						case PackageSpecialServiceType.PRIORITY_ALERT.rawValue :
+							pcell.addItems(withTitles: PriorityAlertEnhancementType.values)
+						case PackageSpecialServiceType.SIGNATURE_OPTION.rawValue :
+							pcell.addItems(withTitles: SignatureOptionType.values)
+						default: break
+					}
+				}
+			}
+			return cell
+		}
+		return nil
 	}
 }
 
