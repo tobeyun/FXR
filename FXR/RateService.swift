@@ -2425,55 +2425,55 @@ struct ShipmentConfigurationData : CustomStringConvertible
 
 struct DangerousGoodsDetail : CustomStringConvertible
 {
-	fileprivate let _regulation: HazardousCommodityRegulationType?
-	fileprivate let _accessibility: DangerousGoodsAccessibilityType?
-	fileprivate let _cargoAircraftOnly: Bool?
-	fileprivate let _options: HazardousCommodityOptionType?
-	fileprivate let _packingOption: DangerousGoodsPackingOptionType?
-	fileprivate let _referenceId: String?
-	fileprivate let _containers: DangerousGoodsContainer?
-	fileprivate let _packaging: HazardousCommodityPackagingDetail?
-	fileprivate let _signatory: DangerousGoodsSignatory?
-	fileprivate let _emergencyContactNumber: String?
-	fileprivate let _offeror: String?
-	fileprivate let _infectiousSubstanceResponsibleContact: Contact?
-	fileprivate let _additionalHandling: String?
-	fileprivate let _radioactivityDetail: RadioactivityDetail?
+	let _regulation: HazardousCommodityRegulationType?
+	let _accessibility: DangerousGoodsAccessibilityType?
+	let _cargoAircraftOnly: Bool?
+	let _options: HazardousCommodityOptionType?
+	let _packingOption: DangerousGoodsPackingOptionType?
+	let _referenceId: String?
+	let _containers: DangerousGoodsContainer?
+	let _packaging: HazardousCommodityPackagingDetail?
+	let _signatory: DangerousGoodsSignatory?
+	let _emergencyContactNumber: String?
+	let _offeror: String?
+	let _infectiousSubstanceResponsibleContact: Contact?
+	let _additionalHandling: String?
+	let _radioactivityDetail: RadioactivityDetail?
 	
 	var description: String { return "\(regulation())\(accessibility())\(cargoAircraftOnly())\(options())\(packingOption())\(referenceId())\(containers())\(packaging())\(signatory())\(emergencyContactNumber())\(offeror())\(infectiousSubstanceResponsibleContact())\(additionalHandling())\(radioactivityDetail())" }
 	
-	init(regulation: HazardousCommodityRegulationType, accessibility: DangerousGoodsAccessibilityType, cargoAircraftOnly: Bool, options: HazardousCommodityOptionType, packingOption: DangerousGoodsPackingOptionType, referenceId: String, containers: DangerousGoodsContainer, packaging: HazardousCommodityPackagingDetail, signatory: DangerousGoodsSignatory, emergencyContactNumber: String, offeror: String, infectiousSubstanceResponsibleContact: Contact, additionalHandling: String, radioactivityDetail: RadioactivityDetail)
+	init(accessibility: DangerousGoodsAccessibilityType?)
 	{
-		_regulation = regulation
+		_regulation = nil
 		_accessibility = accessibility
-		_cargoAircraftOnly = cargoAircraftOnly
-		_options = options
-		_packingOption = packingOption
-		_referenceId = referenceId
-		_containers = containers
-		_packaging = packaging
-		_signatory = signatory
-		_emergencyContactNumber = emergencyContactNumber
-		_offeror = offeror
-		_infectiousSubstanceResponsibleContact = infectiousSubstanceResponsibleContact
-		_additionalHandling = additionalHandling
-		_radioactivityDetail = radioactivityDetail
+		_cargoAircraftOnly = nil
+		_options = nil
+		_packingOption = nil
+		_referenceId = nil
+		_containers = nil
+		_packaging = nil
+		_signatory = nil
+		_emergencyContactNumber = nil
+		_offeror = nil
+		_infectiousSubstanceResponsibleContact = nil
+		_additionalHandling = nil
+		_radioactivityDetail = nil
 	}
 	
-	func regulation() -> String { return (_regulation == nil ? "" : "<Regulation>\(_regulation!)</Regulation>") }
-	func accessibility() -> String { return (_accessibility == nil ? "" : "<Accessibility>\(_accessibility!)</Accessibility>") }
-	func cargoAircraftOnly() -> String { return (_cargoAircraftOnly == nil ? "" : "<CargoAircraftOnly>\(_cargoAircraftOnly!)</CargoAircraftOnly>") }
-	func options() -> String { return (_options == nil ? "" : "<Options>\(_options!)</Options>") }
-	func packingOption() -> String { return (_packingOption == nil ? "" : "<PackingOption>\(_packingOption!)</PackingOption>") }
-	func referenceId() -> String { return (_referenceId == nil ? "" : "<ReferenceId>\(_referenceId!)</ReferenceId>") }
-	func containers() -> String { return (_containers == nil ? "" : "<Containers>\(_containers!)</Containers>") }
-	func packaging() -> String { return (_packaging == nil ? "" : "<Packaging>\(_packaging!)</Packaging>") }
-	func signatory() -> String { return (_signatory == nil ? "" : "<Signatory>\(_signatory!)</Signatory>") }
-	func emergencyContactNumber() -> String { return (_emergencyContactNumber == nil ? "" : "<EmergencyContactNumber>\(_emergencyContactNumber!)</EmergencyContactNumber>") }
-	func offeror() -> String { return (_offeror == nil ? "" : "<Offeror>\(_offeror!)</Offeror>") }
-	func infectiousSubstanceResponsibleContact() -> String { return (_infectiousSubstanceResponsibleContact == nil ? "" : "<InfectiousSubstanceResponsibleContact>\(_infectiousSubstanceResponsibleContact!)</InfectiousSubstanceResponsibleContact>") }
-	func additionalHandling() -> String { return (_additionalHandling == nil ? "" : "<AdditionalHandling>\(_additionalHandling!)</AdditionalHandling>") }
-	func radioactivityDetail() -> String { return (_radioactivityDetail == nil ? "" : "<RadioactivityDetail>\(_radioactivityDetail!)</RadioactivityDetail>") }
+	fileprivate func regulation() -> String { return (_regulation == nil ? "" : "<Regulation>\(_regulation!)</Regulation>") }
+	fileprivate func accessibility() -> String { return (_accessibility == nil ? "" : "<Accessibility>\(_accessibility!)</Accessibility>") }
+	fileprivate func cargoAircraftOnly() -> String { return (_cargoAircraftOnly == nil ? "" : "<CargoAircraftOnly>\(_cargoAircraftOnly!)</CargoAircraftOnly>") }
+	fileprivate func options() -> String { return (_options == nil ? "" : "<Options>\(_options!)</Options>") }
+	fileprivate func packingOption() -> String { return (_packingOption == nil ? "" : "<PackingOption>\(_packingOption!)</PackingOption>") }
+	fileprivate func referenceId() -> String { return (_referenceId == nil ? "" : "<ReferenceId>\(_referenceId!)</ReferenceId>") }
+	fileprivate func containers() -> String { return (_containers == nil ? "" : "<Containers>\(_containers!)</Containers>") }
+	fileprivate func packaging() -> String { return (_packaging == nil ? "" : "<Packaging>\(_packaging!)</Packaging>") }
+	fileprivate func signatory() -> String { return (_signatory == nil ? "" : "<Signatory>\(_signatory!)</Signatory>") }
+	fileprivate func emergencyContactNumber() -> String { return (_emergencyContactNumber == nil ? "" : "<EmergencyContactNumber>\(_emergencyContactNumber!)</EmergencyContactNumber>") }
+	fileprivate func offeror() -> String { return (_offeror == nil ? "" : "<Offeror>\(_offeror!)</Offeror>") }
+	fileprivate func infectiousSubstanceResponsibleContact() -> String { return (_infectiousSubstanceResponsibleContact == nil ? "" : "<InfectiousSubstanceResponsibleContact>\(_infectiousSubstanceResponsibleContact!)</InfectiousSubstanceResponsibleContact>") }
+	fileprivate func additionalHandling() -> String { return (_additionalHandling == nil ? "" : "<AdditionalHandling>\(_additionalHandling!)</AdditionalHandling>") }
+	fileprivate func radioactivityDetail() -> String { return (_radioactivityDetail == nil ? "" : "<RadioactivityDetail>\(_radioactivityDetail!)</RadioactivityDetail>") }
 }
 
 struct DangerousGoodsContainer : CustomStringConvertible
@@ -2814,13 +2814,13 @@ struct CustomerReference : CustomStringConvertible
 
 struct PackageSpecialServicesRequested : CustomStringConvertible
 {
-	fileprivate let _specialServiceTypes: [PackageSpecialServiceType]
-	fileprivate let _codDetail: CodDetail?
-	fileprivate let _dangerousGoodsDetail: DangerousGoodsDetail?
-	fileprivate let _dryIceWeight: Weight?
-	fileprivate let _signatureOptionDetail: SignatureOptionDetail?
-	fileprivate let _priorityAlertDetail: PriorityAlertDetail?
-	fileprivate let _alcoholDetail: AlcoholDetail?
+	let _specialServiceTypes: [PackageSpecialServiceType]
+	let _codDetail: CodDetail?
+	let _dangerousGoodsDetail: DangerousGoodsDetail?
+	let _dryIceWeight: Weight?
+	let _signatureOptionDetail: SignatureOptionDetail?
+	let _priorityAlertDetail: PriorityAlertDetail?
+	let _alcoholDetail: AlcoholDetail?
 	
 	var description: String { return "\(specialServiceTypes())\(codDetail())\(dangerousGoodsDetail())\(dryIceWeight())\(signatureOptionDetail())\(priorityAlertDetail())\(alcoholDetail())" }
 	
@@ -2835,21 +2835,27 @@ struct PackageSpecialServicesRequested : CustomStringConvertible
 		_alcoholDetail = alcoholDetail
 	}
 	
-	func specialServiceTypes() -> String { return "\((_specialServiceTypes.map{ "<SpecialServiceTypes>\($0)</SpecialServiceTypes>" } as [String]).joined())" }
-	func codDetail() -> String { return (_codDetail == nil ? "" : "<CodDetail>\(_codDetail!)</CodDetail>") }
-	func dangerousGoodsDetail() -> String { return (_dangerousGoodsDetail == nil ? "" : "<DangerousGoodsDetail>\(_dangerousGoodsDetail!)</DangerousGoodsDetail>") }
-	func dryIceWeight() -> String { return (_dryIceWeight == nil ? "" : "<DryIceWeight>\(_dryIceWeight!)</DryIceWeight>") }
-	func signatureOptionDetail() -> String { return (_signatureOptionDetail == nil ? "" : "<SignatureOptionDetail>\(_signatureOptionDetail!)</SignatureOptionDetail>") }
-	func priorityAlertDetail() -> String { return (_priorityAlertDetail == nil ? "" : "<PriorityAlertDetail>\(_priorityAlertDetail!)</PriorityAlertDetail>") }
-	func alcoholDetail() -> String { return (_alcoholDetail == nil ? "" : "<AlcoholDetail>\(_alcoholDetail!)</AlcoholDetail>") }
+	fileprivate func specialServiceTypes() -> String { return "\((_specialServiceTypes.map{ "<SpecialServiceTypes>\($0)</SpecialServiceTypes>" } as [String]).joined())" }
+	fileprivate func codDetail() -> String { return (_codDetail == nil ? "" : "<CodDetail>\(_codDetail!)</CodDetail>") }
+	fileprivate func dangerousGoodsDetail() -> String { return (_dangerousGoodsDetail == nil ? "" : "<DangerousGoodsDetail>\(_dangerousGoodsDetail!)</DangerousGoodsDetail>") }
+	fileprivate func dryIceWeight() -> String { return (_dryIceWeight == nil ? "" : "<DryIceWeight>\(_dryIceWeight!)</DryIceWeight>") }
+	fileprivate func signatureOptionDetail() -> String { return (_signatureOptionDetail == nil ? "" : "<SignatureOptionDetail>\(_signatureOptionDetail!)</SignatureOptionDetail>") }
+	fileprivate func priorityAlertDetail() -> String { return (_priorityAlertDetail == nil ? "" : "<PriorityAlertDetail>\(_priorityAlertDetail!)</PriorityAlertDetail>") }
+	fileprivate func alcoholDetail() -> String { return (_alcoholDetail == nil ? "" : "<AlcoholDetail>\(_alcoholDetail!)</AlcoholDetail>") }
 }
 
 struct SignatureOptionDetail : CustomStringConvertible
 {
-	fileprivate let _optionType: SignatureOptionType?
-	fileprivate let _signatureReleaseNumber: String?
+	let _optionType: SignatureOptionType?
+	let _signatureReleaseNumber: String?
 	
 	var description: String { return "\(optionType())\(signatureReleaseNumber())" }
+	
+	init(optionType: SignatureOptionType?)
+	{
+		_optionType = optionType
+		_signatureReleaseNumber = nil
+	}
 	
 	init(optionType: SignatureOptionType?, signatureReleaseNumber: String?)
 	{
@@ -2857,43 +2863,43 @@ struct SignatureOptionDetail : CustomStringConvertible
 		_signatureReleaseNumber = signatureReleaseNumber
 	}
 	
-	func optionType() -> String { return (_optionType == nil ? "" : "<OptionType>\(_optionType!)</OptionType>") }
-	func signatureReleaseNumber() -> String { return (_signatureReleaseNumber == nil ? "" : "<SignatureReleaseNumber>\(_signatureReleaseNumber!)</SignatureReleaseNumber>") }
+	fileprivate func optionType() -> String { return (_optionType == nil ? "" : "<OptionType>\(_optionType!)</OptionType>") }
+	fileprivate func signatureReleaseNumber() -> String { return (_signatureReleaseNumber == nil ? "" : "<SignatureReleaseNumber>\(_signatureReleaseNumber!)</SignatureReleaseNumber>") }
 }
 
 struct CodDetail : CustomStringConvertible
 {
-	fileprivate let _codCollectionAmount: Money?
-	fileprivate let _addTransportationChargesDetail: CodAddTransportationChargesDetail?
-	fileprivate let _collectionType: CodCollectionType?
-	fileprivate let _codRecipient: Party?
-	fileprivate let _financialInstitutionContactAndAddress: ContactAndAddress?
-	fileprivate let _remitToName: String?
-	fileprivate let _referenceIndicator: CodReturnReferenceIndicatorType?
-	fileprivate let _returnTrackingId: TrackingId?
+	let _codCollectionAmount: Money?
+	let _addTransportationChargesDetail: CodAddTransportationChargesDetail?
+	let _collectionType: CodCollectionType?
+	let _codRecipient: Party?
+	let _financialInstitutionContactAndAddress: ContactAndAddress?
+	let _remitToName: String?
+	let _referenceIndicator: CodReturnReferenceIndicatorType?
+	let _returnTrackingId: TrackingId?
 	
 	var description: String { return "\(codCollectionAmount())\(addTransportationChargesDetail())\(collectionType())\(codRecipient())\(financialInstitutionContactAndAddress())\(remitToName())\(referenceIndicator())\(returnTrackingId())" }
 	
-	init(codCollectionAmount: Money?, addTransportationChargesDetail: CodAddTransportationChargesDetail, collectionType: CodCollectionType, codRecipient: Party, financialInstitutionContactAndAddress: ContactAndAddress, remitToName: String, referenceIndicator: CodReturnReferenceIndicatorType, returnTrackingId: TrackingId)
+	init(collectionType: CodCollectionType?)
 	{
-		_codCollectionAmount = codCollectionAmount
-		_addTransportationChargesDetail = addTransportationChargesDetail
+		_codCollectionAmount = nil
+		_addTransportationChargesDetail = nil
 		_collectionType = collectionType
-		_codRecipient = codRecipient
-		_financialInstitutionContactAndAddress = financialInstitutionContactAndAddress
-		_remitToName = remitToName
-		_referenceIndicator = referenceIndicator
-		_returnTrackingId = returnTrackingId
+		_codRecipient = nil
+		_financialInstitutionContactAndAddress = nil
+		_remitToName = nil
+		_referenceIndicator = nil
+		_returnTrackingId = nil
 	}
 	
-	func codCollectionAmount() -> String { return (_codCollectionAmount == nil ? "" : "<CodCollectionAmount>\(_codCollectionAmount!)</CodCollectionAmount>") }
-	func addTransportationChargesDetail() -> String { return (_addTransportationChargesDetail == nil ? "" : "<AddTransportationChargesDetail>\(_addTransportationChargesDetail!)</AddTransportationChargesDetail>") }
-	func collectionType() -> String { return (_collectionType == nil ? "" : "<CollectionType>\(_collectionType!)</CollectionType>") }
-	func codRecipient() -> String { return (_codRecipient == nil ? "" : "<CodRecipient>\(_codRecipient!)</CodRecipient>") }
-	func financialInstitutionContactAndAddress() -> String { return (_financialInstitutionContactAndAddress == nil ? "" : "<FinancialInstitutionContactAndAddress>\(_financialInstitutionContactAndAddress!)</FinancialInstitutionContactAndAddress>") }
-	func remitToName() -> String { return (_remitToName == nil ? "" : "<RemitToName>\(_remitToName!)</RemitToName>") }
-	func referenceIndicator() -> String { return (_referenceIndicator == nil ? "" : "<ReferenceIndicator>\(_referenceIndicator!)</ReferenceIndicator>") }
-	func returnTrackingId() -> String { return (_returnTrackingId == nil ? "" : "<ReturnTrackingId>\(_returnTrackingId!)</ReturnTrackingId>") }
+	fileprivate func codCollectionAmount() -> String { return (_codCollectionAmount == nil ? "" : "<CodCollectionAmount>\(_codCollectionAmount!)</CodCollectionAmount>") }
+	fileprivate func addTransportationChargesDetail() -> String { return (_addTransportationChargesDetail == nil ? "" : "<AddTransportationChargesDetail>\(_addTransportationChargesDetail!)</AddTransportationChargesDetail>") }
+	fileprivate func collectionType() -> String { return (_collectionType == nil ? "" : "<CollectionType>\(_collectionType!)</CollectionType>") }
+	fileprivate func codRecipient() -> String { return (_codRecipient == nil ? "" : "<CodRecipient>\(_codRecipient!)</CodRecipient>") }
+	fileprivate func financialInstitutionContactAndAddress() -> String { return (_financialInstitutionContactAndAddress == nil ? "" : "<FinancialInstitutionContactAndAddress>\(_financialInstitutionContactAndAddress!)</FinancialInstitutionContactAndAddress>") }
+	fileprivate func remitToName() -> String { return (_remitToName == nil ? "" : "<RemitToName>\(_remitToName!)</RemitToName>") }
+	fileprivate func referenceIndicator() -> String { return (_referenceIndicator == nil ? "" : "<ReferenceIndicator>\(_referenceIndicator!)</ReferenceIndicator>") }
+	fileprivate func returnTrackingId() -> String { return (_returnTrackingId == nil ? "" : "<ReturnTrackingId>\(_returnTrackingId!)</ReturnTrackingId>") }
 }
 
 struct CodAddTransportationChargesDetail : CustomStringConvertible
@@ -2918,33 +2924,33 @@ struct CodAddTransportationChargesDetail : CustomStringConvertible
 
 struct PriorityAlertDetail : CustomStringConvertible
 {
-	fileprivate let _enhancementTypes: PriorityAlertEnhancementType?
-	fileprivate let _content: String?
+	let _enhancementTypes: PriorityAlertEnhancementType?
+	let _content: String?
 	
 	var description: String { return "\(enhancementTypes())\(content())" }
 	
-	init(enhancementTypes: PriorityAlertEnhancementType, content: String)
+	init(enhancementTypes: PriorityAlertEnhancementType?)
 	{
 		_enhancementTypes = enhancementTypes
-		_content = content
+		_content = nil
 	}
 	
-	func enhancementTypes() -> String { return (_enhancementTypes == nil ? "" : "<EnhancementTypes>\(_enhancementTypes!)</EnhancementTypes>") }
-	func content() -> String { return (_content == nil ? "" : "<Content>\(_content!)</Content>") }
+	fileprivate func enhancementTypes() -> String { return (_enhancementTypes == nil ? "" : "<EnhancementTypes>\(_enhancementTypes!)</EnhancementTypes>") }
+	fileprivate func content() -> String { return (_content == nil ? "" : "<Content>\(_content!)</Content>") }
 }
 
 struct AlcoholDetail : CustomStringConvertible
 {
-	fileprivate let _recipientType: AlcoholRecipientType?
+	let _recipientType: AlcoholRecipientType?
 	
 	var description: String { return "\(recipientType())" }
 	
-	init(recipientType: AlcoholRecipientType)
+	init(recipientType: AlcoholRecipientType?)
 	{
 		_recipientType = recipientType
 	}
 	
-	func recipientType() -> String { return (_recipientType == nil ? "" : "<RecipientType>\(_recipientType!)</RecipientType>") }
+	fileprivate func recipientType() -> String { return (_recipientType == nil ? "" : "<RecipientType>\(_recipientType!)</RecipientType>") }
 }
 
 struct ContentRecord : CustomStringConvertible
