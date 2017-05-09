@@ -461,7 +461,10 @@ class AppDelegate: NSObject
 			)
 		)
 		
-		//print("\(web)")
+		#if DEBUG
+		print("\(web)")
+		#endif
+		
 		callDataTask(body: "\(web)")
 	}
 	
@@ -561,7 +564,9 @@ class AppDelegate: NSObject
 		{
 			if error != nil
 			{
+				#if DEBUG
 				print("error: \(error!.localizedDescription)")
+				#endif
 			}
 			
 			return
@@ -596,7 +601,9 @@ class AppDelegate: NSObject
 				self.addFreightLineItemButton.isEnabled = true
 			})
 			
+			#if DEBUG
 			print("\(CFAbsoluteTimeGetCurrent() - start)")
+			#endif
 		}
 	}
 }
