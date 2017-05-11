@@ -12,11 +12,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - EULA to display in window rather than open to web page
 
 ## 1.15.216 - 2017-05-09
-### Changed
-- Updated version number to coincide with App Store release train
-
-## 1.14.350 - 2017-05-09
-### Changed
+### Updated
 - Special Services details can now be set
 
 ## 1.14.140 - 2017-05-04
