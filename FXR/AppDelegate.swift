@@ -175,19 +175,18 @@ class AppDelegate: NSObject
 	var parentStack = Stack<SoapElement>()
 	var currentId: Int? = nil
 	var lineItems = Stack<Any>()
-	var ss = Stack<svc>()
+	var specialServices = Stack<svc>()
 
-	
 	@IBAction func OpenPreferences(_ sender: Any) {
-		DispatchQueue.main.async(execute: { () -> Void in
+		DispatchQueue.main.async {
 			NSApplication.shared().runModal(for: SettingsController().window!)
-		})
+		}
 	}
 	
 	@IBAction func ViewEULA(_ sender: Any) {
-		DispatchQueue.main.async(execute: { () -> Void in
-			NSWorkspace.shared().open(URL(string: "https://git.io/v92hP")!)
-		})
+		DispatchQueue.main.async {
+			NSApplication.shared().runModal(for: EULAController().window!)
+		}
 	}
 	
 	@IBAction func deleteLineItem(_ sender: Any) {
@@ -238,19 +237,19 @@ class AppDelegate: NSObject
 			itemDescriptionForClearance: nil,
 			customerReferences: nil,
 			specialServicesRequested: PackageSpecialServicesRequested(
-				specialServiceTypes: ss.items.flatMap{ PackageSpecialServiceType(rawValue: "\($0.0.rawValue)")! },
-				codDetail: ss.items.filter{ $0.0 == PackageSpecialServiceType.COD }.first?.1 as? CodDetail,
-				dangerousGoodsDetail: ss.items.filter{ $0.0 == PackageSpecialServiceType.DANGEROUS_GOODS }.first?.1 as? DangerousGoodsDetail,
-				dryIceWeight: ss.items.filter{ $0.0 == PackageSpecialServiceType.DRY_ICE }.first?.1 as? Weight,
-				signatureOptionDetail: ss.items.filter{ $0.0 == PackageSpecialServiceType.SIGNATURE_OPTION }.first?.1 as? SignatureOptionDetail,
-				priorityAlertDetail: ss.items.filter{ $0.0 == PackageSpecialServiceType.PRIORITY_ALERT }.first?.1 as? PriorityAlertDetail,
-				alcoholDetail: ss.items.filter{ $0.0 == PackageSpecialServiceType.ALCOHOL }.first?.1 as? AlcoholDetail
+				specialServiceTypes: specialServices.items.flatMap{ PackageSpecialServiceType(rawValue: "\($0.0.rawValue)")! },
+				codDetail: specialServices.items.filter{ $0.0 == PackageSpecialServiceType.COD }.first?.1 as? CodDetail,
+				dangerousGoodsDetail: specialServices.items.filter{ $0.0 == PackageSpecialServiceType.DANGEROUS_GOODS }.first?.1 as? DangerousGoodsDetail,
+				dryIceWeight: specialServices.items.filter{ $0.0 == PackageSpecialServiceType.DRY_ICE }.first?.1 as? Weight,
+				signatureOptionDetail: specialServices.items.filter{ $0.0 == PackageSpecialServiceType.SIGNATURE_OPTION }.first?.1 as? SignatureOptionDetail,
+				priorityAlertDetail: specialServices.items.filter{ $0.0 == PackageSpecialServiceType.PRIORITY_ALERT }.first?.1 as? PriorityAlertDetail,
+				alcoholDetail: specialServices.items.filter{ $0.0 == PackageSpecialServiceType.ALCOHOL }.first?.1 as? AlcoholDetail
 			),
 			contentRecords: nil
 			)
 		)
 		
-		ss.items.removeAll()
+		specialServices.items.removeAll()
 		packageWeight.stringValue = ""
 		packageWidth.stringValue = ""
 		packageHeight.stringValue = ""
@@ -808,20 +807,20 @@ extension AppDelegate: NSTableViewDelegate
 				switch (PackageSpecialServiceType.values[row])
 				{
 					case PackageSpecialServiceType.ALCOHOL.rawValue :
-						guard let alcohol = ss.items.filter({ $0.0 == PackageSpecialServiceType.ALCOHOL }).first?.1 as? AlcoholDetail,
+						guard let alcohol = specialServices.items.filter({ $0.0 == PackageSpecialServiceType.ALCOHOL }).first?.1 as? AlcoholDetail,
 							alcohol._recipientType != nil else { return 0 }
 						
 						return AlcoholRecipientType.values.index(of: (alcohol._recipientType?.rawValue)!)! + 1
 					case PackageSpecialServiceType.COD.rawValue :
-						guard let cod = ss.items.filter({ $0.0 == PackageSpecialServiceType.COD }).first?.1 as? CodDetail else {
+						guard let cod = specialServices.items.filter({ $0.0 == PackageSpecialServiceType.COD }).first?.1 as? CodDetail else {
 							return 0
 						}
 						
 						return CodCollectionType.values.index(of: (cod._collectionType?.rawValue)!)! + 1
 					case PackageSpecialServiceType.APPOINTMENT_DELIVERY.rawValue :
-						return ss.items.filter{ $0.0 == PackageSpecialServiceType.APPOINTMENT_DELIVERY }.count
+						return specialServices.items.filter{ $0.0 == PackageSpecialServiceType.APPOINTMENT_DELIVERY }.count
 					case PackageSpecialServiceType.DANGEROUS_GOODS.rawValue :
-						guard let dg = ss.items.filter({ $0.0 == PackageSpecialServiceType.DANGEROUS_GOODS }).first?.1 as? DangerousGoodsDetail else {
+						guard let dg = specialServices.items.filter({ $0.0 == PackageSpecialServiceType.DANGEROUS_GOODS }).first?.1 as? DangerousGoodsDetail else {
 							return 0
 						}
 						
@@ -833,16 +832,16 @@ extension AppDelegate: NSTableViewDelegate
 //	
 //						return (specialServices?._dryIceWeight == nil ? 0 : AlcoholRecipientType.values.index(of: (specialServices?._alcoholDetail?._recipientType?.rawValue)!)! - 1)
 					case PackageSpecialServiceType.NON_STANDARD_CONTAINER.rawValue :
-						return ss.items.filter{ $0.0 == PackageSpecialServiceType.NON_STANDARD_CONTAINER }.count
+						return specialServices.items.filter{ $0.0 == PackageSpecialServiceType.NON_STANDARD_CONTAINER }.count
 					case PackageSpecialServiceType.PRIORITY_ALERT.rawValue :
-						guard let pa = ss.items.filter({ $0.0 == PackageSpecialServiceType.PRIORITY_ALERT }).first?.1 as? PriorityAlertDetail else {
+						guard let pa = specialServices.items.filter({ $0.0 == PackageSpecialServiceType.PRIORITY_ALERT }).first?.1 as? PriorityAlertDetail else {
 							return 0
 						}
 						
 						return
 							PriorityAlertEnhancementType.values.index(of: (pa._enhancementTypes?.rawValue)!)! + 1
 					case PackageSpecialServiceType.SIGNATURE_OPTION.rawValue :
-						guard let sig = ss.items.filter({ $0.0 == PackageSpecialServiceType.SIGNATURE_OPTION }).first?.1 as? SignatureOptionDetail else {
+						guard let sig = specialServices.items.filter({ $0.0 == PackageSpecialServiceType.SIGNATURE_OPTION }).first?.1 as? SignatureOptionDetail else {
 							return 0
 						}
 						
@@ -861,29 +860,29 @@ extension AppDelegate: NSTableViewDelegate
 			switch (PackageSpecialServiceType.values[row])
 			{
 				case PackageSpecialServiceType.ALCOHOL.rawValue :
-					ss.items = ss.items.filter{ $0.0 != PackageSpecialServiceType.ALCOHOL }
-					ss.push((PackageSpecialServiceType.ALCOHOL, (object as? Int) == nil || (object as! Int) == 0 ? nil : AlcoholDetail(recipientType: AlcoholRecipientType(rawValue: AlcoholRecipientType.values[object as! Int - 1])!)))
+					specialServices.items = specialServices.items.filter{ $0.0 != PackageSpecialServiceType.ALCOHOL }
+					specialServices.push((PackageSpecialServiceType.ALCOHOL, (object as? Int) == nil || (object as! Int) == 0 ? nil : AlcoholDetail(recipientType: AlcoholRecipientType(rawValue: AlcoholRecipientType.values[object as! Int - 1])!)))
 				case PackageSpecialServiceType.COD.rawValue :
-					ss.items = ss.items.filter{ $0.0 != PackageSpecialServiceType.COD }
-					ss.push((PackageSpecialServiceType.COD, (object as? Int) == nil || (object as! Int) == 0 ? nil : CodDetail(collectionType: CodCollectionType(rawValue: CodCollectionType.values[object as! Int - 1]))))
+					specialServices.items = specialServices.items.filter{ $0.0 != PackageSpecialServiceType.COD }
+					specialServices.push((PackageSpecialServiceType.COD, (object as? Int) == nil || (object as! Int) == 0 ? nil : CodDetail(collectionType: CodCollectionType(rawValue: CodCollectionType.values[object as! Int - 1]))))
 				case PackageSpecialServiceType.APPOINTMENT_DELIVERY.rawValue :
-					ss.items = ss.items.filter{ $0.0 != PackageSpecialServiceType.APPOINTMENT_DELIVERY }
-					ss.push((PackageSpecialServiceType.APPOINTMENT_DELIVERY, (object as? Int) == nil || (object as! Int) == 0 ? nil : GenericDefault(rawValue: GenericDefault.values[object as! Int - 1])))
+					specialServices.items = specialServices.items.filter{ $0.0 != PackageSpecialServiceType.APPOINTMENT_DELIVERY }
+					specialServices.push((PackageSpecialServiceType.APPOINTMENT_DELIVERY, (object as? Int) == nil || (object as! Int) == 0 ? nil : GenericDefault(rawValue: GenericDefault.values[object as! Int - 1])))
 				case PackageSpecialServiceType.DANGEROUS_GOODS.rawValue :
-					ss.items = ss.items.filter{ $0.0 != PackageSpecialServiceType.DANGEROUS_GOODS }
-					ss.push((PackageSpecialServiceType.DANGEROUS_GOODS, (object as? Int) == nil || (object as! Int) == 0 ? nil : DangerousGoodsDetail(accessibility: DangerousGoodsAccessibilityType(rawValue: DangerousGoodsAccessibilityType.values[object as! Int - 1])!)))
+					specialServices.items = specialServices.items.filter{ $0.0 != PackageSpecialServiceType.DANGEROUS_GOODS }
+					specialServices.push((PackageSpecialServiceType.DANGEROUS_GOODS, (object as? Int) == nil || (object as! Int) == 0 ? nil : DangerousGoodsDetail(accessibility: DangerousGoodsAccessibilityType(rawValue: DangerousGoodsAccessibilityType.values[object as! Int - 1])!)))
 //				case PackageSpecialServiceType.DRY_ICE.rawValue :
-//					ss.items = ss.items.filter{ $0.0 != PackageSpecialServiceType.DRY_ICE }
-//					ss.push((object as? Int) == nil || (object as! Int) == 0 ? nil : Weight(units: WeightUnits.LB, value: <#T##Float#>)))
+//					specialServices.items = specialServices.items.filter{ $0.0 != PackageSpecialServiceType.DRY_ICE }
+//					specialServices.push((object as? Int) == nil || (object as! Int) == 0 ? nil : Weight(units: WeightUnits.LB, value: <#T##Float#>)))
 				case PackageSpecialServiceType.NON_STANDARD_CONTAINER.rawValue :
-					ss.items = ss.items.filter{ $0.0 != PackageSpecialServiceType.NON_STANDARD_CONTAINER }
-					ss.push((PackageSpecialServiceType.NON_STANDARD_CONTAINER, (object as? Int) == nil || (object as! Int) == 0 ? nil : GenericDefault(rawValue: GenericDefault.values[object as! Int - 1])))
+					specialServices.items = specialServices.items.filter{ $0.0 != PackageSpecialServiceType.NON_STANDARD_CONTAINER }
+					specialServices.push((PackageSpecialServiceType.NON_STANDARD_CONTAINER, (object as? Int) == nil || (object as! Int) == 0 ? nil : GenericDefault(rawValue: GenericDefault.values[object as! Int - 1])))
 				case PackageSpecialServiceType.PRIORITY_ALERT.rawValue :
-					ss.items = ss.items.filter{ $0.0 != PackageSpecialServiceType.PRIORITY_ALERT }
-					ss.push((PackageSpecialServiceType.PRIORITY_ALERT, (object as? Int) == nil || (object as! Int) == 0 ? nil : PriorityAlertDetail(enhancementTypes: PriorityAlertEnhancementType(rawValue: PriorityAlertEnhancementType.values[object as! Int - 1])!)))
+					specialServices.items = specialServices.items.filter{ $0.0 != PackageSpecialServiceType.PRIORITY_ALERT }
+					specialServices.push((PackageSpecialServiceType.PRIORITY_ALERT, (object as? Int) == nil || (object as! Int) == 0 ? nil : PriorityAlertDetail(enhancementTypes: PriorityAlertEnhancementType(rawValue: PriorityAlertEnhancementType.values[object as! Int - 1])!)))
 				case PackageSpecialServiceType.SIGNATURE_OPTION.rawValue :
-					ss.items = ss.items.filter{ $0.0 != PackageSpecialServiceType.SIGNATURE_OPTION }
-					ss.push((PackageSpecialServiceType.SIGNATURE_OPTION, (object as? Int) == nil || (object as! Int) == 0 ? nil : SignatureOptionDetail(optionType: SignatureOptionType(rawValue: SignatureOptionType.values[object as! Int - 1])!)))
+					specialServices.items = specialServices.items.filter{ $0.0 != PackageSpecialServiceType.SIGNATURE_OPTION }
+					specialServices.push((PackageSpecialServiceType.SIGNATURE_OPTION, (object as? Int) == nil || (object as! Int) == 0 ? nil : SignatureOptionDetail(optionType: SignatureOptionType(rawValue: SignatureOptionType.values[object as! Int - 1])!)))
 				default: break
 			}
 		}
