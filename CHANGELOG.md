@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 - 
 
 ### Changed
-- 
+- EULA to display in window rather than open to web page
 
 ## 1.15.216 - 2017-05-09
 ### Changed
@@ -19,7 +19,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 ### Changed
 - Special Services details can now be set
 
-## [1.14.140] - 2017-05-04
+## 1.14.140 - 2017-05-04
 ### Added
 - Tracking
 - Parcel and Freight MPS
@@ -30,6 +30,3 @@ and this project adheres to [Semantic Versioning](http://semver.org/).
 
 ## 1.0.1 - 2017-04-26
 - Initial Release
-
-[Unreleased]: https://github.com/olivierlacan/keep-a-changelog/compare/v0.3.0...HEAD
-[0.3.0]: https://github.com/tobeyun/fxr/compare/v0.2.0...v0.3.0
