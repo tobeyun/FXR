@@ -23,10 +23,21 @@
 		558D1A141EAAF39F00C15A7E /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558D1A131EAAF39F00C15A7E /* SettingsController.swift */; };
 /* End PBXBuildFile section */
 
+/* Begin PBXContainerItemProxy section */
+		550884581ECF51BE00E5733D /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 5544F1F11E8076BF00FD44E0 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = 5544F1F81E8076BF00FD44E0;
+			remoteInfo = FXR;
+		};
+/* End PBXContainerItemProxy section */
+
 /* Begin PBXFileReference section */
 		5508814B1EC33E1000A65070 /* EULAController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = EULAController.swift; path = ../EULAController.swift; sourceTree = "<group>"; };
 		5508814D1EC33E2400A65070 /* EULA.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = EULA.xib; path = ../EULA.xib; sourceTree = "<group>"; };
 		550881511EC3D64A00A65070 /* FedExWebServicesEndUserLicenseAgreement-ver7-July2015.pdf */ = {isa = PBXFileReference; lastKnownFileType = image.pdf; path = "FedExWebServicesEndUserLicenseAgreement-ver7-July2015.pdf"; sourceTree = "<group>"; };
+		550884531ECF51BE00E5733D /* FXRTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = FXRTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		551DBFF81EAE593C005D0E2D /* FXR.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = FXR.entitlements; sourceTree = "<group>"; };
 		55391EA61EA8F3F900B7748C /* KeychainManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KeychainManager.swift; sourceTree = "<group>"; };
 		55391EAC1EAA290C00B7748C /* Settings.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = Settings.xib; sourceTree = "<group>"; };
@@ -44,6 +55,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		550884501ECF51BE00E5733D /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5544F1F61E8076BF00FD44E0 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -67,6 +85,7 @@
 			isa = PBXGroup;
 			children = (
 				5544F1F91E8076BF00FD44E0 /* FXR.app */,
+				550884531ECF51BE00E5733D /* FXRTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -96,6 +115,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		550884521ECF51BE00E5733D /* FXRTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 5508845C1ECF51BE00E5733D /* Build configuration list for PBXNativeTarget "FXRTests" */;
+			buildPhases = (
+				5508844F1ECF51BE00E5733D /* Sources */,
+				550884501ECF51BE00E5733D /* Frameworks */,
+				550884511ECF51BE00E5733D /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				550884591ECF51BE00E5733D /* PBXTargetDependency */,
+			);
+			name = FXRTests;
+			productName = FXRTests;
+			productReference = 550884531ECF51BE00E5733D /* FXRTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		5544F1F81E8076BF00FD44E0 /* FXR */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = 5544F2061E8076BF00FD44E0 /* Build configuration list for PBXNativeTarget "FXR" */;
@@ -103,7 +140,7 @@
 				5544F1F51E8076BF00FD44E0 /* Sources */,
 				5544F1F61E8076BF00FD44E0 /* Frameworks */,
 				5544F1F71E8076BF00FD44E0 /* Resources */,
-				5587984F1EB5264400DAA24B /* ShellScript */,
+				5587984F1EB5264400DAA24B /* Run Script */,
 			);
 			buildRules = (
 			);
@@ -120,10 +157,16 @@
 		5544F1F11E8076BF00FD44E0 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0820;
+				LastSwiftUpdateCheck = 0830;
 				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = "Tobey Unruh";
 				TargetAttributes = {
+					550884521ECF51BE00E5733D = {
+						CreatedOnToolsVersion = 8.3.2;
+						DevelopmentTeam = 2W7E67872X;
+						ProvisioningStyle = Automatic;
+						TestTargetID = 5544F1F81E8076BF00FD44E0;
+					};
 					5544F1F81E8076BF00FD44E0 = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = 2W7E67872X;
@@ -150,11 +193,19 @@
 			projectRoot = "";
 			targets = (
 				5544F1F81E8076BF00FD44E0 /* FXR */,
+				550884521ECF51BE00E5733D /* FXRTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		550884511ECF51BE00E5733D /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5544F1F71E8076BF00FD44E0 /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -171,13 +222,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		5587984F1EB5264400DAA24B /* ShellScript */ = {
+		5587984F1EB5264400DAA24B /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Run Script";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -187,6 +239,13 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		5508844F1ECF51BE00E5733D /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		5544F1F51E8076BF00FD44E0 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -204,6 +263,14 @@
 		};
 /* End PBXSourcesBuildPhase section */
 
+/* Begin PBXTargetDependency section */
+		550884591ECF51BE00E5733D /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = 5544F1F81E8076BF00FD44E0 /* FXR */;
+			targetProxy = 550884581ECF51BE00E5733D /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
 /* Begin PBXVariantGroup section */
 		5544F2001E8076BF00FD44E0 /* MainMenu.xib */ = {
 			isa = PBXVariantGroup;
@@ -216,6 +283,38 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		5508845A1ECF51BE00E5733D /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 2W7E67872X;
+				INFOPLIST_FILE = FXRTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.xybergenix.FXRTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FXR.app/Contents/MacOS/FXR";
+			};
+			name = Debug;
+		};
+		5508845B1ECF51BE00E5733D /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				COMBINE_HIDPI_IMAGES = YES;
+				DEVELOPMENT_TEAM = 2W7E67872X;
+				INFOPLIST_FILE = FXRTests/Info.plist;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/../Frameworks @loader_path/../Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = com.xybergenix.FXRTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 3.0;
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/FXR.app/Contents/MacOS/FXR";
+			};
+			name = Release;
+		};
 		5544F2041E8076BF00FD44E0 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -347,6 +446,14 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		5508845C1ECF51BE00E5733D /* Build configuration list for PBXNativeTarget "FXRTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				5508845A1ECF51BE00E5733D /* Debug */,
+				5508845B1ECF51BE00E5733D /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
 		5544F1F41E8076BF00FD44E0 /* Build configuration list for PBXProject "FXR" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
