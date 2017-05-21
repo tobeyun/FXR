@@ -24,7 +24,7 @@ private struct SoapMessage : CustomStringConvertible
 	}
 }
 
-struct RateRequest : CustomStringConvertible
+final class RateRequest : CustomStringConvertible
 {
 	fileprivate let _webAuthenticationDetail: WebAuthenticationDetail
 	fileprivate let _clientDetail: ClientDetail
@@ -77,7 +77,7 @@ private struct VersionId : CustomStringConvertible
 	func minor() -> String { return "<Minor>\(_minor)</Minor>" }
 }
 
-struct ConsolidationKey : CustomStringConvertible
+final class ConsolidationKey : CustomStringConvertible
 {
 	fileprivate let _type: ConsolidationType?
 	fileprivate let _index: String?
@@ -97,7 +97,7 @@ struct ConsolidationKey : CustomStringConvertible
 	func date() -> String { return (_date == nil ? "" : "<Date>\(formatDate(_date!))</Date>") }
 }
 
-struct RequestedShipment : CustomStringConvertible
+final class RequestedShipment : CustomStringConvertible
 {
 	fileprivate let _shipTimestamp: Date?
 	fileprivate let _dropoffType: DropoffType?
@@ -205,7 +205,7 @@ struct RequestedShipment : CustomStringConvertible
 	//func requestedPackageLineItems() -> String { return (_requestedPackageLineItems == nil ? "" : "<RequestedPackageLineItems>\(_requestedPackageLineItems!)</RequestedPackageLineItems>") }
 }
 
-struct RequestedPackageLineItem : CustomStringConvertible
+final class RequestedPackageLineItem : CustomStringConvertible
 {
 	let _sequenceNumber: Int?
 	let _groupNumber: Int?
@@ -286,7 +286,7 @@ struct ShipmentAuthorizationDetail : CustomStringConvertible
 	func accountNumber() -> String { return (_accountNumber == nil ? "" : "<AccountNumber>\(_accountNumber!)</AccountNumber>") }
 }
 
-struct TaxpayerIdentification : CustomStringConvertible
+final class TaxpayerIdentification : CustomStringConvertible
 {
 	fileprivate let _tinType: TinType?
 	fileprivate let _number: String?
@@ -353,7 +353,7 @@ struct Contact : CustomStringConvertible
 	func eMailAddress() -> String { return (_eMailAddress == nil ? "" : "<EMailAddress>\(_eMailAddress!)</EMailAddress>") }
 }
 
-struct Party : CustomStringConvertible
+final class Party : CustomStringConvertible
 {
 	fileprivate let _accountNumber: String?
 	fileprivate let _tins: TaxpayerIdentification?
@@ -376,7 +376,7 @@ struct Party : CustomStringConvertible
 	func address() -> String { return (_address == nil ? "" : "<Address>\(_address!)</Address>") }
 }
 
-struct ContactAndAddress : CustomStringConvertible
+final class ContactAndAddress : CustomStringConvertible
 {
 	fileprivate let _contact: Contact?
 	fileprivate let _address: Address?
@@ -393,7 +393,7 @@ struct ContactAndAddress : CustomStringConvertible
 	func address() -> String { return (_address == nil ? "" : "<Address>\(_address!)</Address>") }
 }
 
-struct Payment : CustomStringConvertible
+final class Payment : CustomStringConvertible
 {
 	fileprivate let _paymentType: PaymentType?
 	fileprivate let _payor: Payor?
@@ -410,7 +410,7 @@ struct Payment : CustomStringConvertible
 	func payor() -> String { return (_payor == nil ? "" : "<Payor>\(_payor!)</Payor>") }
 }
 
-struct Payor : CustomStringConvertible
+final class Payor : CustomStringConvertible
 {
 	fileprivate let _responsibleParty: Party?
 	
@@ -424,7 +424,7 @@ struct Payor : CustomStringConvertible
 	func responsibleParty() -> String { return (_responsibleParty == nil ? "" : "<ResponsibleParty>\(_responsibleParty!)</ResponsibleParty>") }
 }
 
-struct ShipmentSpecialServicesRequested : CustomStringConvertible
+final class ShipmentSpecialServicesRequested : CustomStringConvertible
 {
 	fileprivate let _specialServiceTypes: [ShipmentSpecialServiceType]
 	fileprivate let _codDetail: CodDetail?
@@ -480,7 +480,7 @@ struct ShipmentSpecialServicesRequested : CustomStringConvertible
 	func customDeliveryWindowDetail() -> String { return (_customDeliveryWindowDetail == nil ? "" : "<CustomDeliveryWindowDetail>\(_customDeliveryWindowDetail!)</CustomDeliveryWindowDetail>") }
 }
 
-struct DeliveryOnInvoiceAcceptanceDetail : CustomStringConvertible
+final class DeliveryOnInvoiceAcceptanceDetail : CustomStringConvertible
 {
 	fileprivate let _recipient: Party?
 	fileprivate let _trackingId: TrackingId?
@@ -497,7 +497,7 @@ struct DeliveryOnInvoiceAcceptanceDetail : CustomStringConvertible
 	func trackingId() -> String { return (_trackingId == nil ? "" : "<TrackingId>\(_trackingId!)</TrackingId>") }
 }
 
-struct HoldAtLocationDetail : CustomStringConvertible
+final class HoldAtLocationDetail : CustomStringConvertible
 {
 	fileprivate let _phoneNumber: String?
 	fileprivate let _locationContactAndAddress: ContactAndAddress?
@@ -523,7 +523,7 @@ struct HoldAtLocationDetail : CustomStringConvertible
 	func locationNumber() -> String { return (_locationNumber == nil ? "" : "<LocationNumber>\(_locationNumber!)</LocationNumber>") }
 }
 
-struct ShipmentEventNotificationDetail : CustomStringConvertible
+final class ShipmentEventNotificationDetail : CustomStringConvertible
 {
 	fileprivate let _aggregationType: ShipmentNotificationAggregationType?
 	fileprivate let _personalMessage: String?
@@ -543,7 +543,7 @@ struct ShipmentEventNotificationDetail : CustomStringConvertible
 	func eventNotifications() -> String { return (_eventNotifications == nil ? "" : "<EventNotifications>\(_eventNotifications!)</EventNotifications>") }
 }
 
-struct ShipmentEventNotificationSpecification : CustomStringConvertible
+final class ShipmentEventNotificationSpecification : CustomStringConvertible
 {
 	fileprivate let _role: ShipmentNotificationRoleType?
 	fileprivate let _events: NotificationEventType?
@@ -566,7 +566,7 @@ struct ShipmentEventNotificationSpecification : CustomStringConvertible
 	func formatSpecification() -> String { return (_formatSpecification == nil ? "" : "<FormatSpecification>\(_formatSpecification!)</FormatSpecification>") }
 }
 
-struct NotificationDetail : CustomStringConvertible
+final class NotificationDetail : CustomStringConvertible
 {
 	fileprivate let _notificationType: NotificationType?
 	fileprivate let _emailDetail: EMailDetail?
@@ -638,7 +638,7 @@ struct Address : CustomStringConvertible
 	func residential() -> String { return (_residential == nil ? "" : "<Residential>\(_residential!)</Residential>") }
 }
 
-struct ShipmentNotificationFormatSpecification : CustomStringConvertible
+final class ShipmentNotificationFormatSpecification : CustomStringConvertible
 {
 	fileprivate let _type: NotificationFormatType?
 	
@@ -652,7 +652,7 @@ struct ShipmentNotificationFormatSpecification : CustomStringConvertible
 	func type() -> String { return (_type == nil ? "" : "<Type>\(_type!)</Type>") }
 }
 
-struct ReturnShipmentDetail : CustomStringConvertible
+final class ReturnShipmentDetail : CustomStringConvertible
 {
 	fileprivate let _returnType: ReturnType?
 	fileprivate let _rma: Rma?
@@ -689,7 +689,7 @@ struct Rma : CustomStringConvertible
 	func reason() -> String { return (_reason == nil ? "" : "<Reason>\(_reason!)</Reason>") }
 }
 
-struct ReturnEMailDetail : CustomStringConvertible
+final class ReturnEMailDetail : CustomStringConvertible
 {
 	fileprivate let _merchantPhoneNumber: String?
 	fileprivate let _allowedSpecialServices: ReturnEMailAllowedSpecialServiceType?
@@ -723,7 +723,7 @@ struct ReturnAssociationDetail : CustomStringConvertible
 	func shipDate() -> String { return (_shipDate == nil ? "" : "<ShipDate>\(_shipDate!)</ShipDate>") }
 }
 
-struct PendingShipmentDetail : CustomStringConvertible
+final class PendingShipmentDetail : CustomStringConvertible
 {
 	fileprivate let _type: PendingShipmentType?
 	fileprivate let _expirationDate: Date?
@@ -746,7 +746,7 @@ struct PendingShipmentDetail : CustomStringConvertible
 	func recommendedDocumentSpecification() -> String { return (_recommendedDocumentSpecification == nil ? "" : "<RecommendedDocumentSpecification>\(_recommendedDocumentSpecification!)</RecommendedDocumentSpecification>") }
 }
 
-struct PendingShipmentProcessingOptionsRequested : CustomStringConvertible
+final class PendingShipmentProcessingOptionsRequested : CustomStringConvertible
 {
 	fileprivate let _options: PendingShipmentProcessingOptionType?
 	
@@ -760,7 +760,7 @@ struct PendingShipmentProcessingOptionsRequested : CustomStringConvertible
 	func options() -> String { return (_options == nil ? "" : "<Options>\(_options!)</Options>") }
 }
 
-struct RecommendedDocumentSpecification : CustomStringConvertible
+final class RecommendedDocumentSpecification : CustomStringConvertible
 {
 	fileprivate let _types: RecommendedDocumentType?
 	
@@ -774,7 +774,7 @@ struct RecommendedDocumentSpecification : CustomStringConvertible
 	func types() -> String { return (_types == nil ? "" : "<Types>\(_types!)</Types>") }
 }
 
-struct InternationalControlledExportDetail : CustomStringConvertible
+final class InternationalControlledExportDetail : CustomStringConvertible
 {
 	fileprivate let _type: InternationalControlledExportType?
 	fileprivate let _foreignTradeZoneCode: String?
@@ -814,7 +814,7 @@ struct InternationalTrafficInArmsRegulationsDetail : CustomStringConvertible
 	func licenseOrExemptionNumber() -> String { return (_licenseOrExemptionNumber == nil ? "" : "<LicenseOrExemptionNumber>\(_licenseOrExemptionNumber!)</LicenseOrExemptionNumber>") }
 }
 
-struct ShipmentDryIceDetail : CustomStringConvertible
+final class ShipmentDryIceDetail : CustomStringConvertible
 {
 	fileprivate let _packageCount: UInt?
 	fileprivate let _totalWeight: Weight?
@@ -834,7 +834,7 @@ struct ShipmentDryIceDetail : CustomStringConvertible
 	func processingOptions() -> String { return (_processingOptions == nil ? "" : "<ProcessingOptions>\(_processingOptions!)</ProcessingOptions>") }
 }
 
-struct ShipmentDryIceProcessingOptionsRequested : CustomStringConvertible
+final class ShipmentDryIceProcessingOptionsRequested : CustomStringConvertible
 {
 	fileprivate let _options: ShipmentDryIceProcessingOptionType?
 	
@@ -848,7 +848,7 @@ struct ShipmentDryIceProcessingOptionsRequested : CustomStringConvertible
 	func options() -> String { return (_options == nil ? "" : "<Options>\(_options!)</Options>") }
 }
 
-struct HomeDeliveryPremiumDetail : CustomStringConvertible
+final class HomeDeliveryPremiumDetail : CustomStringConvertible
 {
 	fileprivate let _homeDeliveryPremiumType: HomeDeliveryPremiumType?
 	fileprivate let _date: Date?
@@ -868,7 +868,7 @@ struct HomeDeliveryPremiumDetail : CustomStringConvertible
 	func phoneNumber() -> String { return (_phoneNumber == nil ? "" : "<PhoneNumber>\(_phoneNumber!)</PhoneNumber>") }
 }
 
-struct FlatbedTrailerDetail : CustomStringConvertible
+final class FlatbedTrailerDetail : CustomStringConvertible
 {
 	fileprivate let _options: FlatbedTrailerOption?
 	
@@ -882,7 +882,7 @@ struct FlatbedTrailerDetail : CustomStringConvertible
 	func options() -> String { return (_options == nil ? "" : "<Options>\(_options!)</Options>") }
 }
 
-struct FreightGuaranteeDetail : CustomStringConvertible
+final class FreightGuaranteeDetail : CustomStringConvertible
 {
 	fileprivate let _type: FreightGuaranteeType?
 	fileprivate let _date: Date?
@@ -899,7 +899,7 @@ struct FreightGuaranteeDetail : CustomStringConvertible
 	func date() -> String { return (_date == nil ? "" : "<Date>\(formatDate(_date!))</Date>") }
 }
 
-struct EtdDetail : CustomStringConvertible
+final class EtdDetail : CustomStringConvertible
 {
 	fileprivate let _requestedDocumentCopies: RequestedShippingDocumentType?
 	fileprivate let _documentReferences: UploadDocumentReferenceDetail?
@@ -916,7 +916,7 @@ struct EtdDetail : CustomStringConvertible
 	func documentReferences() -> String { return (_documentReferences == nil ? "" : "<DocumentReferences>\(_documentReferences!)</DocumentReferences>") }
 }
 
-struct UploadDocumentReferenceDetail : CustomStringConvertible
+final class UploadDocumentReferenceDetail : CustomStringConvertible
 {
 	fileprivate let _lineNumber: UInt?
 	fileprivate let _customerReference: String?
@@ -948,7 +948,7 @@ struct UploadDocumentReferenceDetail : CustomStringConvertible
 	func documentIdProducer() -> String { return (_documentIdProducer == nil ? "" : "<DocumentIdProducer>\(_documentIdProducer!)</DocumentIdProducer>") }
 }
 
-struct CustomDeliveryWindowDetail : CustomStringConvertible
+final class CustomDeliveryWindowDetail : CustomStringConvertible
 {
 	fileprivate let _type: CustomDeliveryWindowType?
 	fileprivate let _requestTime: Date?
@@ -988,7 +988,7 @@ struct DateRange : CustomStringConvertible
 	func ends() -> String { return (_ends == nil ? "" : "<Ends>\(_ends!)</Ends>") }
 }
 
-struct ExpressFreightDetail : CustomStringConvertible
+final class ExpressFreightDetail : CustomStringConvertible
 {
 	fileprivate let _packingListEnclosed: Bool?
 	fileprivate let _shippersLoadAndCount: Int?
@@ -1034,7 +1034,7 @@ struct ExpressFreightDetailContact : CustomStringConvertible
 	func phone() -> String { return (_phone == nil ? "" : "<Phone>\(_phone!)</Phone>") }
 }
 
-struct FreightShipmentDetail : CustomStringConvertible
+final class FreightShipmentDetail : CustomStringConvertible
 {
 	fileprivate let _fedExFreightAccountNumber: String?
 	fileprivate let _fedExFreightBillingContactAndAddress: ContactAndAddress?
@@ -1096,7 +1096,7 @@ struct FreightShipmentDetail : CustomStringConvertible
 	func lineItems() -> String { return "\((_lineItems.map{ "<LineItems>\($0)</LineItems>" } as [String]).joined())" }
 }
 
-struct LiabilityCoverageDetail : CustomStringConvertible
+final class LiabilityCoverageDetail : CustomStringConvertible
 {
 	fileprivate let _coverageType: LiabilityCoverageType?
 	fileprivate let _coverageAmount: Money?
@@ -1113,7 +1113,7 @@ struct LiabilityCoverageDetail : CustomStringConvertible
 	func coverageAmount() -> String { return (_coverageAmount == nil ? "" : "<CoverageAmount>\(_coverageAmount!)</CoverageAmount>") }
 }
 
-struct FreightSpecialServicePayment : CustomStringConvertible
+final class FreightSpecialServicePayment : CustomStringConvertible
 {
 	fileprivate let _specialService: ShipmentSpecialServiceType?
 	fileprivate let _paymentType: FreightShipmentRoleType?
@@ -1130,7 +1130,7 @@ struct FreightSpecialServicePayment : CustomStringConvertible
 	func paymentType() -> String { return (_paymentType == nil ? "" : "<PaymentType>\(_paymentType!)</PaymentType>") }
 }
 
-struct FreightShipmentLineItem : CustomStringConvertible
+final class FreightShipmentLineItem : CustomStringConvertible
 {
 	let _freightClass: FreightClassType?
 	let _packaging: PhysicalPackagingType?
@@ -1162,7 +1162,7 @@ struct FreightShipmentLineItem : CustomStringConvertible
 	fileprivate func volume() -> String { return (_volume == nil ? "" : "<Volume>\(_volume!)</Volume>") }
 }
 
-struct Volume : CustomStringConvertible
+final class Volume : CustomStringConvertible
 {
 	fileprivate let _units: VolumeUnits?
 	fileprivate let _value: Float?
@@ -1179,7 +1179,7 @@ struct Volume : CustomStringConvertible
 	func value() -> String { return (_value == nil ? "" : "<Value>\(_value!)</Value>") }
 }
 
-struct VariableHandlingChargeDetail : CustomStringConvertible
+final class VariableHandlingChargeDetail : CustomStringConvertible
 {
 	fileprivate let _fixedValue: Money?
 	fileprivate let _percentValue: Decimal?
@@ -1202,7 +1202,7 @@ struct VariableHandlingChargeDetail : CustomStringConvertible
 	func rateTypeBasis() -> String { return (_rateTypeBasis == nil ? "" : "<RateTypeBasis>\(_rateTypeBasis!)</RateTypeBasis>") }
 }
 
-struct CustomsClearanceDetail : CustomStringConvertible
+final class CustomsClearanceDetail : CustomStringConvertible
 {
 	fileprivate let _brokers: BrokerDetail?
 	fileprivate let _clearanceBrokerage: ClearanceBrokerageType?
@@ -1258,7 +1258,7 @@ struct CustomsClearanceDetail : CustomStringConvertible
 	func regulatoryControls() -> String { return (_regulatoryControls == nil ? "" : "<RegulatoryControls>\(_regulatoryControls!)</RegulatoryControls>") }
 }
 
-struct BrokerDetail : CustomStringConvertible
+final class BrokerDetail : CustomStringConvertible
 {
 	fileprivate let _type: BrokerType?
 	fileprivate let _broker: Party?
@@ -1275,7 +1275,7 @@ struct BrokerDetail : CustomStringConvertible
 	func broker() -> String { return (_broker == nil ? "" : "<Broker>\(_broker!)</Broker>") }
 }
 
-struct CustomsOptionDetail : CustomStringConvertible
+final class CustomsOptionDetail : CustomStringConvertible
 {
 	fileprivate let _type: CustomsOptionType?
 	fileprivate let _description: String?
@@ -1292,7 +1292,7 @@ struct CustomsOptionDetail : CustomStringConvertible
 	func description_() -> String { return (_description == nil ? "" : "<Description>\(_description!)</Description>") }
 }
 
-struct RecipientCustomsId : CustomStringConvertible
+final class RecipientCustomsId : CustomStringConvertible
 {
 	fileprivate let _type: RecipientCustomsIdType?
 	fileprivate let _value: String?
@@ -1309,7 +1309,7 @@ struct RecipientCustomsId : CustomStringConvertible
 	func value() -> String { return (_value == nil ? "" : "<Value>\(_value!)</Value>") }
 }
 
-struct CommercialInvoice : CustomStringConvertible
+final class CommercialInvoice : CustomStringConvertible
 {
 	fileprivate let _comments: String?
 	fileprivate let _freightCharge: Money?
@@ -1356,7 +1356,7 @@ struct CommercialInvoice : CustomStringConvertible
 	func termsOfSale() -> String { return (_termsOfSale == nil ? "" : "<TermsOfSale>\(_termsOfSale!)</TermsOfSale>") }
 }
 
-struct Commodity : CustomStringConvertible
+final class Commodity : CustomStringConvertible
 {
 	fileprivate let _name: String?
 	fileprivate let _numberOfPieces: UInt?
@@ -1455,7 +1455,7 @@ struct EdtExciseCondition : CustomStringConvertible
 	func value() -> String { return (_value == nil ? "" : "<Value>\(_value!)</Value>") }
 }
 
-struct NaftaCommodityDetail : CustomStringConvertible
+final class NaftaCommodityDetail : CustomStringConvertible
 {
 	fileprivate let _referenceCriterion: NaftaPreferenceCriterionCode?
 	fileprivate let _producerDetermination: NaftaProducerDeterminationCode?
@@ -1481,7 +1481,7 @@ struct NaftaCommodityDetail : CustomStringConvertible
 	func netCostDateRange() -> String { return (_netCostDateRange == nil ? "" : "<NetCostDateRange>\(_netCostDateRange!)</NetCostDateRange>") }
 }
 
-struct ExportDetail : CustomStringConvertible
+final class ExportDetail : CustomStringConvertible
 {
 	fileprivate let _b13AFilingOption: B13AFilingOptionType?
 	fileprivate let _exportComplianceStatement: String?
@@ -1504,7 +1504,7 @@ struct ExportDetail : CustomStringConvertible
 	func destinationControlDetail() -> String { return (_destinationControlDetail == nil ? "" : "<DestinationControlDetail>\(_destinationControlDetail!)</DestinationControlDetail>") }
 }
 
-struct DestinationControlDetail : CustomStringConvertible
+final class DestinationControlDetail : CustomStringConvertible
 {
 	fileprivate let _statementTypes: DestinationControlStatementType?
 	fileprivate let _destinationCountries: String?
@@ -1524,7 +1524,7 @@ struct DestinationControlDetail : CustomStringConvertible
 	func endUser() -> String { return (_endUser == nil ? "" : "<EndUser>\(_endUser!)</EndUser>") }
 }
 
-struct PickupDetail : CustomStringConvertible
+final class PickupDetail : CustomStringConvertible
 {
 	fileprivate let _readyDateTime: Date?
 	fileprivate let _latestPickupDateTime: Date?
@@ -1550,7 +1550,7 @@ struct PickupDetail : CustomStringConvertible
 	func requestSource() -> String { return (_requestSource == nil ? "" : "<RequestSource>\(_requestSource!)</RequestSource>") }
 }
 
-struct SmartPostShipmentDetail : CustomStringConvertible
+final class SmartPostShipmentDetail : CustomStringConvertible
 {
 	fileprivate let _processingOptionsRequested: SmartPostShipmentProcessingOptionsRequested?
 	fileprivate let _indicia: SmartPostIndiciaType?
@@ -1576,7 +1576,7 @@ struct SmartPostShipmentDetail : CustomStringConvertible
 	func customerManifestId() -> String { return (_customerManifestId == nil ? "" : "<CustomerManifestId>\(_customerManifestId!)</CustomerManifestId>") }
 }
 
-struct SmartPostShipmentProcessingOptionsRequested : CustomStringConvertible
+final class SmartPostShipmentProcessingOptionsRequested : CustomStringConvertible
 {
 	fileprivate let _options: SmartPostShipmentProcessingOptionType?
 	
@@ -1590,7 +1590,7 @@ struct SmartPostShipmentProcessingOptionsRequested : CustomStringConvertible
 	func options() -> String { return (_options == nil ? "" : "<Options>\(_options!)</Options>") }
 }
 
-struct LabelSpecification : CustomStringConvertible
+final class LabelSpecification : CustomStringConvertible
 {
 	fileprivate let _labelFormatType: LabelFormatType?
 	fileprivate let _imageType: ShippingDocumentImageType?
@@ -1625,7 +1625,7 @@ struct LabelSpecification : CustomStringConvertible
 	func customerSpecifiedDetail() -> String { return (_customerSpecifiedDetail == nil ? "" : "<CustomerSpecifiedDetail>\(_customerSpecifiedDetail!)</CustomerSpecifiedDetail>") }
 }
 
-struct ShippingDocumentSpecification : CustomStringConvertible
+final class ShippingDocumentSpecification : CustomStringConvertible
 {
 	fileprivate let _shippingDocumentTypes: RequestedShippingDocumentType?
 	fileprivate let _certificateOfOrigin: CertificateOfOriginDetail?
@@ -1672,7 +1672,7 @@ struct ShippingDocumentSpecification : CustomStringConvertible
 	func returnInstructionsDetail() -> String { return (_returnInstructionsDetail == nil ? "" : "<ReturnInstructionsDetail>\(_returnInstructionsDetail!)</ReturnInstructionsDetail>") }
 }
 
-struct CertificateOfOriginDetail : CustomStringConvertible
+final class CertificateOfOriginDetail : CustomStringConvertible
 {
 	fileprivate let _documentFormat: ShippingDocumentFormat?
 	fileprivate let _customerImageUsages: CustomerImageUsage?
@@ -1689,7 +1689,7 @@ struct CertificateOfOriginDetail : CustomStringConvertible
 	func customerImageUsages() -> String { return (_customerImageUsages == nil ? "" : "<CustomerImageUsages>\(_customerImageUsages!)</CustomerImageUsages>") }
 }
 
-struct ShippingDocumentFormat : CustomStringConvertible
+final class ShippingDocumentFormat : CustomStringConvertible
 {
 	fileprivate let _dispositions: ShippingDocumentDispositionDetail?
 	fileprivate let _topOfPageOffset: LinearMeasure?
@@ -1721,7 +1721,7 @@ struct ShippingDocumentFormat : CustomStringConvertible
 	func localization() -> String { return (_localization == nil ? "" : "<Localization>\(_localization!)</Localization>") }
 }
 
-struct ShippingDocumentDispositionDetail : CustomStringConvertible
+final class ShippingDocumentDispositionDetail : CustomStringConvertible
 {
 	fileprivate let _dispositionType: ShippingDocumentDispositionType?
 	fileprivate let _grouping: ShippingDocumentGroupingType?
@@ -1744,7 +1744,7 @@ struct ShippingDocumentDispositionDetail : CustomStringConvertible
 	func printDetail() -> String { return (_printDetail == nil ? "" : "<PrintDetail>\(_printDetail!)</PrintDetail>") }
 }
 
-struct ShippingDocumentEMailDetail : CustomStringConvertible
+final class ShippingDocumentEMailDetail : CustomStringConvertible
 {
 	fileprivate let _eMailRecipients: ShippingDocumentEMailRecipient?
 	fileprivate let _grouping: ShippingDocumentEMailGroupingType?
@@ -1764,7 +1764,7 @@ struct ShippingDocumentEMailDetail : CustomStringConvertible
 	func localization() -> String { return (_localization == nil ? "" : "<Localization>\(_localization!)</Localization>") }
 }
 
-struct ShippingDocumentEMailRecipient : CustomStringConvertible
+final class ShippingDocumentEMailRecipient : CustomStringConvertible
 {
 	fileprivate let _recipientType: EMailNotificationRecipientType?
 	fileprivate let _address: String?
@@ -1795,7 +1795,7 @@ struct ShippingDocumentPrintDetail : CustomStringConvertible
 	func printerId() -> String { return (_printerId == nil ? "" : "<PrinterId>\(_printerId!)</PrinterId>") }
 }
 
-struct LinearMeasure : CustomStringConvertible
+final class LinearMeasure : CustomStringConvertible
 {
 	fileprivate let _value: Decimal?
 	fileprivate let _units: LinearUnits?
@@ -1812,7 +1812,7 @@ struct LinearMeasure : CustomStringConvertible
 	func units() -> String { return (_units == nil ? "" : "<Units>\(_units!)</Units>") }
 }
 
-struct DocumentFormatOptionsRequested : CustomStringConvertible
+final class DocumentFormatOptionsRequested : CustomStringConvertible
 {
 	fileprivate let _options: DocumentFormatOptionType?
 	
@@ -1826,7 +1826,7 @@ struct DocumentFormatOptionsRequested : CustomStringConvertible
 	func options() -> String { return (_options == nil ? "" : "<Options>\(_options!)</Options>") }
 }
 
-struct CustomerImageUsage : CustomStringConvertible
+final class CustomerImageUsage : CustomStringConvertible
 {
 	fileprivate let _type: CustomerImageUsageType?
 	fileprivate let _id: ImageId?
@@ -1843,7 +1843,7 @@ struct CustomerImageUsage : CustomStringConvertible
 	func id() -> String { return (_id == nil ? "" : "<Id>\(_id!)</Id>") }
 }
 
-struct CommercialInvoiceDetail : CustomStringConvertible
+final class CommercialInvoiceDetail : CustomStringConvertible
 {
 	fileprivate let _format: ShippingDocumentFormat?
 	fileprivate let _customerImageUsages: CustomerImageUsage?
@@ -1860,7 +1860,7 @@ struct CommercialInvoiceDetail : CustomStringConvertible
 	func customerImageUsages() -> String { return (_customerImageUsages == nil ? "" : "<CustomerImageUsages>\(_customerImageUsages!)</CustomerImageUsages>") }
 }
 
-struct CustomDocumentDetail : CustomStringConvertible
+final class CustomDocumentDetail : CustomStringConvertible
 {
 	fileprivate let _format: ShippingDocumentFormat?
 	fileprivate let _labelPrintingOrientation: LabelPrintingOrientationType?
@@ -1886,7 +1886,7 @@ struct CustomDocumentDetail : CustomStringConvertible
 	func customContent() -> String { return (_customContent == nil ? "" : "<CustomContent>\(_customContent!)</CustomContent>") }
 }
 
-struct CustomLabelDetail : CustomStringConvertible
+final class CustomLabelDetail : CustomStringConvertible
 {
 	fileprivate let _coordinateUnits: CustomLabelCoordinateUnits?
 	fileprivate let _textEntries: CustomLabelTextEntry?
@@ -1915,7 +1915,7 @@ struct CustomLabelDetail : CustomStringConvertible
 	func barcodeEntries() -> String { return (_barcodeEntries == nil ? "" : "<BarcodeEntries>\(_barcodeEntries!)</BarcodeEntries>") }
 }
 
-struct CustomLabelTextEntry : CustomStringConvertible
+final class CustomLabelTextEntry : CustomStringConvertible
 {
 	fileprivate let _position: CustomLabelPosition?
 	fileprivate let _format: String?
@@ -1949,12 +1949,12 @@ struct CustomLabelTextEntry : CustomStringConvertible
 
 struct CustomLabelPosition : CustomStringConvertible
 {
-	fileprivate let _x: UInt?
+	fileprivate let _x: Int?
 	fileprivate let _y: Int?
 	
 	var description: String { return "\(x())\(y())" }
 	
-	init(x: UInt, y: Int)
+	init(x: Int?, y: Int?)
 	{
 		_x = x
 		_y = y
@@ -1964,7 +1964,7 @@ struct CustomLabelPosition : CustomStringConvertible
 	func y() -> String { return (_y == nil ? "" : "<Y>\(_y!)</Y>") }
 }
 
-struct CustomLabelGraphicEntry : CustomStringConvertible
+final class CustomLabelGraphicEntry : CustomStringConvertible
 {
 	fileprivate let _position: CustomLabelPosition?
 	fileprivate let _printerGraphicId: String?
@@ -1984,7 +1984,7 @@ struct CustomLabelGraphicEntry : CustomStringConvertible
 	func fileGraphicFullName() -> String { return (_fileGraphicFullName == nil ? "" : "<FileGraphicFullName>\(_fileGraphicFullName!)</FileGraphicFullName>") }
 }
 
-struct CustomLabelBoxEntry : CustomStringConvertible
+final class CustomLabelBoxEntry : CustomStringConvertible
 {
 	fileprivate let _topLeftCorner: CustomLabelPosition?
 	fileprivate let _bottomRightCorner: CustomLabelPosition?
@@ -2001,7 +2001,7 @@ struct CustomLabelBoxEntry : CustomStringConvertible
 	func bottomRightCorner() -> String { return (_bottomRightCorner == nil ? "" : "<BottomRightCorner>\(_bottomRightCorner!)</BottomRightCorner>") }
 }
 
-struct CustomLabelTextBoxEntry : CustomStringConvertible
+final class CustomLabelTextBoxEntry : CustomStringConvertible
 {
 	fileprivate let _topLeftCorner: CustomLabelPosition?
 	fileprivate let _bottomRightCorner: CustomLabelPosition?
@@ -2039,7 +2039,7 @@ struct CustomLabelTextBoxEntry : CustomStringConvertible
 	func rotation() -> String { return (_rotation == nil ? "" : "<Rotation>\(_rotation!)</Rotation>") }
 }
 
-struct CustomLabelBarcodeEntry : CustomStringConvertible
+final class CustomLabelBarcodeEntry : CustomStringConvertible
 {
 	fileprivate let _position: CustomLabelPosition?
 	fileprivate let _format: String?
@@ -2068,7 +2068,7 @@ struct CustomLabelBarcodeEntry : CustomStringConvertible
 	func barcodeSymbology() -> String { return (_barcodeSymbology == nil ? "" : "<BarcodeSymbology>\(_barcodeSymbology!)</BarcodeSymbology>") }
 }
 
-struct ExportDeclarationDetail : CustomStringConvertible
+final class ExportDeclarationDetail : CustomStringConvertible
 {
 	fileprivate let _documentFormat: ShippingDocumentFormat?
 	fileprivate let _customerImageUsages: CustomerImageUsage?
@@ -2085,7 +2085,7 @@ struct ExportDeclarationDetail : CustomStringConvertible
 	func customerImageUsages() -> String { return (_customerImageUsages == nil ? "" : "<CustomerImageUsages>\(_customerImageUsages!)</CustomerImageUsages>") }
 }
 
-struct GeneralAgencyAgreementDetail : CustomStringConvertible
+final class GeneralAgencyAgreementDetail : CustomStringConvertible
 {
 	fileprivate let _format: ShippingDocumentFormat?
 	
@@ -2099,7 +2099,7 @@ struct GeneralAgencyAgreementDetail : CustomStringConvertible
 	func format() -> String { return (_format == nil ? "" : "<Format>\(_format!)</Format>") }
 }
 
-struct NaftaCertificateOfOriginDetail : CustomStringConvertible
+final class NaftaCertificateOfOriginDetail : CustomStringConvertible
 {
 	fileprivate let _format: ShippingDocumentFormat?
 	fileprivate let _blanketPeriod: DateRange?
@@ -2131,7 +2131,7 @@ struct NaftaCertificateOfOriginDetail : CustomStringConvertible
 	func customerImageUsages() -> String { return (_customerImageUsages == nil ? "" : "<CustomerImageUsages>\(_customerImageUsages!)</CustomerImageUsages>") }
 }
 
-struct NaftaProducer : CustomStringConvertible
+final class NaftaProducer : CustomStringConvertible
 {
 	fileprivate let _id: String?
 	fileprivate let _producer: Party?
@@ -2148,7 +2148,7 @@ struct NaftaProducer : CustomStringConvertible
 	func producer() -> String { return (_producer == nil ? "" : "<Producer>\(_producer!)</Producer>") }
 }
 
-struct Op900Detail : CustomStringConvertible
+final class Op900Detail : CustomStringConvertible
 {
 	fileprivate let _format: ShippingDocumentFormat?
 	fileprivate let _reference: CustomerReferenceType?
@@ -2171,7 +2171,7 @@ struct Op900Detail : CustomStringConvertible
 	func signatureName() -> String { return (_signatureName == nil ? "" : "<SignatureName>\(_signatureName!)</SignatureName>") }
 }
 
-struct DangerousGoodsShippersDeclarationDetail : CustomStringConvertible
+final class DangerousGoodsShippersDeclarationDetail : CustomStringConvertible
 {
 	fileprivate let _format: ShippingDocumentFormat?
 	fileprivate let _customerImageUsages: CustomerImageUsage?
@@ -2188,7 +2188,7 @@ struct DangerousGoodsShippersDeclarationDetail : CustomStringConvertible
 	func customerImageUsages() -> String { return (_customerImageUsages == nil ? "" : "<CustomerImageUsages>\(_customerImageUsages!)</CustomerImageUsages>") }
 }
 
-struct FreightAddressLabelDetail : CustomStringConvertible
+final class FreightAddressLabelDetail : CustomStringConvertible
 {
 	fileprivate let _format: ShippingDocumentFormat?
 	fileprivate let _copies: UInt?
@@ -2217,7 +2217,7 @@ struct FreightAddressLabelDetail : CustomStringConvertible
 	func customContent() -> String { return (_customContent == nil ? "" : "<CustomContent>\(_customContent!)</CustomContent>") }
 }
 
-struct DocTabContent : CustomStringConvertible
+final class DocTabContent : CustomStringConvertible
 {
 	fileprivate let _docTabContentType: DocTabContentType?
 	fileprivate let _zone001: DocTabContentZone001?
@@ -2237,7 +2237,7 @@ struct DocTabContent : CustomStringConvertible
 	func barcoded() -> String { return (_barcoded == nil ? "" : "<Barcoded>\(_barcoded!)</Barcoded>") }
 }
 
-struct DocTabContentZone001 : CustomStringConvertible
+final class DocTabContentZone001 : CustomStringConvertible
 {
 	fileprivate let _docTabZoneSpecifications: DocTabZoneSpecification?
 	
@@ -2251,7 +2251,7 @@ struct DocTabContentZone001 : CustomStringConvertible
 	func docTabZoneSpecifications() -> String { return (_docTabZoneSpecifications == nil ? "" : "<DocTabZoneSpecifications>\(_docTabZoneSpecifications!)</DocTabZoneSpecifications>") }
 }
 
-struct DocTabZoneSpecification : CustomStringConvertible
+final class DocTabZoneSpecification : CustomStringConvertible
 {
 	fileprivate let _zoneNumber: Int?
 	fileprivate let _header: String?
@@ -2277,7 +2277,7 @@ struct DocTabZoneSpecification : CustomStringConvertible
 	func justification() -> String { return (_justification == nil ? "" : "<Justification>\(_justification!)</Justification>") }
 }
 
-struct DocTabContentBarcoded : CustomStringConvertible
+final class DocTabContentBarcoded : CustomStringConvertible
 {
 	fileprivate let _symbology: BarcodeSymbologyType?
 	fileprivate let _specification: DocTabZoneSpecification?
@@ -2294,7 +2294,7 @@ struct DocTabContentBarcoded : CustomStringConvertible
 	func specification() -> String { return (_specification == nil ? "" : "<Specification>\(_specification!)</Specification>") }
 }
 
-struct ReturnInstructionsDetail : CustomStringConvertible
+final class ReturnInstructionsDetail : CustomStringConvertible
 {
 	fileprivate let _format: ShippingDocumentFormat?
 	fileprivate let _customText: String?
@@ -2311,7 +2311,7 @@ struct ReturnInstructionsDetail : CustomStringConvertible
 	func customText() -> String { return (_customText == nil ? "" : "<CustomText>\(_customText!)</CustomText>") }
 }
 
-struct CustomerSpecifiedLabelDetail : CustomStringConvertible
+final class CustomerSpecifiedLabelDetail : CustomStringConvertible
 {
 	fileprivate let _docTabContent: DocTabContent?
 	fileprivate let _customContentPosition : RelativeVerticalPositionType?
@@ -2375,7 +2375,7 @@ struct ConfigurableLabelReferenceEntry : CustomStringConvertible
 	func literalValue() -> String { return (_literalValue == nil ? "" : "<LiteralValue>\(_literalValue!)</LiteralValue>") }
 }
 
-struct RegulatoryLabelContentDetail : CustomStringConvertible
+final class RegulatoryLabelContentDetail : CustomStringConvertible
 {
 	fileprivate let _type: RegulatoryLabelType?
 	fileprivate let _generationOptions: CustomerSpecifiedLabelGenerationOptionType?
@@ -2392,7 +2392,7 @@ struct RegulatoryLabelContentDetail : CustomStringConvertible
 	func generationOptions() -> String { return (_generationOptions == nil ? "" : "<GenerationOptions>\(_generationOptions!)</GenerationOptions>") }
 }
 
-struct AdditionalLabelsDetail : CustomStringConvertible
+final class AdditionalLabelsDetail : CustomStringConvertible
 {
 	fileprivate let _type: AdditionalLabelsType?
 	fileprivate let _count: UInt?
@@ -2409,7 +2409,7 @@ struct AdditionalLabelsDetail : CustomStringConvertible
 	func count() -> String { return (_count == nil ? "" : "<Count>\(_count!)</Count>") }
 }
 
-struct ShipmentConfigurationData : CustomStringConvertible
+final class ShipmentConfigurationData : CustomStringConvertible
 {
 	fileprivate let _dangerousGoodsPackageConfigurations: DangerousGoodsDetail?
 	
@@ -2423,7 +2423,7 @@ struct ShipmentConfigurationData : CustomStringConvertible
 	func dangerousGoodsPackageConfigurations() -> String { return (_dangerousGoodsPackageConfigurations == nil ? "" : "<DangerousGoodsPackageConfigurations>\(_dangerousGoodsPackageConfigurations!)</DangerousGoodsPackageConfigurations>") }
 }
 
-struct DangerousGoodsDetail : CustomStringConvertible
+final class DangerousGoodsDetail : CustomStringConvertible
 {
 	let _regulation: HazardousCommodityRegulationType?
 	let _accessibility: DangerousGoodsAccessibilityType?
@@ -2476,7 +2476,7 @@ struct DangerousGoodsDetail : CustomStringConvertible
 	fileprivate func radioactivityDetail() -> String { return (_radioactivityDetail == nil ? "" : "<RadioactivityDetail>\(_radioactivityDetail!)</RadioactivityDetail>") }
 }
 
-struct DangerousGoodsContainer : CustomStringConvertible
+final class DangerousGoodsContainer : CustomStringConvertible
 {
 	fileprivate let _packingType: HazardousContainerPackingType?
 	fileprivate let _containerType: String?
@@ -2502,7 +2502,7 @@ struct DangerousGoodsContainer : CustomStringConvertible
 	func hazardousCommodities() -> String { return (_hazardousCommodities == nil ? "" : "<HazardousCommodities>\(_hazardousCommodities!)</HazardousCommodities>") }
 }
 
-struct HazardousCommodityContent : CustomStringConvertible
+final class HazardousCommodityContent : CustomStringConvertible
 {
 	fileprivate let _description: HazardousCommodityDescription?
 	fileprivate let _quantity: HazardousCommodityQuantityDetail?
@@ -2531,7 +2531,7 @@ struct HazardousCommodityContent : CustomStringConvertible
 	func netExplosiveDetail() -> String { return (_netExplosiveDetail == nil ? "" : "<NetExplosiveDetail>\(_netExplosiveDetail!)</NetExplosiveDetail>") }
 }
 
-struct HazardousCommodityDescription : CustomStringConvertible
+final class HazardousCommodityDescription : CustomStringConvertible
 {
 	fileprivate let _id: String?
 	fileprivate let _sequenceNumber: UInt?
@@ -2598,7 +2598,7 @@ struct HazardousCommodityPackingDetail : CustomStringConvertible
 	func packingInstructions() -> String { return (_packingInstructions == nil ? "" : "<PackingInstructions>\(_packingInstructions!)</PackingInstructions>") }
 }
 
-struct HazardousCommodityQuantityDetail : CustomStringConvertible
+final class HazardousCommodityQuantityDetail : CustomStringConvertible
 {
 	fileprivate let _amount: Decimal?
 	fileprivate let _units: String?
@@ -2618,7 +2618,7 @@ struct HazardousCommodityQuantityDetail : CustomStringConvertible
 	func quantityType () -> String { return (_quantityType  == nil ? "" : "<QuantityType >\(_quantityType!)</QuantityType >") }
 }
 
-struct HazardousCommodityInnerReceptacleDetail : CustomStringConvertible
+final class HazardousCommodityInnerReceptacleDetail : CustomStringConvertible
 {
 	fileprivate let _quantity: HazardousCommodityQuantityDetail?
 	
@@ -2632,7 +2632,7 @@ struct HazardousCommodityInnerReceptacleDetail : CustomStringConvertible
 	func quantity() -> String { return (_quantity == nil ? "" : "<Quantity>\(_quantity!)</Quantity>") }
 }
 
-struct HazardousCommodityOptionDetail : CustomStringConvertible
+final class HazardousCommodityOptionDetail : CustomStringConvertible
 {
 	fileprivate let _labelTextOption: HazardousCommodityLabelTextOptionType?
 	fileprivate let _customerSuppliedLabelText: String?
@@ -2649,7 +2649,7 @@ struct HazardousCommodityOptionDetail : CustomStringConvertible
 	func customerSuppliedLabelText() -> String { return (_customerSuppliedLabelText == nil ? "" : "<CustomerSuppliedLabelText>\(_customerSuppliedLabelText!)</CustomerSuppliedLabelText>") }
 }
 
-struct RadionuclideDetail : CustomStringConvertible
+final class RadionuclideDetail : CustomStringConvertible
 {
 	fileprivate let _radionuclide: String?
 	fileprivate let _activity: RadionuclideActivity?
@@ -2675,7 +2675,7 @@ struct RadionuclideDetail : CustomStringConvertible
 	func chemicalForm() -> String { return (_chemicalForm == nil ? "" : "<ChemicalForm>\(_chemicalForm!)</ChemicalForm>") }
 }
 
-struct RadionuclideActivity : CustomStringConvertible
+final class RadionuclideActivity : CustomStringConvertible
 {
 	fileprivate let _value: Decimal?
 	fileprivate let _unitOfMeasure: RadioactivityUnitOfMeasure?
@@ -2692,7 +2692,7 @@ struct RadionuclideActivity : CustomStringConvertible
 	func unitOfMeasure() -> String { return (_unitOfMeasure == nil ? "" : "<UnitOfMeasure>\(_unitOfMeasure!)</UnitOfMeasure>") }
 }
 
-struct NetExplosiveDetail : CustomStringConvertible
+final class NetExplosiveDetail : CustomStringConvertible
 {
 	fileprivate let _type: NetExplosiveClassificationType?
 	fileprivate let _amount: Decimal?
@@ -2714,12 +2714,12 @@ struct NetExplosiveDetail : CustomStringConvertible
 
 struct HazardousCommodityPackagingDetail : CustomStringConvertible
 {
-	fileprivate let _count: UInt?
+	fileprivate let _count: Int?
 	fileprivate let _units: String?
 	
 	var description: String { return "\(count())\(units())" }
 	
-	init(count: UInt, units: String)
+	init(count: Int?, units: String?)
 	{
 		_count = count
 		_units = units
@@ -2749,7 +2749,7 @@ struct DangerousGoodsSignatory : CustomStringConvertible
 	func place() -> String { return (_place == nil ? "" : "<Place>\(_place!)</Place>") }
 }
 
-struct RadioactivityDetail : CustomStringConvertible
+final class RadioactivityDetail : CustomStringConvertible
 {
 	fileprivate let _transportIndex: Decimal?
 	fileprivate let _surfaceReading: Decimal?
@@ -2772,7 +2772,7 @@ struct RadioactivityDetail : CustomStringConvertible
 	func dimensions() -> String { return (_dimensions == nil ? "" : "<Dimensions>\(_dimensions!)</Dimensions>") }
 }
 
-struct Dimensions : CustomStringConvertible
+final class Dimensions : CustomStringConvertible
 {
 	fileprivate let _length: Int?
 	fileprivate let _width: Int?
@@ -2795,7 +2795,7 @@ struct Dimensions : CustomStringConvertible
 	func units() -> String { return (_units == nil ? "" : "<Units>\(_units!)</Units>") }
 }
 
-struct CustomerReference : CustomStringConvertible
+final class CustomerReference : CustomStringConvertible
 {
 	fileprivate let _customerReferenceType: CustomerReferenceType?
 	fileprivate let _value: String?
@@ -2812,7 +2812,7 @@ struct CustomerReference : CustomStringConvertible
 	func value() -> String { return (_value == nil ? "" : "<Value>\(_value!)</Value>") }
 }
 
-struct PackageSpecialServicesRequested : CustomStringConvertible
+final class PackageSpecialServicesRequested : CustomStringConvertible
 {
 	let _specialServiceTypes: [PackageSpecialServiceType]
 	let _codDetail: CodDetail?
@@ -2844,7 +2844,7 @@ struct PackageSpecialServicesRequested : CustomStringConvertible
 	fileprivate func alcoholDetail() -> String { return (_alcoholDetail == nil ? "" : "<AlcoholDetail>\(_alcoholDetail!)</AlcoholDetail>") }
 }
 
-struct SignatureOptionDetail : CustomStringConvertible
+final class SignatureOptionDetail : CustomStringConvertible
 {
 	let _optionType: SignatureOptionType?
 	let _signatureReleaseNumber: String?
@@ -2867,7 +2867,7 @@ struct SignatureOptionDetail : CustomStringConvertible
 	fileprivate func signatureReleaseNumber() -> String { return (_signatureReleaseNumber == nil ? "" : "<SignatureReleaseNumber>\(_signatureReleaseNumber!)</SignatureReleaseNumber>") }
 }
 
-struct CodDetail : CustomStringConvertible
+final class CodDetail : CustomStringConvertible
 {
 	let _codCollectionAmount: Money?
 	let _addTransportationChargesDetail: CodAddTransportationChargesDetail?
@@ -2902,7 +2902,7 @@ struct CodDetail : CustomStringConvertible
 	fileprivate func returnTrackingId() -> String { return (_returnTrackingId == nil ? "" : "<ReturnTrackingId>\(_returnTrackingId!)</ReturnTrackingId>") }
 }
 
-struct CodAddTransportationChargesDetail : CustomStringConvertible
+final class CodAddTransportationChargesDetail : CustomStringConvertible
 {
 	fileprivate let _rateTypeBasis: RateTypeBasisType?
 	fileprivate let _chargeBasis: CodAddTransportationChargeBasisType?
@@ -2922,7 +2922,7 @@ struct CodAddTransportationChargesDetail : CustomStringConvertible
 	func chargeBasisLevel() -> String { return (_chargeBasisLevel == nil ? "" : "<ChargeBasisLevel>\(_chargeBasisLevel!)</ChargeBasisLevel>") }
 }
 
-struct PriorityAlertDetail : CustomStringConvertible
+final class PriorityAlertDetail : CustomStringConvertible
 {
 	let _enhancementTypes: PriorityAlertEnhancementType?
 	let _content: String?
@@ -2939,7 +2939,7 @@ struct PriorityAlertDetail : CustomStringConvertible
 	fileprivate func content() -> String { return (_content == nil ? "" : "<Content>\(_content!)</Content>") }
 }
 
-struct AlcoholDetail : CustomStringConvertible
+final class AlcoholDetail : CustomStringConvertible
 {
 	let _recipientType: AlcoholRecipientType?
 	
@@ -2957,11 +2957,11 @@ struct ContentRecord : CustomStringConvertible
 {
 	fileprivate let _partNumber: String?
 	fileprivate let _itemNumber: String?
-	fileprivate let _receivedQuantity: UInt?
+	fileprivate let _receivedQuantity: Int?
 	
 	var description: String { return "\(partNumber())\(itemNumber())\(receivedQuantity())" }
 	
-	init(partNumber: String, itemNumber: String, receivedQuantity: UInt)
+	init(partNumber: String?, itemNumber: String?, receivedQuantity: Int?)
 	{
 		_partNumber = partNumber
 		_itemNumber = itemNumber
@@ -2973,7 +2973,7 @@ struct ContentRecord : CustomStringConvertible
 	func receivedQuantity() -> String { return (_receivedQuantity == nil ? "" : "<ReceivedQuantity>\(_receivedQuantity!)</ReceivedQuantity>") }
 }
 
-struct ServiceSubOptionDetail : CustomStringConvertible
+final class ServiceSubOptionDetail : CustomStringConvertible
 {
 	fileprivate let _freightGuarantee: FreightGuaranteeType?
 	fileprivate let _smartPostHubId: String?
@@ -3015,7 +3015,7 @@ struct CleansedAddressAndLocationDetail
 	}
 }
 
-struct CommitDetail : CustomStringConvertible
+final class CommitDetail : CustomStringConvertible
 {
 	fileprivate let _index: Int
 	fileprivate let _stack: Stack<ValuePath>
@@ -3109,24 +3109,41 @@ struct CommitDetail : CustomStringConvertible
 	func freightCommitDetail() -> FreightCommitDetail? { return nil }
 }
 
-struct DelayDetail
+final class DelayDetail
 {
 	fileprivate let _date: Date?
-	fileprivate let _dayOfWeek: DayOfWeekType
-	fileprivate let _level: DelayLevelType
-	fileprivate let _point: DelayPointType
-	fileprivate let _type: CommitmentDelayType
+	fileprivate let _dayOfWeek: DayOfWeekType?
+	fileprivate let _level: DelayLevelType?
+	fileprivate let _point: DelayPointType?
+	fileprivate let _type: CommitmentDelayType?
 	fileprivate let _description: String?
+	
+	init(date: Date?, dayOfWeek: DayOfWeekType?, level: DelayLevelType?, point: DelayPointType?, type: CommitmentDelayType?, description: String?)
+	{
+		_date = date
+		_dayOfWeek = dayOfWeek
+		_level = level
+		_point = point
+		_type = type
+		_description = description
+	}
 }
 
-struct FreightCommitDetail
+final class FreightCommitDetail
 {
-	fileprivate let _originDetail: FreightServiceCenterDetail
-	fileprivate let _destinationDetail: FreightServiceCenterDetail
-	fileprivate let _totalDistance: Distance
+	fileprivate let _originDetail: FreightServiceCenterDetail?
+	fileprivate let _destinationDetail: FreightServiceCenterDetail?
+	fileprivate let _totalDistance: Distance?
+	
+	init(originDetail: FreightServiceCenterDetail?, destinationDetail: FreightServiceCenterDetail?, totalDistance: Distance?)
+	{
+		_originDetail = originDetail
+		_destinationDetail = destinationDetail
+		_totalDistance = totalDistance
+	}
 }
 
-struct FreightServiceCenterDetail
+final class FreightServiceCenterDetail
 {
 	fileprivate let _interlineCarrierCode: String?
 	fileprivate let _interlineCarrierName: String?
@@ -3139,12 +3156,33 @@ struct FreightServiceCenterDetail
 	fileprivate let _gatewayLocationId: String?
 	fileprivate let _location: String?
 	fileprivate let _contactAndAddress: ContactAndAddress?
+	
+	init()
+	{
+		_interlineCarrierCode = nil
+		_interlineCarrierName = nil
+		_additionalDays = nil
+		_localService = nil
+		_localDistance = nil
+		_localDuration = nil
+		_localServiceScheduling = nil
+		_limitedServiceDays = nil
+		_gatewayLocationId = nil
+		_location = nil
+		_contactAndAddress = nil
+	}
 }
 
-struct Distance
+final class Distance
 {
 	fileprivate let _value: Decimal?
 	fileprivate let _units: DistanceUnits?
+	
+	init(value: Decimal?, units: DistanceUnits?)
+	{
+		_value = value
+		_units = units
+	}
 }
 
 struct Money : CustomStringConvertible
@@ -3163,127 +3201,6 @@ struct Money : CustomStringConvertible
 	func currency() -> String { return (_currency == nil ? "" : "<Currency>\(_currency!)</Currency>") }
 	func amount() -> String { return (_amount == nil ? "" : "<Amount>\(_amount!)</Amount>") }
 }
-
-//struct RatedShipmentDetail : CustomStringConvertible
-//{
-//	fileprivate let _index: Int
-//	fileprivate let _stack: Stack<ValuePath>
-//	
-//	var description: String { return "RateReply|RateReplyDetails|RatedShipmentDetails" }
-//	
-//	init(_ index: Int, _ stack: Stack<ValuePath>)
-//	{
-//		_index = index
-//		_stack = stack
-//	}
-//	
-//	func effectiveNetDiscount() -> Money?
-//	{
-//		return Money(
-//			currency: _stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|EffectiveNetDiscount|Currency")[safe: _index]?.value,
-//			amount: Decimal(string: (_stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|EffectiveNetDiscount|Amount")[safe: _index]?.value)!)
-//		)
-//	}
-//	func adjustedCodCollectionAmount() -> Money?
-//	{
-//		return Money(
-//			currency: _stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|AdjustedCodCollectionAmount|Currency")[safe: _index]?.value,
-//			amount: Decimal(string: (_stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|AdjustedCodCollectionAmount|Amount")[safe: _index]?.value)!)
-//		)
-//	}
-//	func shipmentRateDetail() -> ShipmentRateDetail?
-//	{
-//		return ShipmentRateDetail(_index, _stack)
-//	}
-//	func ratedPackages() -> RatedPackageDetail? { return nil }
-//}
-
-//struct RatedPackageDetail : CustomStringConvertible
-//{
-//	fileprivate let _trackingIds: TrackingId?
-//	fileprivate let _groupNumber: UInt?
-//	fileprivate let _effectiveNetDiscount: Money?
-//	fileprivate let _adjustedCodCollectionAmount: Money?
-//	fileprivate let _oversizeClass: OversizeClassType?
-//	fileprivate let _packageRateDetail: PackageRateDetail?
-//	
-//	var description: String { return "\(trackingIds())\(groupNumber())\(effectiveNetDiscount())\(adjustedCodCollectionAmount())\(oversizeClass())\(packageRateDetail())" }
-//	
-//	init(trackingIds: TrackingId, groupNumber: UInt, effectiveNetDiscount: Money, adjustedCodCollectionAmount: Money, oversizeClass: OversizeClassType, packageRateDetail: PackageRateDetail)
-//	{
-//		_trackingIds = trackingIds
-//		_groupNumber = groupNumber
-//		_effectiveNetDiscount = effectiveNetDiscount
-//		_adjustedCodCollectionAmount = adjustedCodCollectionAmount
-//		_oversizeClass = oversizeClass
-//		_packageRateDetail = packageRateDetail
-//	}
-//	
-//	func trackingIds() -> String { return (_trackingIds == nil ? "" : "<TrackingIds>\(_trackingIds!)</TrackingIds>") }
-//	func groupNumber() -> String { return (_groupNumber == nil ? "" : "<GroupNumber>\(_groupNumber!)</GroupNumber>") }
-//	func effectiveNetDiscount() -> String { return (_effectiveNetDiscount == nil ? "" : "<EffectiveNetDiscount>\(_effectiveNetDiscount!)</EffectiveNetDiscount>") }
-//	func adjustedCodCollectionAmount() -> String { return (_adjustedCodCollectionAmount == nil ? "" : "<AdjustedCodCollectionAmount>\(_adjustedCodCollectionAmount!)</AdjustedCodCollectionAmount>") }
-//	func oversizeClass() -> String { return (_oversizeClass == nil ? "" : "<OversizeClass>\(_oversizeClass!)</OversizeClass>") }
-//	func packageRateDetail() -> String { return (_packageRateDetail == nil ? "" : "<PackageRateDetail>\(_packageRateDetail!)</PackageRateDetail>") }
-//}
-//
-//struct ShipmentRateDetail : CustomStringConvertible
-//{
-//	fileprivate let _index: Int
-//	fileprivate let _stack: Stack<ValuePath>
-//	fileprivate let _rateReplyDetail: RateReplyDetail
-//	
-//	var description: String { return "Shipment Rate Detail" }
-//	
-//	init(_ index: Int, _ stack: Stack<ValuePath>)
-//	{
-//		_index = index
-//		_stack = stack
-//		_rateReplyDetail = (RateReply(_stack).rateReplyDetails()?[_index])!
-//	}
-//	
-//	func rateType() -> ReturnedRateType? { return nil }
-//	func rateScale() -> String? { return nil }
-//	func rateZone() -> String? { return nil }
-//	func pricingCode() -> PricingCodeType? { return nil }
-//	func ratedWeightMethod() -> RatedWeightMethod? { return nil }
-//	func minimumChargeType() -> MinimumChargeType? { return nil }
-//	func currencyExchangeRate() -> CurrencyExchangeRate? { return nil }
-//	func specialRatingApplied() -> SpecialRatingAppliedType? { return nil }
-//	func dimDivisor() -> UInt? { return nil }
-//	func dimDivisorType() -> RateDimensionalDivisorType? { return nil }
-//	func fuelSurchargePercent() -> Decimal? { return nil }
-//	func totalBillingWeight() -> Weight? { return nil }
-//	func totalDimWeight() -> Weight? { return nil }
-//	func totalBaseCharge() -> Money? { return nil }
-//	func totalFreightDiscounts() -> Money? { return nil }
-//	func totalNetFreight() -> Money? { return nil }
-//	func totalSurcharges() -> Money? { return nil }
-//	func totalNetFedExCharge() -> Money? { return nil }
-//	func totalTaxes() -> Money? { return nil }
-//	func totalNetCharge() -> Money?
-//	{
-//		return Money(
-//			currency: _stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|ShipmentRateDetail|TotalNetCharge").getValue(service: (_rateReplyDetail.serviceType()?.rawValue)!, value: "Currency"),
-//			amount: Decimal(string: _stack.find("RateReply|RateReplyDetails|RatedShipmentDetails|ShipmentRateDetail|TotalNetCharge").getValue(service: (_rateReplyDetail.serviceType()?.rawValue)!, value: "Amount")!)
-//		)
-//	}
-//	func totalRebates() -> Money? { return nil }
-//	func totalDutiesAndTaxes() -> Money? { return nil }
-//	func totalAncillaryFeesAndTaxes() -> Money? { return nil }
-//	func totalDutiesTaxesAndFees() -> Money? { return nil }
-//	func totalNetChargeWithDutiesAndTaxes() -> Money? { return nil }
-//	func shipmentLegRateDetails() -> ShipmentLegRateDetail? { return nil }
-//	func freightRateDetail() -> FreightRateDetail? { return nil }
-//	func freightDiscounts() -> RateDiscount? { return nil }
-//	func rebates() -> Rebate? { return nil }
-//	func surcharges() -> Surcharge? { return nil }
-//	func taxes() -> Tax? { return nil }
-//	func dutiesAndTaxes() -> EdtCommodityTax? { return nil }
-//	func ancillaryFeesAndTaxes() -> AncillaryFeeAndTax? { return nil }
-//	func variableHandlingCharges() -> VariableHandlingCharges? { return nil }
-//	func totalVariableHandlingCharges() -> VariableHandlingCharges? { return nil }
-//}
 
 struct CurrencyExchangeRate : CustomStringConvertible
 {
@@ -3305,126 +3222,7 @@ struct CurrencyExchangeRate : CustomStringConvertible
 	func rate() -> String { return (_rate == nil ? "" : "<Rate>\(_rate!)</Rate>") }
 }
 
-//struct ShipmentLegRateDetail : CustomStringConvertible
-//{
-//	fileprivate let _legDescription: String?
-//	fileprivate let _legOrigin: Address?
-//	fileprivate let _legOriginLocationId: String?
-//	fileprivate let _legDestination: Address?
-//	fileprivate let _legDestinationLocationId: String?
-//	fileprivate let _rateType: ReturnedRateType?
-//	fileprivate let _rateScale: String?
-//	fileprivate let _rateZone: String?
-//	fileprivate let _pricingCode: PricingCodeType?
-//	fileprivate let _ratedWeightMethod: RatedWeightMethod?
-//	fileprivate let _minimumChargeType: MinimumChargeType?
-//	fileprivate let _currencyExchangeRate: CurrencyExchangeRate?
-//	fileprivate let _specialRatingApplied: SpecialRatingAppliedType?
-//	fileprivate let _dimDivisor: UInt?
-//	fileprivate let _dimDivisorType: RateDimensionalDivisorType?
-//	fileprivate let _fuelSurchargePercent: Decimal?
-//	fileprivate let _totalBillingWeight: Weight?
-//	fileprivate let _totalDimWeight: Weight?
-//	fileprivate let _totalBaseCharge: Money?
-//	fileprivate let _totalFreightDiscounts: Money?
-//	fileprivate let _totalNetFreight: Money?
-//	fileprivate let _totalSurcharges: Money?
-//	fileprivate let _totalNetFedExCharge: Money?
-//	fileprivate let _totalTaxes: Money?
-//	fileprivate let _totalNetCharge: Money?
-//	fileprivate let _totalRebates: Money?
-//	fileprivate let _totalDutiesAndTaxes: Money?
-//	fileprivate let _totalNetChargeWithDutiesAndTaxes: Money?
-//	fileprivate let _freightRateDetail: FreightRateDetail?
-//	fileprivate let _freightDiscounts: RateDiscount?
-//	fileprivate let _rebates: Rebate?
-//	fileprivate let _surcharges: Surcharge?
-//	fileprivate let _taxes: Tax?
-//	fileprivate let _dutiesAndTaxes: EdtCommodityTax?
-//	fileprivate let _variableHandlingCharges: VariableHandlingCharges?
-//	fileprivate let _totalVariableHandlingCharges: VariableHandlingCharges?
-//	
-//	var description: String { return "\(legDescription())\(legOrigin())\(legOriginLocationId())\(legDestination())\(legDestinationLocationId())\(rateType())\(rateScale())\(rateZone())\(pricingCode())\(ratedWeightMethod())\(minimumChargeType())\(currencyExchangeRate())\(specialRatingApplied())\(dimDivisor())\(dimDivisorType())\(fuelSurchargePercent())\(totalBillingWeight())\(totalDimWeight())\(totalBaseCharge())\(totalFreightDiscounts())\(totalNetFreight())\(totalSurcharges())\(totalNetFedExCharge())\(totalTaxes())\(totalNetCharge())\(totalRebates())\(totalDutiesAndTaxes())\(totalNetChargeWithDutiesAndTaxes())\(freightRateDetail())\(freightDiscounts())\(rebates())\(surcharges())\(taxes())\(dutiesAndTaxes())\(variableHandlingCharges())\(totalVariableHandlingCharges())" }
-//	
-//	init(legDescription: String, legOrigin: Address, legOriginLocationId: String, legDestination: Address, legDestinationLocationId: String, rateType: ReturnedRateType, rateScale: String, rateZone: String, pricingCode: PricingCodeType, ratedWeightMethod: RatedWeightMethod, minimumChargeType: MinimumChargeType, currencyExchangeRate: CurrencyExchangeRate, specialRatingApplied: SpecialRatingAppliedType, dimDivisor: UInt, dimDivisorType: RateDimensionalDivisorType, fuelSurchargePercent: Decimal, totalBillingWeight: Weight, totalDimWeight: Weight, totalBaseCharge: Money, totalFreightDiscounts: Money, totalNetFreight: Money, totalSurcharges: Money, totalNetFedExCharge: Money, totalTaxes: Money, totalNetCharge: Money, totalRebates: Money, totalDutiesAndTaxes: Money, totalNetChargeWithDutiesAndTaxes: Money, freightRateDetail: FreightRateDetail, freightDiscounts: RateDiscount, rebates: Rebate, surcharges: Surcharge, taxes: Tax, dutiesAndTaxes: EdtCommodityTax, variableHandlingCharges: VariableHandlingCharges, totalVariableHandlingCharges: VariableHandlingCharges)
-//	{
-//		_legDescription = legDescription
-//		_legOrigin = legOrigin
-//		_legOriginLocationId = legOriginLocationId
-//		_legDestination = legDestination
-//		_legDestinationLocationId = legDestinationLocationId
-//		_rateType = rateType
-//		_rateScale = rateScale
-//		_rateZone = rateZone
-//		_pricingCode = pricingCode
-//		_ratedWeightMethod = ratedWeightMethod
-//		_minimumChargeType = minimumChargeType
-//		_currencyExchangeRate = currencyExchangeRate
-//		_specialRatingApplied = specialRatingApplied
-//		_dimDivisor = dimDivisor
-//		_dimDivisorType = dimDivisorType
-//		_fuelSurchargePercent = fuelSurchargePercent
-//		_totalBillingWeight = totalBillingWeight
-//		_totalDimWeight = totalDimWeight
-//		_totalBaseCharge = totalBaseCharge
-//		_totalFreightDiscounts = totalFreightDiscounts
-//		_totalNetFreight = totalNetFreight
-//		_totalSurcharges = totalSurcharges
-//		_totalNetFedExCharge = totalNetFedExCharge
-//		_totalTaxes = totalTaxes
-//		_totalNetCharge = totalNetCharge
-//		_totalRebates = totalRebates
-//		_totalDutiesAndTaxes = totalDutiesAndTaxes
-//		_totalNetChargeWithDutiesAndTaxes = totalNetChargeWithDutiesAndTaxes
-//		_freightRateDetail = freightRateDetail
-//		_freightDiscounts = freightDiscounts
-//		_rebates = rebates
-//		_surcharges = surcharges
-//		_taxes = taxes
-//		_dutiesAndTaxes = dutiesAndTaxes
-//		_variableHandlingCharges = variableHandlingCharges
-//		_totalVariableHandlingCharges = totalVariableHandlingCharges
-//	}
-//	
-//	func legDescription() -> String { return (_legDescription == nil ? "" : "<LegDescription>\(_legDescription!)</LegDescription>") }
-//	func legOrigin() -> String { return (_legOrigin == nil ? "" : "<LegOrigin>\(_legOrigin!)</LegOrigin>") }
-//	func legOriginLocationId() -> String { return (_legOriginLocationId == nil ? "" : "<LegOriginLocationId>\(_legOriginLocationId!)</LegOriginLocationId>") }
-//	func legDestination() -> String { return (_legDestination == nil ? "" : "<LegDestination>\(_legDestination!)</LegDestination>") }
-//	func legDestinationLocationId() -> String { return (_legDestinationLocationId == nil ? "" : "<LegDestinationLocationId>\(_legDestinationLocationId!)</LegDestinationLocationId>") }
-//	func rateType() -> String { return (_rateType == nil ? "" : "<RateType>\(_rateType!)</RateType>") }
-//	func rateScale() -> String { return (_rateScale == nil ? "" : "<RateScale>\(_rateScale!)</RateScale>") }
-//	func rateZone() -> String { return (_rateZone == nil ? "" : "<RateZone>\(_rateZone!)</RateZone>") }
-//	func pricingCode() -> String { return (_pricingCode == nil ? "" : "<PricingCode>\(_pricingCode!)</PricingCode>") }
-//	func ratedWeightMethod() -> String { return (_ratedWeightMethod == nil ? "" : "<RatedWeightMethod>\(_ratedWeightMethod!)</RatedWeightMethod>") }
-//	func minimumChargeType() -> String { return (_minimumChargeType == nil ? "" : "<MinimumChargeType>\(_minimumChargeType!)</MinimumChargeType>") }
-//	func currencyExchangeRate() -> String { return (_currencyExchangeRate == nil ? "" : "<CurrencyExchangeRate>\(_currencyExchangeRate!)</CurrencyExchangeRate>") }
-//	func specialRatingApplied() -> String { return (_specialRatingApplied == nil ? "" : "<SpecialRatingApplied>\(_specialRatingApplied!)</SpecialRatingApplied>") }
-//	func dimDivisor() -> String { return (_dimDivisor == nil ? "" : "<DimDivisor>\(_dimDivisor!)</DimDivisor>") }
-//	func dimDivisorType() -> String { return (_dimDivisorType == nil ? "" : "<DimDivisorType>\(_dimDivisorType!)</DimDivisorType>") }
-//	func fuelSurchargePercent() -> String { return (_fuelSurchargePercent == nil ? "" : "<FuelSurchargePercent>\(_fuelSurchargePercent!)</FuelSurchargePercent>") }
-//	func totalBillingWeight() -> String { return (_totalBillingWeight == nil ? "" : "<TotalBillingWeight>\(_totalBillingWeight!)</TotalBillingWeight>") }
-//	func totalDimWeight() -> String { return (_totalDimWeight == nil ? "" : "<TotalDimWeight>\(_totalDimWeight!)</TotalDimWeight>") }
-//	func totalBaseCharge() -> String { return (_totalBaseCharge == nil ? "" : "<TotalBaseCharge>\(_totalBaseCharge!)</TotalBaseCharge>") }
-//	func totalFreightDiscounts() -> String { return (_totalFreightDiscounts == nil ? "" : "<TotalFreightDiscounts>\(_totalFreightDiscounts!)</TotalFreightDiscounts>") }
-//	func totalNetFreight() -> String { return (_totalNetFreight == nil ? "" : "<TotalNetFreight>\(_totalNetFreight!)</TotalNetFreight>") }
-//	func totalSurcharges() -> String { return (_totalSurcharges == nil ? "" : "<TotalSurcharges>\(_totalSurcharges!)</TotalSurcharges>") }
-//	func totalNetFedExCharge() -> String { return (_totalNetFedExCharge == nil ? "" : "<TotalNetFedExCharge>\(_totalNetFedExCharge!)</TotalNetFedExCharge>") }
-//	func totalTaxes() -> String { return (_totalTaxes == nil ? "" : "<TotalTaxes>\(_totalTaxes!)</TotalTaxes>") }
-//	func totalNetCharge() -> String { return (_totalNetCharge == nil ? "" : "<TotalNetCharge>\(_totalNetCharge!)</TotalNetCharge>") }
-//	func totalRebates() -> String { return (_totalRebates == nil ? "" : "<TotalRebates>\(_totalRebates!)</TotalRebates>") }
-//	func totalDutiesAndTaxes() -> String { return (_totalDutiesAndTaxes == nil ? "" : "<TotalDutiesAndTaxes>\(_totalDutiesAndTaxes!)</TotalDutiesAndTaxes>") }
-//	func totalNetChargeWithDutiesAndTaxes() -> String { return (_totalNetChargeWithDutiesAndTaxes == nil ? "" : "<TotalNetChargeWithDutiesAndTaxes>\(_totalNetChargeWithDutiesAndTaxes!)</TotalNetChargeWithDutiesAndTaxes>") }
-//	func freightRateDetail() -> String { return (_freightRateDetail == nil ? "" : "<FreightRateDetail>\(_freightRateDetail!)</FreightRateDetail>") }
-//	func freightDiscounts() -> String { return (_freightDiscounts == nil ? "" : "<FreightDiscounts>\(_freightDiscounts!)</FreightDiscounts>") }
-//	func rebates() -> String { return (_rebates == nil ? "" : "<Rebates>\(_rebates!)</Rebates>") }
-//	func surcharges() -> String { return (_surcharges == nil ? "" : "<Surcharges>\(_surcharges!)</Surcharges>") }
-//	func taxes() -> String { return (_taxes == nil ? "" : "<Taxes>\(_taxes!)</Taxes>") }
-//	func dutiesAndTaxes() -> String { return (_dutiesAndTaxes == nil ? "" : "<DutiesAndTaxes>\(_dutiesAndTaxes!)</DutiesAndTaxes>") }
-//	func variableHandlingCharges() -> String { return (_variableHandlingCharges == nil ? "" : "<VariableHandlingCharges>\(_variableHandlingCharges!)</VariableHandlingCharges>") }
-//	func totalVariableHandlingCharges() -> String { return (_totalVariableHandlingCharges == nil ? "" : "<TotalVariableHandlingCharges>\(_totalVariableHandlingCharges!)</TotalVariableHandlingCharges>") }
-//}
-
-struct FreightRateDetail : CustomStringConvertible
+final class FreightRateDetail : CustomStringConvertible
 {
 	fileprivate let _quoteNumber: String?
 	fileprivate let _quoteType: FreightRateQuoteType?
@@ -3450,7 +3248,7 @@ struct FreightRateDetail : CustomStringConvertible
 	func notations() -> String { return (_notations == nil ? "" : "<Notations>\(_notations!)</Notations>") }
 }
 
-struct FreightBaseCharge : CustomStringConvertible
+final class FreightBaseCharge : CustomStringConvertible
 {
 	fileprivate let _freightClass: FreightClassType?
 	fileprivate let _ratedAsClass: FreightClassType?
@@ -3502,7 +3300,7 @@ struct FreightRateNotation : CustomStringConvertible
 	func description_() -> String { return (_description == nil ? "" : "<Description>\(_description!)</Description>") }
 }
 
-struct RateDiscount : CustomStringConvertible
+final class RateDiscount : CustomStringConvertible
 {
 	fileprivate let _rateDiscountType: RateDiscountType?
 	fileprivate let _description: String?
@@ -3525,7 +3323,7 @@ struct RateDiscount : CustomStringConvertible
 	func percent() -> String { return (_percent == nil ? "" : "<Percent>\(_percent!)</Percent>") }
 }
 
-struct Rebate : CustomStringConvertible
+final class Rebate : CustomStringConvertible
 {
 	fileprivate let _rebateType: RebateType?
 	fileprivate let _description: String?
@@ -3548,7 +3346,7 @@ struct Rebate : CustomStringConvertible
 	func percent() -> String { return (_percent == nil ? "" : "<Percent>\(_percent!)</Percent>") }
 }
 
-struct Surcharge : CustomStringConvertible
+final class Surcharge : CustomStringConvertible
 {
 	fileprivate let _surchargeType: SurchargeType?
 	fileprivate let _level: SurchargeLevelType?
@@ -3571,7 +3369,7 @@ struct Surcharge : CustomStringConvertible
 	func amount() -> String { return (_amount == nil ? "" : "<Amount>\(_amount!)</Amount>") }
 }
 
-struct Tax : CustomStringConvertible
+final class Tax : CustomStringConvertible
 {
 	fileprivate let _taxType: TaxType?
 	fileprivate let _description: String?
@@ -3591,7 +3389,7 @@ struct Tax : CustomStringConvertible
 	func amount() -> String { return (_amount == nil ? "" : "<Amount>\(_amount!)</Amount>") }
 }
 
-struct EdtCommodityTax : CustomStringConvertible
+final class EdtCommodityTax : CustomStringConvertible
 {
 	fileprivate let _harmonizedCode: String?
 	fileprivate let _taxes: EdtTaxDetail?
@@ -3608,7 +3406,7 @@ struct EdtCommodityTax : CustomStringConvertible
 	func taxes() -> String { return (_taxes == nil ? "" : "<Taxes>\(_taxes!)</Taxes>") }
 }
 
-struct EdtTaxDetail : CustomStringConvertible
+final class EdtTaxDetail : CustomStringConvertible
 {
 	fileprivate let _taxType: EdtTaxType?
 	fileprivate let _effectiveDate: Date?
@@ -3640,7 +3438,7 @@ struct EdtTaxDetail : CustomStringConvertible
 	func amount() -> String { return (_amount == nil ? "" : "<Amount>\(_amount!)</Amount>") }
 }
 
-struct AncillaryFeeAndTax : CustomStringConvertible
+final class AncillaryFeeAndTax : CustomStringConvertible
 {
 	fileprivate let _type: AncillaryFeeAndTaxType?
 	fileprivate let _description: String?
@@ -3660,7 +3458,7 @@ struct AncillaryFeeAndTax : CustomStringConvertible
 	func amount() -> String { return (_amount == nil ? "" : "<Amount>\(_amount!)</Amount>") }
 }
 
-struct VariableHandlingCharges : CustomStringConvertible
+final class VariableHandlingCharges : CustomStringConvertible
 {
 	fileprivate let _variableHandlingCharge: Money?
 	fileprivate let _fixedVariableHandlingCharge: Money?
@@ -3683,7 +3481,7 @@ struct VariableHandlingCharges : CustomStringConvertible
 	func totalCustomerCharge() -> String { return (_totalCustomerCharge == nil ? "" : "<TotalCustomerCharge>\(_totalCustomerCharge!)</TotalCustomerCharge>") }
 }
 
-struct TrackingId : CustomStringConvertible
+final class TrackingId : CustomStringConvertible
 {
 	fileprivate let _trackingIdType: TrackingIdType?
 	fileprivate let _formId: String?
@@ -3703,75 +3501,7 @@ struct TrackingId : CustomStringConvertible
 	func trackingNumber() -> String { return (_trackingNumber == nil ? "" : "<TrackingNumber>\(_trackingNumber!)</TrackingNumber>") }
 }
 
-//struct PackageRateDetail : CustomStringConvertible
-//{
-//	fileprivate let _rateType: ReturnedRateType?
-//	fileprivate let _ratedWeightMethod: RatedWeightMethod?
-//	fileprivate let _minimumChargeType: MinimumChargeType?
-//	fileprivate let _billingWeight: Weight?
-//	fileprivate let _dimWeight: Weight?
-//	fileprivate let _oversizeWeight: Weight?
-//	fileprivate let _baseCharge: Money?
-//	fileprivate let _totalFreightDiscounts: Money?
-//	fileprivate let _netFreight: Money?
-//	fileprivate let _totalSurcharges: Money?
-//	fileprivate let _netFedExCharge: Money?
-//	fileprivate let _totalTaxes: Money?
-//	fileprivate let _netCharge: Money?
-//	fileprivate let _totalRebates: Money?
-//	fileprivate let _freightDiscounts: RateDiscount?
-//	fileprivate let _rebates: Rebate?
-//	fileprivate let _surcharges: Surcharge?
-//	fileprivate let _taxes: Tax?
-//	fileprivate let _variableHandlingCharges: VariableHandlingCharges?
-//	
-//	var description: String { return "\(rateType())\(ratedWeightMethod())\(minimumChargeType())\(billingWeight())\(dimWeight())\(oversizeWeight())\(baseCharge())\(totalFreightDiscounts())\(netFreight())\(totalSurcharges())\(netFedExCharge())\(totalTaxes())\(netCharge())\(totalRebates())\(freightDiscounts())\(rebates())\(surcharges())\(taxes())\(variableHandlingCharges())" }
-//	
-//	init(rateType: ReturnedRateType, ratedWeightMethod: RatedWeightMethod, minimumChargeType: MinimumChargeType, billingWeight: Weight, dimWeight: Weight, oversizeWeight: Weight, baseCharge: Money, totalFreightDiscounts: Money, netFreight: Money, totalSurcharges: Money, netFedExCharge: Money, totalTaxes: Money, netCharge: Money, totalRebates: Money, freightDiscounts: RateDiscount, rebates: Rebate, surcharges: Surcharge, taxes: Tax, variableHandlingCharges: VariableHandlingCharges)
-//	{
-//		_rateType = rateType
-//		_ratedWeightMethod = ratedWeightMethod
-//		_minimumChargeType = minimumChargeType
-//		_billingWeight = billingWeight
-//		_dimWeight = dimWeight
-//		_oversizeWeight = oversizeWeight
-//		_baseCharge = baseCharge
-//		_totalFreightDiscounts = totalFreightDiscounts
-//		_netFreight = netFreight
-//		_totalSurcharges = totalSurcharges
-//		_netFedExCharge = netFedExCharge
-//		_totalTaxes = totalTaxes
-//		_netCharge = netCharge
-//		_totalRebates = totalRebates
-//		_freightDiscounts = freightDiscounts
-//		_rebates = rebates
-//		_surcharges = surcharges
-//		_taxes = taxes
-//		_variableHandlingCharges = variableHandlingCharges
-//	}
-//	
-//	func rateType() -> String { return (_rateType == nil ? "" : "<RateType>\(_rateType!)</RateType>") }
-//	func ratedWeightMethod() -> String { return (_ratedWeightMethod == nil ? "" : "<RatedWeightMethod>\(_ratedWeightMethod!)</RatedWeightMethod>") }
-//	func minimumChargeType() -> String { return (_minimumChargeType == nil ? "" : "<MinimumChargeType>\(_minimumChargeType!)</MinimumChargeType>") }
-//	func billingWeight() -> String { return (_billingWeight == nil ? "" : "<BillingWeight>\(_billingWeight!)</BillingWeight>") }
-//	func dimWeight() -> String { return (_dimWeight == nil ? "" : "<DimWeight>\(_dimWeight!)</DimWeight>") }
-//	func oversizeWeight() -> String { return (_oversizeWeight == nil ? "" : "<OversizeWeight>\(_oversizeWeight!)</OversizeWeight>") }
-//	func baseCharge() -> String { return (_baseCharge == nil ? "" : "<BaseCharge>\(_baseCharge!)</BaseCharge>") }
-//	func totalFreightDiscounts() -> String { return (_totalFreightDiscounts == nil ? "" : "<TotalFreightDiscounts>\(_totalFreightDiscounts!)</TotalFreightDiscounts>") }
-//	func netFreight() -> String { return (_netFreight == nil ? "" : "<NetFreight>\(_netFreight!)</NetFreight>") }
-//	func totalSurcharges() -> String { return (_totalSurcharges == nil ? "" : "<TotalSurcharges>\(_totalSurcharges!)</TotalSurcharges>") }
-//	func netFedExCharge() -> String { return (_netFedExCharge == nil ? "" : "<NetFedExCharge>\(_netFedExCharge!)</NetFedExCharge>") }
-//	func totalTaxes() -> String { return (_totalTaxes == nil ? "" : "<TotalTaxes>\(_totalTaxes!)</TotalTaxes>") }
-//	func netCharge() -> String { return (_netCharge == nil ? "" : "<NetCharge>\(_netCharge!)</NetCharge>") }
-//	func totalRebates() -> String { return (_totalRebates == nil ? "" : "<TotalRebates>\(_totalRebates!)</TotalRebates>") }
-//	func freightDiscounts() -> String { return (_freightDiscounts == nil ? "" : "<FreightDiscounts>\(_freightDiscounts!)</FreightDiscounts>") }
-//	func rebates() -> String { return (_rebates == nil ? "" : "<Rebates>\(_rebates!)</Rebates>") }
-//	func surcharges() -> String { return (_surcharges == nil ? "" : "<Surcharges>\(_surcharges!)</Surcharges>") }
-//	func taxes() -> String { return (_taxes == nil ? "" : "<Taxes>\(_taxes!)</Taxes>") }
-//	func variableHandlingCharges() -> String { return (_variableHandlingCharges == nil ? "" : "<VariableHandlingCharges>\(_variableHandlingCharges!)</VariableHandlingCharges>") }
-//}
-
-struct Weight : CustomStringConvertible
+final class Weight : CustomStringConvertible
 {
 	let _units: WeightUnits?
 	let _value: Float?
