@@ -277,11 +277,11 @@
                         </buttonCell>
                     </button>
                     <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="fDC-mV-E7v">
-                        <rect key="frame" x="20" y="237" width="320" height="5"/>
+                        <rect key="frame" x="20" y="210" width="320" height="59"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     </box>
                     <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="LXY-ag-gnk">
-                        <rect key="frame" x="20" y="136" width="320" height="5"/>
+                        <rect key="frame" x="20" y="119" width="320" height="38"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     </box>
                     <textField identifier="ZipTextField" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="kZi-Hy-MA2">

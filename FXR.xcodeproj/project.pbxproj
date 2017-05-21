@@ -103,7 +103,7 @@
 				5544F1F51E8076BF00FD44E0 /* Sources */,
 				5544F1F61E8076BF00FD44E0 /* Frameworks */,
 				5544F1F71E8076BF00FD44E0 /* Resources */,
-				5587984F1EB5264400DAA24B /* ShellScript */,
+				5587984F1EB5264400DAA24B /* Run Script */,
 			);
 			buildRules = (
 			);
@@ -120,7 +120,7 @@
 		5544F1F11E8076BF00FD44E0 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0820;
+				LastSwiftUpdateCheck = 0830;
 				LastUpgradeCheck = 0820;
 				ORGANIZATIONNAME = "Tobey Unruh";
 				TargetAttributes = {
@@ -171,13 +171,14 @@
 /* End PBXResourcesBuildPhase section */
 
 /* Begin PBXShellScriptBuildPhase section */
-		5587984F1EB5264400DAA24B /* ShellScript */ = {
+		5587984F1EB5264400DAA24B /* Run Script */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
 			);
 			inputPaths = (
 			);
+			name = "Run Script";
 			outputPaths = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
