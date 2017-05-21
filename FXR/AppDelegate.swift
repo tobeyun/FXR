@@ -183,11 +183,12 @@ class AppDelegate: NSObject
 		}
 	}
 	
-	@IBAction func ViewEULA(_ sender: Any) {
-		DispatchQueue.main.async {
-			NSApplication.shared().runModal(for: EULAController().window!)
-		}
-	}
+	// EULA not needed as customer is emailed a copy during registration
+	//@IBAction func ViewEULA(_ sender: Any) {
+	//	DispatchQueue.main.async {
+	//		NSApplication.shared().runModal(for: EULAController().window!)
+	//	}
+	//}
 	
 	@IBAction func deleteLineItem(_ sender: Any) {
 		guard lineItemsTable.selectedRow >= 0 else { return }
@@ -195,7 +196,7 @@ class AppDelegate: NSObject
 		lineItems.items.remove(at: lineItemsTable.selectedRow)
 		
 		if (lineItems.items.count == 0) {
-			lineItemsTable.tableColumns[0].title = ""
+			//lineItemsTable.tableColumns[0].title = ""
 			
 			parentStack.items.removeAll()
 			soapStack.items.removeAll()
@@ -299,10 +300,10 @@ class AppDelegate: NSObject
 	
 	@IBAction func quickTrack(_ sender: Any)
 	{
-		let tsd = [TrackSelectionDetail(
+		let tsd = trackingNumber.stringValue.components(separatedBy: "[^\\d]+").map{ TrackSelectionDetail(
 			carrierCode: nil,
 			operatingCompany: nil,
-			packageIdentifier: TrackPackageIdentifier(type: TrackIdentifierType.TRACKING_NUMBER_OR_DOORTAG, value: "\(trackingNumber.stringValue)"),
+			packageIdentifier: TrackPackageIdentifier(type: TrackIdentifierType.TRACKING_NUMBER_OR_DOORTAG, value: "\($0)"),
 			trackingNumberUniqueIdentifier: nil,
 			shipDateRangeBegin: nil,
 			shipDateRangeEnd: nil,
@@ -310,7 +311,7 @@ class AppDelegate: NSObject
 			secureSpodAccount: nil,
 			destination: nil,
 			pagingDetail: nil,
-			customerSpecifiedTimeOutValueInMilliseconds: nil)]
+			customerSpecifiedTimeOutValueInMilliseconds: nil) }
 		
 		let wad = WebAuthenticationDetail(
 			parentCredential: nil,
@@ -334,7 +335,7 @@ class AppDelegate: NSObject
 			transactionTimeOutValueInMilliseconds: nil,
 			processingOptions: nil)
 		
-		//print("\(track)")
+		print("\(track)")
 		
 		callDataTask(body: "\(track)")
 	}
@@ -479,6 +480,7 @@ class AppDelegate: NSObject
 	
 	func getCityStateFromUSPS(_ zip: String)
 	{
+		// TODO: add USPS user ID to Settings for per customer credentials
 		let web = "&XML=<CityStateLookupRequest USERID=\"829TOBEY1118\">" +
 					"<ZipCode ID=\"0\">" +
 					"<Zip5>\(zip)</Zip5>" +
