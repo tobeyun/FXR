@@ -114,13 +114,21 @@ extension String {
 		
 		return df.date(from: self) ?? nil
 	}
-}
 
-extension String {
 	func toCurrency() -> String? {
 		let nf = NumberFormatter(); nf.locale = Locale(identifier: Locale.current.identifier); nf.numberStyle = .currency
 		
 		return nf.string(from: NSNumber(value: Float(self)!)) ?? nil
+	}
+	
+	func ranges(of string: String, options: CompareOptions = .literal) -> [Range<Index>] {
+		var result: [Range<Index>] = []
+		var start = startIndex
+		while let range = range(of: string, options: options, range: start..<endIndex) {
+			result.append(range)
+			start = range.upperBound
+		}
+		return result
 	}
 }
 
@@ -300,10 +308,10 @@ class AppDelegate: NSObject
 	
 	@IBAction func quickTrack(_ sender: Any)
 	{
-		let tsd = trackingNumber.stringValue.components(separatedBy: "[^\\d]+").map{ TrackSelectionDetail(
+		let tsd = trackingNumber.stringValue.ranges(of: "[^\\d]+", options: .regularExpression).map{ TrackSelectionDetail(
 			carrierCode: nil,
 			operatingCompany: nil,
-			packageIdentifier: TrackPackageIdentifier(type: TrackIdentifierType.TRACKING_NUMBER_OR_DOORTAG, value: "\($0)"),
+			packageIdentifier: TrackPackageIdentifier(type: TrackIdentifierType.TRACKING_NUMBER_OR_DOORTAG, value: "\(trackingNumber.stringValue[$0])"),
 			trackingNumberUniqueIdentifier: nil,
 			shipDateRangeBegin: nil,
 			shipDateRangeEnd: nil,
