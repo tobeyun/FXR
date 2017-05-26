@@ -158,6 +158,7 @@ class AppDelegate: NSObject
 	@IBOutlet weak var freightQuantity: NSTextField!
 	@IBOutlet weak var freightVolume: NSTextField!
 	@IBOutlet weak var residentialCheck: NSButton!
+	@IBOutlet weak var saturdayCheck: NSButton!
 	@IBOutlet weak var lineItemsTable: NSTableView!
 	@IBOutlet weak var linearUnitsPopUp: NSPopUpButton!
 	@IBOutlet weak var freightVolumeUnitsPopUp: NSPopUpButton!
@@ -344,6 +345,7 @@ class AppDelegate: NSObject
 	{
 		let rpli: [RequestedPackageLineItem]?
 		let fsd: FreightShipmentDetail?
+		let sssr: ShipmentSpecialServicesRequested?
 		
 		if (lineItems.items.count == 0) { return }
 		
@@ -401,6 +403,29 @@ class AppDelegate: NSObject
 			fsd = nil
 		}
 		
+		if saturdayCheck.state == 1 {
+			sssr = ShipmentSpecialServicesRequested(
+				specialServiceTypes: [ShipmentSpecialServiceType(rawValue: "Saturday Delivery")!],
+				codDetail: nil, //CodDetail?,
+				deliveryOnInvoiceAcceptanceDetail: nil, //DeliveryOnInvoiceAcceptanceDetail?,
+				holdAtLocationDetail: nil, //HoldAtLocationDetail?,
+				eventNotificationDetail: nil, //ShipmentEventNotificationDetail?,
+				returnShipmentDetail: nil, //ReturnShipmentDetail?,
+				pendingShipmentDetail: nil, //PendingShipmentDetail?,
+				internationalControlledExportDetail: nil, //InternationalControlledExportDetail?,
+				internationalTrafficInArmsRegulationsDetail: nil, //InternationalTrafficInArmsRegulationsDetail?,
+				shipmentDryIceDetail: nil, //ShipmentDryIceDetail?,
+				homeDeliveryPremiumDetail: nil, //HomeDeliveryPremiumDetail?,
+				flatbedTrailerDetail: nil, //FlatbedTrailerDetail?,
+				freightGuaranteeDetail: nil, //FreightGuaranteeDetail?,
+				etdDetail: nil, //EtdDetail?,
+				customDeliveryWindowDetail: nil //CustomDeliveryWindowDetail?
+			)
+		} else {
+			sssr = nil
+		}
+		
+		
 		let web = RateRequest(
 			webAuthenticationDetail: wad,
 			clientDetail: cd,
@@ -441,7 +466,7 @@ class AppDelegate: NSObject
 					paymentType: PaymentType.SENDER,
 					payor: Payor(responsibleParty: getParty())
 				),
-				specialServicesRequested: nil,
+				specialServicesRequested: sssr,
 				expressFreightDetail: nil,
 				freightShipmentDetail: fsd,
 				deliveryInstructions: nil,
