@@ -750,8 +750,8 @@ CA
                                                 <action selector="addPackageLineItemButton:" target="Voe-Tx-rLC" id="jhc-dq-T1T"/>
                                             </connections>
                                         </button>
-                                        <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="zIr-zm-88X">
-                                            <rect key="frame" x="17" y="30" width="371" height="75"/>
+                                        <box verticalHuggingPriority="750" fixedFrame="YES" boxType="separator" translatesAutoresizingMaskIntoConstraints="NO" id="0hI-ow-L2t">
+                                            <rect key="frame" x="17" y="65" width="322" height="5"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                         </box>
                                     </subviews>
@@ -921,9 +921,9 @@ CA
                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="5nV-EX-ykt">
                         <rect key="frame" x="226" y="357" width="93" height="18"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
-                        <buttonCell key="cell" type="check" title="residential" bezelStyle="regularSquare" imagePosition="left" inset="2" id="kCU-dp-RhP">
+                        <buttonCell key="cell" type="check" title="Residential" bezelStyle="regularSquare" imagePosition="left" inset="2" id="kCU-dp-RhP">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                            <font key="font" metaFont="system" size="11"/>
+                            <font key="font" metaFont="smallSystem"/>
                         </buttonCell>
                     </button>
                     <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="FA9-OE-qcM">
@@ -931,7 +931,7 @@ CA
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <buttonCell key="cell" type="check" title="Saturday Delivery" bezelStyle="regularSquare" imagePosition="left" inset="2" id="aWs-t1-Iwl">
                             <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
-                            <font key="font" metaFont="system" size="11"/>
+                            <font key="font" metaFont="smallSystem"/>
                         </buttonCell>
                     </button>
                 </subviews>
