@@ -53,15 +53,15 @@ extension Stack {
 		return arr
 	}
 	
-	func indexOf(search: String, start: Int) -> Int {
-		if let i = items.index(where: { String(describing: $0).contains(search) && items.index(after: start) >= start }) {
-			return i
-		}
-		else
-		{
-			return -1
-		}
-	}
+//	func indexOf(search: String, start: Int) -> Int {
+//		if let i = items.index(where: { String(describing: $0).contains(search) && items.index(after: start) >= start }) {
+//			return i
+//		}
+//		else
+//		{
+//			return -1
+//		}
+//	}
 	
 	func subrange(_ index: Int) -> [String] {
 		return Set(items.map{ ($0 as! ValuePath).path.components(separatedBy: "|")[index] }).sorted(by: <)
@@ -89,6 +89,7 @@ struct SoapElement
 	let depth: Int
 	let parent: Int?
 	let tag: String
+	let attr: [String : String]
 	let value: String?
 }
 
@@ -169,6 +170,8 @@ class AppDelegate: NSObject
 	@IBOutlet weak var itemDetailTabView: NSTabView!
 	
 	// local vars
+	var recipientCityState = (city: "", state: "", zip: "")
+	var senderCityState = (city: "", state: "", zip: "")
 	var cityState = (city: "", state: "", zip: "")
 	var xmlParser = XMLParser()
 	var pathStack = Stack<String>()
@@ -183,13 +186,6 @@ class AppDelegate: NSObject
 			NSApplication.shared().runModal(for: SettingsController().window!)
 		}
 	}
-	
-	// EULA not needed as customer is emailed a copy during registration
-	//@IBAction func ViewEULA(_ sender: Any) {
-	//	DispatchQueue.main.async {
-	//		NSApplication.shared().runModal(for: EULAController().window!)
-	//	}
-	//}
 	
 	@IBAction func deleteLineItem(_ sender: Any) {
 		guard lineItemsTable.selectedRow >= 0 else { return }
@@ -338,7 +334,7 @@ class AppDelegate: NSObject
 		
 		print("\(track)")
 		
-		callDataTask(body: "\(track)")
+		callDataTask(body: "\(track)", url: UserDefaults.standard.string(forKey: "ws-url")!)
 	}
 	
 	func rateShipment()
@@ -425,7 +421,6 @@ class AppDelegate: NSObject
 			sssr = nil
 		}
 		
-		
 		let web = RateRequest(
 			webAuthenticationDetail: wad,
 			clientDetail: cd,
@@ -451,8 +446,8 @@ class AppDelegate: NSObject
 					contact: nil,
 					address: Address(
 						streetLines: nil,
-						city: cityState.city,
-						stateOrProvinceCode: cityState.state,
+						city: recipientCityState.city,
+						stateOrProvinceCode: recipientCityState.state,
 						postalCode: recipientZip.stringValue,
 						urbanizationCode: nil,
 						countryCode: "US",
@@ -490,31 +485,39 @@ class AppDelegate: NSObject
 		print("\(web)")
 		#endif
 		
-		callDataTask(body: "\(web)")
+		callDataTask(body: "\(web)", url: UserDefaults.standard.string(forKey: "ws-url")!)
 	}
 	
 	override func controlTextDidEndEditing(_ obj: Notification) {
 		guard let tf = obj.object as? NSTextField else { return }
 		
-		if tf.identifier == "RecipientZipTextField" {
-			if recipientZip.stringValue.characters.count == 5 {
-				getCityStateFromUSPS(recipientZip.stringValue)
+		if tf.identifier == "RecipientZipTextField" || tf.identifier == "SenderZipTextField" {
+			if recipientZip.stringValue.characters.count == 5 && senderZip.stringValue.characters.count == 5 {
+				// clar line items if sender/recipient changes
+				DispatchQueue.main.async {
+					self.lineItems.items.removeAll()
+					self.lineItemsTable.reloadData()
+				}
+				
+				// update city/state for sender/recip
+				getCityStateFromUSPS()
 			}
 		}
 	}
 	
-	func getCityStateFromUSPS(_ zip: String)
+	func getCityStateFromUSPS()
 	{
-		// TODO: add USPS user ID to Settings for per customer credentials
+		// TODO: add USPS user ID to Settings for per-customer credentials
 		let web = "&XML=<CityStateLookupRequest USERID=\"829TOBEY1118\">" +
 					"<ZipCode ID=\"0\">" +
-					"<Zip5>\(zip)</Zip5>" +
+					"<Zip5>\(senderZip.stringValue)</Zip5>" +
+					"</ZipCode>" +
+					"<ZipCode ID=\"1\">" +
+					"<Zip5>\(recipientZip.stringValue)</Zip5>" +
 					"</ZipCode>" +
 					"</CityStateLookupRequest>"
 		
-		let task = URLSession.shared.dataTask(with: getUrlRequest(body: web, url2: "https://secure.shippingapis.com/ShippingAPI.dll?API=CityStateLookup"), completionHandler: completionCallback)
-
-		task.resume()
+		callDataTask(body: "\(web)", url: "https://secure.shippingapis.com/ShippingAPI.dll?API=CityStateLookup")
 	}
 	
 	func getTotalWeight() -> Float
@@ -535,10 +538,10 @@ class AppDelegate: NSObject
 			tins: nil,
 			contact: nil,
 			address: Address(
-				streetLines: UserDefaults.standard.string(forKey: "\(pfx)address"),
-				city: UserDefaults.standard.string(forKey: "\(pfx)city"),
-				stateOrProvinceCode: UserDefaults.standard.string(forKey: "\(pfx)state"),
-				postalCode: UserDefaults.standard.string(forKey: "\(pfx)zip"),
+				streetLines: nil, //UserDefaults.standard.string(forKey: "\(pfx)address"),
+				city: senderCityState.city,
+				stateOrProvinceCode: senderCityState.state,
+				postalCode: senderZip.stringValue,
 				urbanizationCode: nil,
 				countryCode: "US",
 				countryName: nil,
@@ -569,7 +572,7 @@ class AppDelegate: NSObject
 		return request
 	}
 	
-	func callDataTask(body: String)
+	func callDataTask(body: String, url: String)
 	{
 		DispatchQueue.main.async(execute: { () -> Void in
 			self.progressIndicator.startAnimation(self)
@@ -579,7 +582,7 @@ class AppDelegate: NSObject
 			self.addFreightLineItemButton.isEnabled = false
 		})
 		
-		let task = URLSession.shared.dataTask(with: getUrlRequest(body: body), completionHandler: completionCallback)
+		let task = URLSession.shared.dataTask(with: getUrlRequest(body: body, url2: url), completionHandler: completionCallback)
 		
 		task.resume()
 	}
@@ -716,6 +719,7 @@ extension AppDelegate: XMLParserDelegate
 				depth: pathStack.xpath!.components(separatedBy: "|").count,
 				parent: currentId,
 				tag: elementName,
+				attr: attributeDict,
 				value: nil
 			)
 		)
@@ -739,6 +743,7 @@ extension AppDelegate: XMLParserDelegate
 		                           depth: pathStack.xpath!.components(separatedBy: "|").count,
 		                           parent: currentId,
 		                           tag: pathStack.xpath!.components(separatedBy: "|").last!,
+		                           attr: parentStack.items.last!.attr,
 		                           value: string)
 		)
 	}
@@ -775,11 +780,15 @@ extension AppDelegate: XMLParserDelegate
 			
 			//if self.soapStack.items.count > 0 {
 				if self.soapStack.items.first?.tag == "CityStateLookupResponse" {
-					self.cityState.zip = (self.soapStack.items.filter{ $0.tag == "Zip5" }.first?.value!)!
-					self.cityState.city = (self.soapStack.items.filter{ $0.tag == "City" }.first?.value!)!
-					self.cityState.state = (self.soapStack.items.filter{ $0.tag == "State" }.first?.value)!
+					self.senderCityState.zip = (self.soapStack.items.filter{ $0.tag == "Zip5" }.first!.value)!
+					self.senderCityState.city = (self.soapStack.items.filter{ $0.tag == "City" }.first!.value)!
+					self.senderCityState.state = (self.soapStack.items.filter{ $0.tag == "State" }.first!.value)!
 					
-					self.detailsView.tableColumns[0].title = "Name - \(self.cityState.city), \(self.cityState.state)"
+					self.recipientCityState.zip = (self.soapStack.items.filter{ $0.tag == "Zip5" }.last!.value)!
+					self.recipientCityState.city = (self.soapStack.items.filter{ $0.tag == "City" }.last!.value)!
+					self.recipientCityState.state = (self.soapStack.items.filter{ $0.tag == "State" }.last!.value)!
+					
+					self.detailsView.tableColumns[0].title = "Name - \(self.recipientCityState.city), \(self.recipientCityState.state)"
 				}
 			//}
 		})
