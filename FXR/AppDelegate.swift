@@ -81,6 +81,22 @@ extension Stack {
 	}
 }
 
+extension NSLocale {
+	class func locales1(countryName1 : String) -> String {
+		let locales : String = ""
+		
+		for localeCode in NSLocale.isoCountryCodes {
+			let countryName = (Locale.current as NSLocale).displayName(forKey: .countryCode, value: localeCode)
+			
+			if countryName1.lowercased() == countryName?.lowercased() {
+				return localeCode
+			}
+		}
+		
+		return locales
+	}
+}
+
 struct SoapElement
 {
 	let id: Int
@@ -168,6 +184,7 @@ class AppDelegate: NSObject
 	@IBOutlet weak var freightItemWidth: NSTextField!
 	@IBOutlet weak var freightItemHeight: NSTextField!
 	@IBOutlet weak var itemDetailTabView: NSTabView!
+	@IBOutlet weak var countryPopUp: NSPopUpButton!
 	
 	// local vars
 	var recipientCityState = (city: "", state: "", zip: "")
@@ -450,7 +467,7 @@ class AppDelegate: NSObject
 						stateOrProvinceCode: recipientCityState.state,
 						postalCode: recipientZip.stringValue,
 						urbanizationCode: nil,
-						countryCode: "US",
+						countryCode: NSLocale.locales1(countryName1: countryPopUp.titleOfSelectedItem!),
 						countryName: nil,
 						residential: residentialCheck.state == 1)
 				),
@@ -490,6 +507,12 @@ class AppDelegate: NSObject
 	
 	override func controlTextDidEndEditing(_ obj: Notification) {
 		guard let tf = obj.object as? NSTextField else { return }
+		
+		// reset between changes
+		senderCityState = (city: "", state: "", zip: "")
+		recipientCityState = (city: "", state: "", zip: "")
+		detailsView.tableColumns[0].title = ""
+		
 		
 		if tf.identifier == "RecipientZipTextField" || tf.identifier == "SenderZipTextField" {
 			if recipientZip.stringValue.characters.count == 5 && senderZip.stringValue.characters.count == 5 {
@@ -679,6 +702,11 @@ extension AppDelegate: NSApplicationDelegate
 		linearUnitsPopUp.selectItem(withTitle: "IN")
 		freightVolumeUnitsPopUp.selectItem(withTitle: "Cubic FT")
 		
+		countryPopUp.addItems(withTitles: NSLocale.isoCountryCodes.map{ (code:String) -> String in
+			let id = NSLocale.localeIdentifier(fromComponents: [NSLocale.Key.countryCode.rawValue: code])
+			return NSLocale(localeIdentifier: "en_US").displayName(forKey: NSLocale.Key.identifier, value: id) ?? "Country not found for code: \(code)"
+		}.sorted())
+		
 		UserDefaults.standard.set(1, forKey: "NSInitialToolTipDelay")
 	}
 	
@@ -765,7 +793,7 @@ extension AppDelegate: XMLParserDelegate
 	
 	func parserDidEndDocument(_ parser: XMLParser)
 	{
-//		print("\(self.soapStack)")
+//		print("\(self.soapStack.items)")
 //		print("\(self.soapStack.items.filter{ $0.value == nil })")
 		
 		DispatchQueue.main.async(execute: { () -> Void in
@@ -778,19 +806,19 @@ extension AppDelegate: XMLParserDelegate
 			
 			self.progressIndicator.stopAnimation(self)
 			
-			//if self.soapStack.items.count > 0 {
-				if self.soapStack.items.first?.tag == "CityStateLookupResponse" {
-					self.senderCityState.zip = (self.soapStack.items.filter{ $0.tag == "Zip5" }.first!.value)!
-					self.senderCityState.city = (self.soapStack.items.filter{ $0.tag == "City" }.first!.value)!
-					self.senderCityState.state = (self.soapStack.items.filter{ $0.tag == "State" }.first!.value)!
-					
-					self.recipientCityState.zip = (self.soapStack.items.filter{ $0.tag == "Zip5" }.last!.value)!
-					self.recipientCityState.city = (self.soapStack.items.filter{ $0.tag == "City" }.last!.value)!
-					self.recipientCityState.state = (self.soapStack.items.filter{ $0.tag == "State" }.last!.value)!
-					
-					self.detailsView.tableColumns[0].title = "Name - \(self.recipientCityState.city), \(self.recipientCityState.state)"
-				}
-			//}
+			if self.soapStack.items.first?.tag == "CityStateLookupResponse" {
+				self.senderCityState.zip = (self.soapStack.items.filter{ $0.tag == "Zip5" }.first!.value)!
+				self.senderCityState.city = (self.soapStack.items.filter{ $0.tag == "City" }.first!.value)!
+				self.senderCityState.state = (self.soapStack.items.filter{ $0.tag == "State" }.first!.value)!
+				
+				self.recipientCityState.zip = (self.soapStack.items.filter{ $0.tag == "Zip5" }.last!.value)!
+				self.recipientCityState.city = (self.soapStack.items.filter{ $0.tag == "City" }.last!.value)!
+				self.recipientCityState.state = (self.soapStack.items.filter{ $0.tag == "State" }.last!.value)!
+				
+				self.detailsView.tableColumns[0].title = "Name - \(self.recipientCityState.city), \(self.recipientCityState.state)"
+				
+				self.countryPopUp.setTitle("United States")
+			}
 		})
 	}
 }
@@ -966,7 +994,7 @@ extension AppDelegate: NSOutlineViewDelegate
 	{
 		// if item is nil, empty view (i.e. init)
 		guard let soapElement = item as? SoapElement else  { return nil }
-
+		
 		// if NameColumn
 		if tableColumn?.identifier == "NameColumn" {
 			return soapElement.tag
@@ -986,10 +1014,39 @@ extension AppDelegate: NSOutlineViewDelegate
 				return drillDown(parent: soapElement, path: "TrackDetails|StatusDetail|Description")?.value
 			}
 			
+			if (soapElement.tag == "RatedShipmentDetails") {
+				if (soapStack.items.filter{ $0.tag == "CommodityName" }.count == 0) {
+					if (soapStack.items.filter{ $0.parent == soapElement.id }.count == 3) {
+						return "DISCOUNTED RATE"
+					}
+				} else {
+					if (soapStack.items.filter{ $0.parent == soapElement.id }.count == 2) {
+						return "DISCOUNTED RATE"
+					}
+				}
+				
+				return "LIST RATE"
+			}
+			
 			return soapElement.value
 		} else if tableColumn?.identifier == "CostColumn" {
 			if soapElement.tag == "RateReplyDetails" {
-				return drillDown(parent: soapElement, path: "RatedShipmentDetails|ShipmentRateDetail|TotalNetCharge|Amount")?.value?.toCurrency() ?? "0".toCurrency()
+				let srd = soapStack.items.filter{ $0.tag == "RatedShipmentDetails" && $0.parent == soapElement.id }
+				
+				// get RatedShipmentDetails children
+				var se = soapStack.items.filter{ $0.parent == srd.first!.id }
+				
+				if (soapStack.items.filter{ $0.tag == "CommodityName" }.count == 0) {
+					if (se.count != 3) {
+						se = soapStack.items.filter{ $0.parent == srd.last!.id }
+					}
+				} else {
+					if (se.count != 2) {
+						se = soapStack.items.filter{ $0.parent == srd.last!.id }
+					}
+				}
+				
+				return drillDown(parent: se.filter{ $0.tag == "ShipmentRateDetail" }.first!, path: "TotalNetCharge|Amount")?.value?.toCurrency() ?? "0".toCurrency()
 			}
 		} else if tableColumn?.identifier == "CommitColumn" {
 			if soapElement.tag == "RateReplyDetails" {
