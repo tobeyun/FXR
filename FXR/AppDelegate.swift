@@ -162,6 +162,7 @@ class AppDelegate: NSObject
 	@IBOutlet weak var senderZip: NSTextField!
 	@IBOutlet weak var recipientZip: NSTextField!
 	@IBOutlet weak var packageWeight: NSTextField!
+	@IBOutlet weak var packageQuantity: NSTextField!
 	@IBOutlet weak var httpResponseLabel: NSTextField!
 	@IBOutlet weak var trackingNumber: NSTextField!
 	@IBOutlet weak var detailsView: NSOutlineView!
@@ -237,7 +238,7 @@ class AppDelegate: NSObject
 		lineItems.items.append(RequestedPackageLineItem(
 			sequenceNumber: 1,
 			groupNumber: 1,
-			groupPackageCount: 1,
+			groupPackageCount: Int(packageQuantity.stringValue)!,
 			variableHandlingChargeDetail: nil,
 			insuredValue: nil,
 			weight: Weight(units: WeightUnits.LB, value: Float(packageWeight.stringValue)!),
@@ -266,6 +267,7 @@ class AppDelegate: NSObject
 		
 		specialServices.items.removeAll()
 		packageWeight.stringValue = ""
+		packageQuantity.stringValue = ""
 		packageWidth.stringValue = ""
 		packageHeight.stringValue = ""
 		packageLength.stringValue = ""
@@ -393,7 +395,7 @@ class AppDelegate: NSObject
 					)
 				),
 				alternateBilling: nil,
-				role: FreightShipmentRoleType(rawValue: (UserDefaults.standard.integer(forKey: "ltlthirdparty") == 0 ? "SHIPPER" : "CONSIGNEE")),
+				role: FreightShipmentRoleType(rawValue: "SHIPPER"),
 				collectTermsType: FreightCollectTermsType.STANDARD,
 				declaredValuePerUnit: nil, //Money?,
 				declaredValueUnits: nil, //String?,
@@ -508,13 +510,12 @@ class AppDelegate: NSObject
 	override func controlTextDidEndEditing(_ obj: Notification) {
 		guard let tf = obj.object as? NSTextField else { return }
 		
-		// reset between changes
-		senderCityState = (city: "", state: "", zip: "")
-		recipientCityState = (city: "", state: "", zip: "")
-		detailsView.tableColumns[0].title = ""
-		
-		
 		if tf.identifier == "RecipientZipTextField" || tf.identifier == "SenderZipTextField" {
+			// reset between changes
+			senderCityState = (city: "", state: "", zip: "")
+			recipientCityState = (city: "", state: "", zip: "")
+			detailsView.tableColumns[0].title = ""
+			
 			if recipientZip.stringValue.characters.count == 5 && senderZip.stringValue.characters.count == 5 {
 				// clar line items if sender/recipient changes
 				DispatchQueue.main.async {
@@ -562,9 +563,9 @@ class AppDelegate: NSObject
 			contact: nil,
 			address: Address(
 				streetLines: nil, //UserDefaults.standard.string(forKey: "\(pfx)address"),
-				city: senderCityState.city,
-				stateOrProvinceCode: senderCityState.state,
-				postalCode: senderZip.stringValue,
+				city: (pfx == "" ? senderCityState.city : UserDefaults.standard.string(forKey: "ltlcity")),
+				stateOrProvinceCode: (pfx == "" ? senderCityState.state : UserDefaults.standard.string(forKey: "ltlstate")),
+				postalCode: (pfx == "" ? senderZip.stringValue : UserDefaults.standard.string(forKey: "ltlzip")),
 				urbanizationCode: nil,
 				countryCode: "US",
 				countryName: nil,
@@ -857,6 +858,12 @@ extension AppDelegate: NSTableViewDelegate
 				
 				if let lineItem = lineItems.items[row] as? RequestedPackageLineItem {
 					return "\(lineItem._weight!._value!) \(lineItem._weight!._units!)"
+				}
+			}
+			
+			if (tableColumn?.identifier == "QtyColumn") {
+				if let lineItem = lineItems.items[row] as? RequestedPackageLineItem {
+					return "\(lineItem._groupPackageCount!)"
 				}
 			}
 		}

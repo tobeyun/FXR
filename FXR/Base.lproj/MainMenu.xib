@@ -35,6 +35,7 @@
                 <outlet property="packageHeight" destination="DJ1-vo-YFB" id="7d4-r1-TcJ"/>
                 <outlet property="packageLength" destination="DG4-L5-iL0" id="OBk-FF-rnS"/>
                 <outlet property="packageLinearUnits" destination="7Ne-b0-TPU" id="a54-qZ-5hn"/>
+                <outlet property="packageQuantity" destination="yAL-SQ-2no" id="cBM-Lj-4Kd"/>
                 <outlet property="packageWeight" destination="VC9-gk-pmd" id="MWS-fL-LJJ"/>
                 <outlet property="packageWidth" destination="mAc-8h-dLM" id="kcJ-Mp-Xoz"/>
                 <outlet property="progressIndicator" destination="Vev-8s-cMk" id="c0c-aQ-VjJ"/>
@@ -459,7 +460,7 @@ CA
                                     <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                     <color key="gridColor" name="gridColor" catalog="System" colorSpace="catalog"/>
                                     <tableColumns>
-                                        <tableColumn identifier="ValueColumn" editable="NO" width="324" minWidth="10" maxWidth="3.4028234663852886e+38" id="YaQ-qc-kMr">
+                                        <tableColumn identifier="ValueColumn" editable="NO" width="269" minWidth="10" maxWidth="3.4028234663852886e+38" id="YaQ-qc-kMr">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="⌘⌫ to remove">
                                                 <font key="font" metaFont="smallSystem"/>
                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
@@ -472,17 +473,31 @@ CA
                                             </textFieldCell>
                                             <tableColumnResizingMask key="resizingMask" resizeWithTable="YES"/>
                                         </tableColumn>
-                                        <tableColumn identifier="TypeColumn" width="72" minWidth="10" maxWidth="3.4028234663852886e+38" id="TQP-UR-pUu">
+                                        <tableColumn identifier="QtyColumn" editable="NO" width="36" minWidth="10" maxWidth="3.4028234663852886e+38" id="TQP-UR-pUu">
+                                            <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left" title="Qty">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
+                                            </tableHeaderCell>
+                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" alignment="left" title="Text Cell" id="EhA-lG-CDD">
+                                                <font key="font" metaFont="smallSystem"/>
+                                                <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                            <tableColumnResizingMask key="resizingMask" resizeWithTable="YES"/>
+                                        </tableColumn>
+                                        <tableColumn identifier="" width="88" minWidth="10" maxWidth="3.4028234663852886e+38" id="jIE-WB-ClM">
                                             <tableHeaderCell key="headerCell" lineBreakMode="truncatingTail" borderStyle="border" alignment="left">
                                                 <font key="font" metaFont="smallSystem"/>
                                                 <color key="textColor" name="headerTextColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                             </tableHeaderCell>
-                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" editable="YES" alignment="left" title="Text Cell" id="EhA-lG-CDD">
-                                                <font key="font" metaFont="smallSystem"/>
+                                            <textFieldCell key="dataCell" lineBreakMode="truncatingTail" selectable="YES" alignment="left" title="Text Cell" id="vKg-Ye-xW2">
+                                                <font key="font" metaFont="system" size="11"/>
                                                 <color key="textColor" name="controlTextColor" catalog="System" colorSpace="catalog"/>
                                                 <color key="backgroundColor" name="controlBackgroundColor" catalog="System" colorSpace="catalog"/>
                                             </textFieldCell>
+                                            <tableColumnResizingMask key="resizingMask" resizeWithTable="YES"/>
                                         </tableColumn>
                                     </tableColumns>
                                     <connections>
@@ -493,7 +508,7 @@ CA
                             </subviews>
                         </clipView>
                         <scroller key="horizontalScroller" hidden="YES" verticalHuggingPriority="750" horizontal="YES" id="0z1-qh-7JS">
-                            <rect key="frame" x="1" y="-16" width="0.0" height="16"/>
+                            <rect key="frame" x="1" y="114" width="402" height="16"/>
                             <autoresizingMask key="autoresizingMask"/>
                         </scroller>
                         <scroller key="verticalScroller" hidden="YES" verticalHuggingPriority="750" doubleValue="1" horizontal="NO" id="qeE-M2-mwL">
@@ -604,25 +619,13 @@ CA
                         <rect key="frame" x="20" y="138" width="16" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                     </progressIndicator>
-                    <textField identifier="TrackingNumber" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xwN-Vi-UEE">
-                        <rect key="frame" x="440" y="491" width="306" height="22"/>
-                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="tracking number" drawsBackground="YES" id="j4I-zO-vFL">
-                            <font key="font" metaFont="system"/>
-                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
-                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
-                        </textFieldCell>
-                        <connections>
-                            <outlet property="delegate" destination="Voe-Tx-rLC" id="YPy-Ae-Npk"/>
-                        </connections>
-                    </textField>
                     <tabView fixedFrame="YES" initialItem="bsu-Bf-YOR" translatesAutoresizingMaskIntoConstraints="NO" id="wCe-av-qgw">
                         <rect key="frame" x="13" y="338" width="426" height="147"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                         <font key="font" metaFont="cellTitle"/>
                         <tabViewItems>
                             <tabViewItem label="Parcel" identifier="1" id="bsu-Bf-YOR">
-                                <view key="view" id="5a5-n8-8fo">
+                                <view key="view" ambiguous="YES" id="5a5-n8-8fo">
                                     <rect key="frame" x="10" y="33" width="406" height="101"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
@@ -719,7 +722,7 @@ CA
                                                 <menu key="menu" id="M9U-NH-HxN"/>
                                             </popUpButtonCell>
                                         </popUpButton>
-                                        <textField identifier="WeightTextField" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VC9-gk-pmd">
+                                        <textField identifier="WeightTextField" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="VC9-gk-pmd">
                                             <rect key="frame" x="17" y="76" width="71" height="22"/>
                                             <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
                                             <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" placeholderString="weight" drawsBackground="YES" usesSingleLineMode="YES" id="wkW-1b-7ry">
@@ -742,11 +745,23 @@ CA
                                                 <action selector="addPackageLineItemButton:" target="Voe-Tx-rLC" id="jhc-dq-T1T"/>
                                             </connections>
                                         </button>
+                                        <textField verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" textCompletion="NO" translatesAutoresizingMaskIntoConstraints="NO" id="yAL-SQ-2no">
+                                            <rect key="frame" x="96" y="76" width="34" height="22"/>
+                                            <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                                            <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" alignment="center" placeholderString="qty" drawsBackground="YES" usesSingleLineMode="YES" id="ulH-P9-5AI">
+                                                <font key="font" metaFont="system"/>
+                                                <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                                                <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                                            </textFieldCell>
+                                            <connections>
+                                                <outlet property="delegate" destination="Voe-Tx-rLC" id="nLs-DK-sVk"/>
+                                            </connections>
+                                        </textField>
                                     </subviews>
                                 </view>
                             </tabViewItem>
                             <tabViewItem label="Freight" identifier="2" id="wEf-Az-LXf">
-                                <view key="view" ambiguous="YES" id="dAJ-iE-zea">
+                                <view key="view" id="dAJ-iE-zea">
                                     <rect key="frame" x="10" y="33" width="406" height="101"/>
                                     <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                                     <subviews>
@@ -871,6 +886,18 @@ CA
                             </tabViewItem>
                         </tabViewItems>
                     </tabView>
+                    <textField identifier="TrackingNumber" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xwN-Vi-UEE">
+                        <rect key="frame" x="440" y="491" width="306" height="22"/>
+                        <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="tracking number" drawsBackground="YES" id="j4I-zO-vFL">
+                            <font key="font" metaFont="system"/>
+                            <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
+                            <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
+                        </textFieldCell>
+                        <connections>
+                            <outlet property="delegate" destination="Voe-Tx-rLC" id="YPy-Ae-Npk"/>
+                        </connections>
+                    </textField>
                     <textField identifier="SenderZipTextField" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KlZ-oq-3Cb">
                         <rect key="frame" x="42" y="491" width="72" height="22"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
