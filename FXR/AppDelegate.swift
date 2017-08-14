@@ -476,9 +476,9 @@ class AppDelegate: NSObject
 				recipientLocationNumber: nil,
 				origin: nil,
 				soldTo: nil,
-				shippingChargesPayment: (isFreight() ? nil : Payment(
+				shippingChargesPayment: Payment(
 					paymentType: PaymentType.SENDER,
-					payor: Payor(responsibleParty: getParty()))
+					payor: Payor(responsibleParty: getParty())
 				),
 				specialServicesRequested: sssr,
 				expressFreightDetail: nil,
@@ -563,9 +563,9 @@ class AppDelegate: NSObject
 			contact: nil,
 			address: Address(
 				streetLines: nil, //UserDefaults.standard.string(forKey: "\(pfx)address"),
-				city: senderCityState.city,
-				stateOrProvinceCode: senderCityState.state,
-				postalCode: senderZip.stringValue,
+				city: (pfx == "" ? senderCityState.city : UserDefaults.standard.string(forKey: "ltlcity")),
+				stateOrProvinceCode: (pfx == "" ? senderCityState.state : UserDefaults.standard.string(forKey: "ltlstate")),
+				postalCode: (pfx == "" ? senderZip.stringValue : UserDefaults.standard.string(forKey: "ltlzip")),
 				urbanizationCode: nil,
 				countryCode: "US",
 				countryName: nil,
