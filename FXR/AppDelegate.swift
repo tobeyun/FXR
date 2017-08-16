@@ -238,7 +238,7 @@ class AppDelegate: NSObject
 		lineItems.items.append(RequestedPackageLineItem(
 			sequenceNumber: 1,
 			groupNumber: 1,
-			groupPackageCount: Int(packageQuantity.stringValue)!,
+			groupPackageCount: (packageQuantity.stringValue == "" ? 1 : Int(packageQuantity.stringValue)!),
 			variableHandlingChargeDetail: nil,
 			insuredValue: nil,
 			weight: Weight(units: WeightUnits.LB, value: Float(packageWeight.stringValue)!),
