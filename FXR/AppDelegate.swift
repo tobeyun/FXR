@@ -1016,7 +1016,7 @@ extension AppDelegate: NSOutlineViewDelegate
 			
 			if (soapElement.tag == "CompletedTrackDetails") {
 				outlineView.selectRowIndexes(IndexSet(integer: 5), byExtendingSelection: false)
-				outlineView.expandItem(item)
+				//outlineView.expandItem(item)
 		
 				return drillDown(parent: soapElement, path: "TrackDetails|StatusDetail|Description")?.value
 			}
