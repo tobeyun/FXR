@@ -165,6 +165,7 @@ class AppDelegate: NSObject
 	@IBOutlet weak var packageQuantity: NSTextField!
 	@IBOutlet weak var httpResponseLabel: NSTextField!
 	@IBOutlet weak var trackingNumber: NSTextField!
+	@IBOutlet weak var referenceCheck: NSButton!
 	@IBOutlet weak var detailsView: NSOutlineView!
 	@IBOutlet weak var specialServicesTable: NSTableView!
 	@IBOutlet weak var packageLength: NSTextField!
@@ -319,11 +320,13 @@ class AppDelegate: NSObject
 		let tsd = trackingNumber.stringValue.components(separatedBy: "[^\\d]+").map{ TrackSelectionDetail(
 			carrierCode: nil,
 			operatingCompany: nil,
-			packageIdentifier: TrackPackageIdentifier(type: TrackIdentifierType.TRACKING_NUMBER_OR_DOORTAG, value: "\($0)"),
+			packageIdentifier: TrackPackageIdentifier(
+				type: (referenceCheck.state == 1 ? TrackIdentifierType.SHIPPER_REFERENCE : TrackIdentifierType.TRACKING_NUMBER_OR_DOORTAG),
+				value: "\($0)"),
 			trackingNumberUniqueIdentifier: nil,
 			shipDateRangeBegin: nil,
 			shipDateRangeEnd: nil,
-			shipmentAccountNumber: nil,
+			shipmentAccountNumber: KeychainManager.queryData(itemKey: "account") as? String ?? "",
 			secureSpodAccount: nil,
 			destination: nil,
 			pagingDetail: nil,

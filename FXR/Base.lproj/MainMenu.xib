@@ -40,6 +40,7 @@
                 <outlet property="packageWidth" destination="mAc-8h-dLM" id="kcJ-Mp-Xoz"/>
                 <outlet property="progressIndicator" destination="Vev-8s-cMk" id="c0c-aQ-VjJ"/>
                 <outlet property="recipientZip" destination="dnB-iV-Q8R" id="PpU-Jo-uQI"/>
+                <outlet property="referenceCheck" destination="D5c-3i-UGC" id="PVC-kQ-Fa6"/>
                 <outlet property="residentialCheck" destination="5nV-EX-ykt" id="qew-G1-A4r"/>
                 <outlet property="saturdayCheck" destination="FA9-OE-qcM" id="4eT-3u-Pgl"/>
                 <outlet property="senderZip" destination="KlZ-oq-3Cb" id="4Gx-2i-r3v"/>
@@ -883,9 +884,9 @@ CA
                         </tabViewItems>
                     </tabView>
                     <textField identifier="TrackingNumber" verticalHuggingPriority="750" fixedFrame="YES" allowsCharacterPickerTouchBarItem="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xwN-Vi-UEE">
-                        <rect key="frame" x="440" y="491" width="306" height="22"/>
+                        <rect key="frame" x="440" y="491" width="212" height="22"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" flexibleMinY="YES"/>
-                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="tracking number" drawsBackground="YES" id="j4I-zO-vFL">
+                        <textFieldCell key="cell" scrollable="YES" lineBreakMode="clipping" selectable="YES" editable="YES" sendsActionOnEndEditing="YES" state="on" borderStyle="bezel" placeholderString="tracking number / reference" drawsBackground="YES" id="j4I-zO-vFL">
                             <font key="font" metaFont="system"/>
                             <color key="textColor" name="textColor" catalog="System" colorSpace="catalog"/>
                             <color key="backgroundColor" name="textBackgroundColor" catalog="System" colorSpace="catalog"/>
@@ -962,6 +963,14 @@ CA
                         <rect key="frame" x="20" y="2" width="16" height="16"/>
                         <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                     </progressIndicator>
+                    <button fixedFrame="YES" translatesAutoresizingMaskIntoConstraints="NO" id="D5c-3i-UGC">
+                        <rect key="frame" x="658" y="491" width="90" height="18"/>
+                        <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMinY="YES"/>
+                        <buttonCell key="cell" type="check" title="Reference" bezelStyle="regularSquare" imagePosition="left" inset="2" id="JDL-Pd-c6v">
+                            <behavior key="behavior" changeContents="YES" doesNotDimImage="YES" lightByContents="YES"/>
+                            <font key="font" metaFont="system" size="11"/>
+                        </buttonCell>
+                    </button>
                 </subviews>
             </view>
             <point key="canvasLocation" x="331" y="247.5"/>
