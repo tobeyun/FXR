@@ -97,60 +97,6 @@ private struct VersionId : CustomStringConvertible
     func minor() -> String { return "<Minor>\(_minor)</Minor>" }
 }
 
-struct TrackSelectionDetail : CustomStringConvertible
-{
-    fileprivate let _carrierCode: CarrierCodeType?
-    fileprivate let _operatingCompany: OperatingCompanyType?
-    fileprivate let _packageIdentifier: TrackPackageIdentifier?
-    fileprivate let _trackingNumberUniqueIdentifier: String?
-    fileprivate let _shipDateRangeBegin: Date?
-    fileprivate let _shipDateRangeEnd: Date?
-    fileprivate let _shipmentAccountNumber: String?
-    fileprivate let _secureSpodAccount: String?
-    fileprivate let _destination: Address?
-    fileprivate let _pagingDetail: PagingDetail?
-    fileprivate let _customerSpecifiedTimeOutValueInMilliseconds: Int?
-    
-    var description: String { return "\(carrierCode())\(operatingCompany())\(packageIdentifier())\(trackingNumberUniqueIdentifier())\(shipDateRangeBegin())\(shipDateRangeEnd())\(shipmentAccountNumber())\(secureSpodAccount())\(destination())\(pagingDetail())\(customerSpecifiedTimeOutValueinMilliseconds())" }
-    
-    init(carrierCode: CarrierCodeType?,
-         operatingCompany: OperatingCompanyType?,
-         packageIdentifier: TrackPackageIdentifier?,
-         trackingNumberUniqueIdentifier: String?,
-         shipDateRangeBegin: Date?,
-         shipDateRangeEnd: Date?,
-         shipmentAccountNumber: String?,
-         secureSpodAccount: String?,
-         destination: Address?,
-         pagingDetail: PagingDetail?,
-         customerSpecifiedTimeOutValueInMilliseconds: Int?)
-    {
-        _carrierCode = carrierCode
-        _operatingCompany = operatingCompany
-        _packageIdentifier = packageIdentifier
-        _trackingNumberUniqueIdentifier = trackingNumberUniqueIdentifier
-        _shipDateRangeBegin = shipDateRangeBegin
-        _shipDateRangeEnd = shipDateRangeEnd
-        _shipmentAccountNumber = shipmentAccountNumber
-        _secureSpodAccount = secureSpodAccount
-        _destination = destination
-        _pagingDetail = pagingDetail
-        _customerSpecifiedTimeOutValueInMilliseconds = customerSpecifiedTimeOutValueInMilliseconds
-    }
-    
-    func carrierCode() -> String { return (_carrierCode == nil ? "" : "<CarrierCode>\(_carrierCode!)</CarrierCode>") }
-    func operatingCompany() -> String { return (_operatingCompany == nil ? "" : "<OperatingCompany>\(_operatingCompany!)</OperatingCompany>") }
-    func packageIdentifier() -> String { return (_packageIdentifier == nil ? "" : "<PackageIdentifier>\(_packageIdentifier!)</PackageIdentifier>") }
-    func trackingNumberUniqueIdentifier() -> String { return (_trackingNumberUniqueIdentifier == nil ? "" : "<TrackingNumberUniqueIdentifier>\(_trackingNumberUniqueIdentifier!)</TrackingNumberUniqueIdentifier>") }
-    func shipDateRangeBegin() -> String { return (_shipDateRangeBegin == nil ? "" : "<ShipDateRangeBegin>\(_shipDateRangeBegin!)</ShipDateRangeBegin>") }
-    func shipDateRangeEnd() -> String { return (_shipDateRangeEnd == nil ? "" : "<ShipDateRangeEnd>\(_shipDateRangeEnd!)</ShipDateRangeEnd>") }
-    func shipmentAccountNumber() -> String { return (_shipmentAccountNumber == nil ? "" : "<ShipmentAccountNumber>\(_shipmentAccountNumber!)</ShipmentAccountNumber>") }
-    func secureSpodAccount() -> String { return (_secureSpodAccount == nil ? "" : "<SecureSpodAccount>\(_secureSpodAccount!)</SecureSpodAccount>") }
-    func destination() -> String { return (_destination == nil ? "" : "<Destination>\(_destination!)</Destination>") }
-    func pagingDetail() -> String { return (_pagingDetail == nil ? "" : "<PagingDetail>\(_pagingDetail!)</PagingDetail>") }
-    func customerSpecifiedTimeOutValueinMilliseconds() -> String { return (_customerSpecifiedTimeOutValueInMilliseconds == nil ? "" : "<CustomerSpecifiedTimeOutValueInMilliseconds>\(_customerSpecifiedTimeOutValueInMilliseconds!)</CustomerSpecifiedTimeOutValueInMilliseconds>") }
-}
-
 struct UniqueTrackingNumber : CustomStringConvertible
 {
     let _trackingNumber : String
@@ -275,7 +221,7 @@ struct LocationSupportedPackageDetail : CustomStringConvertible
     init(weight: Weight, dimensions: Dimensions)
     {
         _weight = weight
-        _dimensions = Dimensions
+        _dimensions = dimensions
     }
     
     func weight() -> String { return "<Weight>\(_weight)</Weight>" }
