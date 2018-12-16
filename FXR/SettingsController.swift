@@ -14,6 +14,7 @@ class SettingsController: NSWindowController, NSWindowDelegate
 	@IBOutlet weak var meterNumber: NSTextField!
 	@IBOutlet weak var webCredentialKey: NSTextField!
 	@IBOutlet weak var webCredentialPassword: NSTextField!
+    @IBOutlet weak var testAccount: NSButton!
 	@IBOutlet weak var companyName: NSTextField!
 	@IBOutlet weak var addressLine: NSTextField!
 	@IBOutlet weak var city: NSTextField!
@@ -43,6 +44,7 @@ class SettingsController: NSWindowController, NSWindowDelegate
 		meterNumber.stringValue = "\((KeychainManager.queryData(itemKey: "meter")) as? String ?? "")"
 		webCredentialKey.stringValue = "\((KeychainManager.queryData(itemKey: "key")) as? String ?? "")"
 		webCredentialPassword.stringValue = "\((KeychainManager.queryData(itemKey: "password")) as? String ?? "")"
+        testAccount.state = convertToNSControlStateValue(UserDefaults.standard.integer(forKey: "testaccount"))
 		
 		companyName.stringValue = "\((UserDefaults.standard.string(forKey: "company")) ?? "")"
 		addressLine.stringValue = "\((UserDefaults.standard.string(forKey: "address")) ?? "")"
@@ -56,7 +58,7 @@ class SettingsController: NSWindowController, NSWindowDelegate
 		ltlCity.stringValue = "\((UserDefaults.standard.string(forKey: "ltlcity")) ?? "")"
 		ltlState.stringValue = "\((UserDefaults.standard.string(forKey: "ltlstate")) ?? "")"
 		ltlZipCode.stringValue = "\((UserDefaults.standard.string(forKey: "ltlzip")) ?? "")"
-		ltlThirdParty.state = UserDefaults.standard.integer(forKey: "ltlthirdparty")
+		ltlThirdParty.state = convertToNSControlStateValue(UserDefaults.standard.integer(forKey: "ltlthirdparty"))
 	}
 	
 	func windowWillClose(_ notification: Notification) {
@@ -85,8 +87,14 @@ class SettingsController: NSWindowController, NSWindowDelegate
 			KeychainManager.deleteData(itemKey: "ltlaccount")
 			KeychainManager.addData(itemKey: "ltlaccount", itemValue: ltlAccountNumber.stringValue)
 		}
+        
+        UserDefaults.standard.set(testAccount.stringValue, forKey: "testaccount")
 		
-		UserDefaults.standard.set("https://ws.fedex.com:443/web-services/", forKey: "ws-url")
+        if (testAccount.stringValue == "1") {
+            UserDefaults.standard.set("https://wsbeta.fedex.com:443/web-services/", forKey: "ws-url")
+        } else {
+            UserDefaults.standard.set("https://ws.fedex.com:443/web-services/", forKey: "ws-url")
+        }
 		
 		UserDefaults.standard.set(companyName.stringValue, forKey: "company")
 		UserDefaults.standard.set(addressLine.stringValue, forKey: "address")
@@ -101,6 +109,11 @@ class SettingsController: NSWindowController, NSWindowDelegate
 		UserDefaults.standard.set(ltlZipCode.stringValue, forKey: "ltlzip")
 		UserDefaults.standard.set(ltlThirdParty.stringValue, forKey: "ltlthirdparty")
 		
-		NSApplication.shared().stopModal()
+		NSApplication.shared.stopModal()
 	}
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToNSControlStateValue(_ input: Int) -> NSControl.StateValue {
+	return NSControl.StateValue(rawValue: input)
 }
