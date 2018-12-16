@@ -83,7 +83,7 @@ final class ConsolidationKey : CustomStringConvertible
 	fileprivate let _index: String?
 	fileprivate let _date: Date?
 
-	var description: String { return "<\(type(of: self))>\(type())\(index())\(date())</\(type(of: self))>" }
+	var description: String { return "<\(Swift.type(of: self))>\(type())\(index())\(date())</\(Swift.type(of: self))>" }
 	
 	init(type: ConsolidationType?, index: String?, date: Date?)
 	{
