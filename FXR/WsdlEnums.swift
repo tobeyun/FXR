@@ -1562,3 +1562,106 @@ enum GenericDefault: String
 	
 	static let values = [YES.rawValue, NO.rawValue]
 }
+
+enum LocationsSearchCriteriaType: String
+{
+    case ADDRESS = "Address"
+    case GEOGRAPHIC_COORDINATES = "Geographic Coordinates"
+    case PHONE_NUMBER = "Phone Number"
+    
+    static let values = [ADDRESS.rawValue, GEOGRAPHIC_COORDINATES.rawValue, PHONE_NUMBER.rawValue]
+}
+
+enum MultipleMatchesActionType: String
+{
+    case RETURN_ALL = "Return All"
+    case RETURN_ERROR = "Return Error"
+    case RETURN_FIRST = "Return First"
+    
+    static let values = [RETURN_ALL.rawValue, RETURN_ERROR.rawValue, RETURN_FIRST.rawValue]
+}
+
+enum LocationSortCriteriaType: String
+{
+    case DISTANCE = "Distance"
+    case LATEST_EXPRESS_DROPOFF_TIME = "Latest Express Dropoff Time"
+    case LATEST_GROUND_DROPOFF_TIME = "Latest Ground Dropoff Time"
+    case LOCATION_TYPE = "Location Type"
+    
+    static let values = [DISTANCE.rawValue, LATEST_EXPRESS_DROPOFF_TIME.rawValue, LATEST_GROUND_DROPOFF_TIME.rawValue, LOCATION_TYPE.rawValue]
+}
+
+enum LocationSortOrderType: String
+{
+    case HIGHEST_TO_LOWEST
+    case LOWEST_TO_HIGHEST
+}
+
+enum LocationSearchFilterType: String
+{
+    case EXCLUDE_LOCATIONS_OUTSIDE_COUNTRY = "Exclude Locations Outside Country"
+    case EXCLUDE_LOCATIONS_OUTSIDE_STATE_OR_PROVINCE = "Exclude Locations Outside State or Province"
+    case EXCLUDE_UNAVAILABLE_LOCATIONS = "Exclude Unavailable Locations"
+    
+    static let values = [EXCLUDE_LOCATIONS_OUTSIDE_COUNTRY.rawValue, EXCLUDE_LOCATIONS_OUTSIDE_STATE_OR PROVINCE.rawValue, EXCLUDE_UNAVAILABLE_LOCATIONS.rawValue]
+}
+
+enum SupportedRedirectToHoldServiceType: String
+{
+    case FEDEX_EXPRESS
+    case FEDEX_GROUND
+    case FEDEX_GROUND_HOME_DELIVERY
+}
+
+enum LocationAttributesType: String
+{
+    case ACCEPTS_CASH = "Accepts Cash"
+    case ALREADY_OPEN = "Already Open"
+    case CLEARANCE_SERVICES = "Clearance Services"
+    case COPY_AND_PRINT_SERVICES = "Copy and Print Services"
+    case DANGEROUS_GOODS_SERVICES = "Dangerous Goods Services"
+    case DIRECT_MAIL_SERVICES = "Direct Mail Services"
+    case DOMESTIC_SHIPPING_SERVICES = "Domestic Shipping Services"
+    case DROP_BOX = "Drop Box"
+    case INTERNATIONAL_SHIPPING_SERVICES = "International Shipping Services"
+    case LOCATION_IS_IN_AIRPORT = "Location is in Airport"
+    case NOTARY_SERVICES = "Notary Services"
+    case OBSERVES_DAY_LIGHT_SAVING_TIMES = "Observes Daylight Savings Time"
+    case OPEN_TWENTY_FOUR_HOURS = "Open Twenty-Four Hours"
+    case PACKAGING_SUPPLIES = "Packaging Supplies"
+    case PACK_AND_SHIP = "Pack and Ship"
+    case PASSPORT_PHOTO_SERVICES = "Passport Photo Services"
+    case RETURNS_SERVICES = "Returns Services"
+    case SIGNS_AND_BANNERS_SERVICE = "Signs and Banner Service"
+    case SONY_PICTURE_STATION = "Sony Picture Station"
+    
+    static let values = [ACCEPTS_CASE.rawValue, ALREADY_OPEN.rawValue, CLEARANCE_SERVICES.rawValue, COPY_AND_PRINT_SERVICES.rawValue, DANGEROUS_GOODS_SERVICES.rawValue, DIRECT_MAIL_SERVICES.rawValue, DOMESTIC_SHIPPING_SERVICES.rawValue, DROP_BOX.rawValue, INTERNATIONAL_SHIPPING_SERVICES.rawValue, LOCATIONS_IS_IN_AIRPORT.rawValue, NOTARY_SERVICES.rawValue, OBSERVES_DAY_LIGHT_SAVING_TIMES.rawValue, OPEN_TWENTY_FOUR_HOURS.rawValue, PACKAGING_SUPPLIES.rawValue, PACK_AND_SHIP.rawValue, PASSPORT_PHOTO_SERVICES.rawValue, RETURNS_SERVICES.rawValue, SIGNS_AND_BANNERS_SERVICE.rawValue, SONY_PICTURE_STATION.rawValue]
+}
+
+enum LocationContentOptionType: String
+{
+    case HOLIDAYS = "Holidays"
+    case LOCATION_DROPOFF_TIMES = "Location Dropoff Times"
+    case MAP_URL = "Map URL"
+    case TIMEZONE_OFFSET = "Timezone Offset"
+    
+    static let values = [HOLIDAYS.rawValue, LOCATION_DROPOFF_TIMES.rawValue, MAP_URL.rawValue, TIMEZONE_OFFSET.rawValue]
+}
+
+enum LocationTransferOfPossessionType: String
+{
+    case DROPOFF = "Drop Off"
+    case HOLD_AT_LOCATION = "Hold at Location"
+    case REDIRECT_TO_HOLD_AT_LOCATION = "Redirect to Hold at Location"
+    
+    static let values = [DROPOFF.rawValue, HOLD_AT_LOCATION.rawValue, REDIRECT_TO_HOLD_AT_LOCATION.rawValue]
+}
+
+enum ServiceCategoryType: String
+{
+    case EXPRESS_FREIGHT = "Express Freight"
+    case EXPRESS_PARCEL = "Express Parcel"
+    case GROUND_HOME_DELIVERY = "Ground Home Delivery"
+    
+    static let values = [EXPRESS_FREIGHT.rawValue, EXPRESS_PARCEL.rawValue, GROUND_HOME_DELIVERY.rawValue]
+}
