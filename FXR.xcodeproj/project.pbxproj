@@ -18,6 +18,7 @@
 		556DED161EA71B3A00CD11C0 /* RateService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556DED141EA71B3A00CD11C0 /* RateService.swift */; };
 		556DED171EA71B3A00CD11C0 /* WsdlEnums.swift in Sources */ = {isa = PBXBuildFile; fileRef = 556DED151EA71B3A00CD11C0 /* WsdlEnums.swift */; };
 		558D1A141EAAF39F00C15A7E /* SettingsController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 558D1A131EAAF39F00C15A7E /* SettingsController.swift */; };
+		55D22E4521C5721500940C5F /* LocationsService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 55D22E4421C5721500940C5F /* LocationsService.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -35,6 +36,7 @@
 		556DED141EA71B3A00CD11C0 /* RateService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RateService.swift; sourceTree = "<group>"; };
 		556DED151EA71B3A00CD11C0 /* WsdlEnums.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WsdlEnums.swift; sourceTree = "<group>"; };
 		558D1A131EAAF39F00C15A7E /* SettingsController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsController.swift; sourceTree = "<group>"; };
+		55D22E4421C5721500940C5F /* LocationsService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationsService.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -73,13 +75,14 @@
 				55391EA61EA8F3F900B7748C /* KeychainManager.swift */,
 				556DED141EA71B3A00CD11C0 /* RateService.swift */,
 				55391EAE1EAA2B4B00B7748C /* TrackingService.swift */,
+				55D22E4421C5721500940C5F /* LocationsService.swift */,
 				55391EB21EAA448700B7748C /* GlobalStructs.swift */,
+				556DED151EA71B3A00CD11C0 /* WsdlEnums.swift */,
 				5544F1FE1E8076BF00FD44E0 /* Assets.xcassets */,
 				5544F2001E8076BF00FD44E0 /* MainMenu.xib */,
 				55391EAC1EAA290C00B7748C /* Settings.xib */,
 				558D1A131EAAF39F00C15A7E /* SettingsController.swift */,
 				5544F2031E8076BF00FD44E0 /* Info.plist */,
-				556DED151EA71B3A00CD11C0 /* WsdlEnums.swift */,
 			);
 			path = FXR;
 			sourceTree = "<group>";
@@ -113,12 +116,13 @@
 			isa = PBXProject;
 			attributes = {
 				LastSwiftUpdateCheck = 0830;
-				LastUpgradeCheck = 0820;
+				LastUpgradeCheck = 1010;
 				ORGANIZATIONNAME = "Tobey Unruh";
 				TargetAttributes = {
 					5544F1F81E8076BF00FD44E0 = {
 						CreatedOnToolsVersion = 8.2.1;
 						DevelopmentTeam = 2W7E67872X;
+						LastSwiftMigration = 1010;
 						ProvisioningStyle = Automatic;
 						SystemCapabilities = {
 							com.apple.Sandbox = {
@@ -197,6 +201,7 @@
 			files = (
 				5544F1FD1E8076BF00FD44E0 /* AppDelegate.swift in Sources */,
 				556DED171EA71B3A00CD11C0 /* WsdlEnums.swift in Sources */,
+				55D22E4521C5721500940C5F /* LocationsService.swift in Sources */,
 				556DED161EA71B3A00CD11C0 /* RateService.swift in Sources */,
 				558D1A141EAAF39F00C15A7E /* SettingsController.swift in Sources */,
 				55391EAF1EAA2B4B00B7748C /* TrackingService.swift in Sources */,
@@ -228,15 +233,23 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -277,15 +290,23 @@
 				CLANG_CXX_LIBRARY = "libc++";
 				CLANG_ENABLE_MODULES = YES;
 				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
 				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
 				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
 				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
 				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
 				CLANG_WARN_EMPTY_BODY = YES;
 				CLANG_WARN_ENUM_CONVERSION = YES;
 				CLANG_WARN_INFINITE_RECURSION = YES;
 				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
 				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
 				CLANG_WARN_SUSPICIOUS_MOVE = YES;
 				CLANG_WARN_UNREACHABLE_CODE = YES;
 				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
@@ -323,7 +344,8 @@
 				OTHER_SWIFT_FLAGS = "-Xfrontend -debug-time-function-bodies";
 				PRODUCT_BUNDLE_IDENTIFIER = com.xybergenix.FXR;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.2;
 				VERSIONING_SYSTEM = "";
 			};
 			name = Debug;
@@ -342,7 +364,8 @@
 				OTHER_SWIFT_FLAGS = "-Xfrontend -debug-time-function-bodies";
 				PRODUCT_BUNDLE_IDENTIFIER = com.xybergenix.FXR;
 				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_VERSION = 3.0;
+				SWIFT_SWIFT3_OBJC_INFERENCE = On;
+				SWIFT_VERSION = 4.2;
 				VERSIONING_SYSTEM = "";
 			};
 			name = Release;
