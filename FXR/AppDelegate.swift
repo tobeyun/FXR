@@ -73,7 +73,7 @@ extension Stack {
 	
 	func unique() -> [String] {
 		return Set(items.map{ ($0 as! ValuePath).path.components(separatedBy: "|").dropLast().joined(separator: "|") })
-			.sorted(by: { $0.0.components(separatedBy: "|").count < $0.1.components(separatedBy: "|").count })
+			.sorted(by: { $0.components(separatedBy: "|").count < $1.components(separatedBy: "|").count })
 	}
 	
 	func update(_ value: Any?) {
@@ -120,7 +120,7 @@ extension Array where Element == ValuePath
 extension Collection where Indices.Iterator.Element == Index {
 	
 	/// Returns the element at the specified index if it is within bounds, otherwise nil.
-	subscript (safe index: Index) -> Generator.Element? {
+	subscript (safe index: Index) -> Iterator.Element? {
 		return indices.contains(index) ? self[index] : nil
 	}
 }
@@ -202,7 +202,7 @@ class AppDelegate: NSObject
 
 	@IBAction func OpenPreferences(_ sender: Any) {
 		DispatchQueue.main.async {
-			NSApplication.shared().runModal(for: SettingsController().window!)
+			NSApplication.shared.runModal(for: SettingsController().window!)
 		}
 	}
 	
@@ -254,7 +254,7 @@ class AppDelegate: NSObject
 			itemDescriptionForClearance: nil,
 			customerReferences: nil,
 			specialServicesRequested: PackageSpecialServicesRequested(
-				specialServiceTypes: specialServices.items.flatMap{ PackageSpecialServiceType(rawValue: "\($0.0.rawValue)")! },
+				specialServiceTypes: specialServices.items.compactMap{ PackageSpecialServiceType(rawValue: "\($0.0.rawValue)")! },
 				codDetail: specialServices.items.filter{ $0.0 == PackageSpecialServiceType.COD }.first?.1 as? CodDetail,
 				dangerousGoodsDetail: specialServices.items.filter{ $0.0 == PackageSpecialServiceType.DANGEROUS_GOODS }.first?.1 as? DangerousGoodsDetail,
 				dryIceWeight: specialServices.items.filter{ $0.0 == PackageSpecialServiceType.DRY_ICE }.first?.1 as? Weight,
@@ -321,7 +321,7 @@ class AppDelegate: NSObject
 			carrierCode: nil,
 			operatingCompany: nil,
 			packageIdentifier: TrackPackageIdentifier(
-				type: (referenceCheck.state == 1 ? TrackIdentifierType.SHIPPER_REFERENCE : TrackIdentifierType.TRACKING_NUMBER_OR_DOORTAG),
+				type: (referenceCheck.state == .on ? TrackIdentifierType.SHIPPER_REFERENCE : TrackIdentifierType.TRACKING_NUMBER_OR_DOORTAG),
 				value: "\($0)"),
 			trackingNumberUniqueIdentifier: nil,
 			shipDateRangeBegin: nil,
@@ -356,7 +356,7 @@ class AppDelegate: NSObject
 		
 		print("\(track)")
 		
-		callDataTask(body: "\(track)", url: UserDefaults.standard.string(forKey: "ws-url")!)
+        callDataTask(body: "\(track)", url: UserDefaults.standard.string(forKey: "ws-url")!)
 	}
 	
 	func rateShipment()
@@ -421,7 +421,7 @@ class AppDelegate: NSObject
 			fsd = nil
 		}
 		
-		if saturdayCheck.state == 1 {
+		if saturdayCheck.state == .on {
 			sssr = ShipmentSpecialServicesRequested(
 				specialServiceTypes: [ShipmentSpecialServiceType(rawValue: "Saturday Delivery")!],
 				codDetail: nil, //CodDetail?,
@@ -474,7 +474,7 @@ class AppDelegate: NSObject
 						urbanizationCode: nil,
 						countryCode: NSLocale.locales1(countryName1: countryPopUp.titleOfSelectedItem!),
 						countryName: nil,
-						residential: residentialCheck.state == 1)
+						residential: residentialCheck.state == .on)
 				),
 				recipientLocationNumber: nil,
 				origin: nil,
@@ -507,19 +507,19 @@ class AppDelegate: NSObject
 		print("\(web)")
 		#endif
 		
-		callDataTask(body: "\(web)", url: UserDefaults.standard.string(forKey: "ws-url")!)
+        callDataTask(body: "\(web)", url: UserDefaults.standard.string(forKey: "ws-url")!)
 	}
 	
-	override func controlTextDidEndEditing(_ obj: Notification) {
+	func controlTextDidEndEditing(_ obj: Notification) {
 		guard let tf = obj.object as? NSTextField else { return }
 		
-		if tf.identifier == "RecipientZipTextField" || tf.identifier == "SenderZipTextField" {
+		if convertFromOptionalNSUserInterfaceItemIdentifier(tf.identifier) == "RecipientZipTextField" || convertFromOptionalNSUserInterfaceItemIdentifier(tf.identifier) == "SenderZipTextField" {
 			// reset between changes
 			senderCityState = (city: "", state: "", zip: "")
 			recipientCityState = (city: "", state: "", zip: "")
 			detailsView.tableColumns[0].title = ""
 			
-			if recipientZip.stringValue.characters.count == 5 && senderZip.stringValue.characters.count == 5 {
+			if recipientZip.stringValue.count == 5 && senderZip.stringValue.count == 5 {
 				// clar line items if sender/recipient changes
 				DispatchQueue.main.async {
 					self.lineItems.items.removeAll()
@@ -832,15 +832,15 @@ extension AppDelegate: NSTableViewDataSource
 	func numberOfRows(in tableView: NSTableView) -> Int
 	{
 		// trigger when line items are added
-		if (tableView.identifier == "LineItemsTable") {
+		if (convertFromOptionalNSUserInterfaceItemIdentifier(tableView.identifier) == "LineItemsTable") {
 			rateShipment()
 		}
 		
-		if (tableView.identifier == "LineItemsTable") {
+		if (convertFromOptionalNSUserInterfaceItemIdentifier(tableView.identifier) == "LineItemsTable") {
 			return lineItems.items.count
 		}
 		
-		if (tableView.identifier == "SpecialServicesTable") {
+		if (convertFromOptionalNSUserInterfaceItemIdentifier(tableView.identifier) == "SpecialServicesTable") {
 			return PackageSpecialServiceType.values.count
 		}
 		
@@ -852,8 +852,8 @@ extension AppDelegate: NSTableViewDelegate
 {
 	func tableView(_ tableView: NSTableView, objectValueFor tableColumn: NSTableColumn?, row: Int) -> Any?
 	{
-		if (tableView.identifier == "LineItemsTable") {
-			if (tableColumn?.identifier == "ValueColumn") {
+		if (convertFromOptionalNSUserInterfaceItemIdentifier(tableView.identifier) == "LineItemsTable") {
+            if (convertFromNSUserInterfaceItemIdentifier((tableColumn?.identifier)!) == "ValueColumn") {
 				// get record to display
 				if let lineItem = lineItems.items[row] as? FreightShipmentLineItem {
 					return "\(lineItem._weight!._value!) \(lineItem._weight!._units!)"
@@ -864,20 +864,20 @@ extension AppDelegate: NSTableViewDelegate
 				}
 			}
 			
-			if (tableColumn?.identifier == "QtyColumn") {
+            if (convertFromNSUserInterfaceItemIdentifier((tableColumn?.identifier)!) == "QtyColumn") {
 				if let lineItem = lineItems.items[row] as? RequestedPackageLineItem {
 					return "\(lineItem._groupPackageCount!)"
 				}
 			}
 		}
 		
-		if (tableView.identifier == "SpecialServicesTable") {
-			if (tableColumn?.identifier == "TypeColumn") {
+		if (convertFromOptionalNSUserInterfaceItemIdentifier(tableView.identifier) == "SpecialServicesTable") {
+            if (convertFromNSUserInterfaceItemIdentifier((tableColumn?.identifier)!) == "TypeColumn") {
 				return PackageSpecialServiceType.values[row]
 			}
 			
 			// display selected detail item
-			if (tableColumn?.identifier == "DetailColumn") {
+            if (convertFromNSUserInterfaceItemIdentifier((tableColumn?.identifier)!) == "DetailColumn") {
 				switch (PackageSpecialServiceType.values[row])
 				{
 					case PackageSpecialServiceType.ALCOHOL.rawValue :
@@ -929,7 +929,7 @@ extension AppDelegate: NSTableViewDelegate
 	}
 	
 	func tableView(_ tableView: NSTableView, setObjectValue object: Any?, for tableColumn: NSTableColumn?, row: Int) {
-		if tableColumn!.identifier == "DetailColumn" {
+		if convertFromNSUserInterfaceItemIdentifier(tableColumn!.identifier) == "DetailColumn" {
 			// set values for dictionary
 			switch (PackageSpecialServiceType.values[row])
 			{
@@ -965,7 +965,7 @@ extension AppDelegate: NSTableViewDelegate
 	// fill popup buttons
 	func tableView(_ tableView: NSTableView, dataCellFor tableColumn: NSTableColumn?, row: Int) -> NSCell? {
 		if let cell = tableColumn?.dataCell(forRow: row) as? NSCell {
-			if tableColumn!.identifier == "DetailColumn" {
+			if convertFromNSUserInterfaceItemIdentifier(tableColumn!.identifier) == "DetailColumn" {
 				if let pcell = cell as? NSPopUpButtonCell {
 					pcell.removeAllItems()
 					pcell.addItem(withTitle: "Select")
@@ -1006,9 +1006,9 @@ extension AppDelegate: NSOutlineViewDelegate
 		guard let soapElement = item as? SoapElement else  { return nil }
 		
 		// if NameColumn
-		if tableColumn?.identifier == "NameColumn" {
+        if convertFromNSUserInterfaceItemIdentifier((tableColumn?.identifier)!) == "NameColumn" {
 			return soapElement.tag
-		} else if tableColumn?.identifier == "ValueColumn" {
+        } else if convertFromNSUserInterfaceItemIdentifier((tableColumn?.identifier)!) == "ValueColumn" {
 			if soapElement.tag == "RateReplyDetails" {
 				return soapStack.items.filter{ $0.parent == soapElement.id && $0.tag == "ServiceType" }.last?.value
 			}
@@ -1039,7 +1039,7 @@ extension AppDelegate: NSOutlineViewDelegate
 			}
 			
 			return soapElement.value
-		} else if tableColumn?.identifier == "CostColumn" {
+        } else if convertFromNSUserInterfaceItemIdentifier((tableColumn?.identifier)!) == "CostColumn" {
 			if soapElement.tag == "RateReplyDetails" {
 				let srd = soapStack.items.filter{ $0.tag == "RatedShipmentDetails" && $0.parent == soapElement.id }
 				
@@ -1058,7 +1058,7 @@ extension AppDelegate: NSOutlineViewDelegate
 				
 				return drillDown(parent: se.filter{ $0.tag == "ShipmentRateDetail" }.first!, path: "TotalNetCharge|Amount")?.value?.toCurrency() ?? "0".toCurrency()
 			}
-		} else if tableColumn?.identifier == "CommitColumn" {
+        } else if convertFromNSUserInterfaceItemIdentifier((tableColumn?.identifier)!) == "CommitColumn" {
 			if soapElement.tag == "RateReplyDetails" {
 				guard let x = drillDown(parent: soapElement, path: "CommitDetails|DayOfWeek")?.value! else {
 					return drillDown(parent: soapElement, path: "CommitDetails|TransitTime")?.value!
@@ -1129,4 +1129,15 @@ extension AppDelegate: NSComboBoxDelegate, NSComboBoxDataSource
 	func comboBox(_ comboBox: NSComboBox, objectValueForItemAt index: Int) -> Any? {
 		return PackageSpecialServiceType.values[index]
 	}
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromOptionalNSUserInterfaceItemIdentifier(_ input: NSUserInterfaceItemIdentifier?) -> String? {
+	guard let input = input else { return nil }
+	return input.rawValue
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromNSUserInterfaceItemIdentifier(_ input: NSUserInterfaceItemIdentifier) -> String {
+	return input.rawValue
 }
