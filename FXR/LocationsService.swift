@@ -30,7 +30,7 @@ struct SearchLocationsRequest : CustomStringConvertible
     fileprivate let _clientDetail: ClientDetail
     fileprivate let _transactionDetail: TransactionDetail?
     fileprivate let _version: VersionId
-    fileprivate let _effectiveDate: Date?
+    fileprivate let _effectiveDate: String?
     fileprivate let _locationsSearchCriterion: LocationsSearchCriteriaType?
     fileprivate let _shipperAccountNumber: String?
     fileprivate let _uniqueTrackingNumber: UniqueTrackingNumber?
@@ -46,7 +46,7 @@ struct SearchLocationsRequest : CustomStringConvertible
     init(webAuthenticationDetail: WebAuthenticationDetail,
          clientDetail: ClientDetail,
          transactionDetail: TransactionDetail?,
-         effectiveDate: Date?,
+         effectiveDate: String?,
          locationsSearchCriterion: LocationsSearchCriteriaType?,
          shipperAccountNumber: String?,
          uniqueTrackingNumber: UniqueTrackingNumber?,
@@ -78,15 +78,15 @@ struct SearchLocationsRequest : CustomStringConvertible
     func transactionDetail() -> String { return (_transactionDetail == nil ? "" : "<TransactionDetail>\(_transactionDetail!)</TransactionDetail>") }
     func version() -> String { return "<Version>\(_version)</Version>" }
 	func effectiveDate() -> String { return "<EffectiveDate>\(_effectiveDate!)</EffectiveDate>" }
-	func locationsSearchCriterion() -> String { return "<LocationsSearchCriterion>\(_locationsSearchCriterion!)</LocationsSearchCriterion>" }
-	func shipperAccountNumber() -> String { return "<ShipperAccountNumber>\(_shipperAccountNumber!)</ShipperAccountNumber>" }
-	func uniqueTrackingNumber() -> String { return "<UniqueTrackingNumber>\(_uniqueTrackingNumber!)</UniqueTrackingNumber>" }
+	func locationsSearchCriterion() -> String { return (_locationsSearchCriterion == nil ? "" : "<LocationsSearchCriterion>\(_locationsSearchCriterion!)</LocationsSearchCriterion>") }
+	func shipperAccountNumber() -> String { return (_shipperAccountNumber == nil ? "" : "<ShipperAccountNumber>\(_shipperAccountNumber!)</ShipperAccountNumber>") }
+	func uniqueTrackingNumber() -> String { return (_uniqueTrackingNumber == nil ? "" : "<UniqueTrackingNumber>\(_uniqueTrackingNumber!)</UniqueTrackingNumber>") }
 	func address() -> String { return "<Address>\(_address!)</Address>" }
-	func phoneNumber() -> String { return "<PhoneNumber>\(_phoneNumber!)</PhoneNumber>" }
-	func geographicCoordinates() -> String { return "<GeographicCoordinates>\(_geographicCoordinates!)</GeographicCoordinates>" }
-	func multipleMatchesAction() -> String { return "<MultipleMatchesAction>\(_multipleMatchesAction!)</MultipleMatchesAction>" }
-	func sortDetail() -> String { return "<SortDetail>\(_sortDetail!)</SortDetail>" }
-	func constraints() -> String { return "<Constraints>\(_constraints!)</Constraints>" }
+	func phoneNumber() -> String { return (_phoneNumber == nil ? "" : "<PhoneNumber>\(_phoneNumber!)</PhoneNumber>") }
+	func geographicCoordinates() -> String { return (_geographicCoordinates == nil ? "" : "<GeographicCoordinates>\(_geographicCoordinates!)</GeographicCoordinates>") }
+	func multipleMatchesAction() -> String { return (_multipleMatchesAction == nil ? "" : "<MultipleMatchesAction>\(_multipleMatchesAction!)</MultipleMatchesAction>") }
+	func sortDetail() -> String { return (_sortDetail == nil ? "" : "<SortDetail>\(_sortDetail!)</SortDetail>") }
+	func constraints() -> String { return (_constraints == nil ? "" : "<Constraints>\(_constraints!)</Constraints>") }
 }
 
 private struct VersionId : CustomStringConvertible
@@ -124,7 +124,7 @@ struct LocationSortDetail : CustomStringConvertible
     
     var description: String { return "\(criterion())\(order())" }
     
-    init(criterion: LocationSortCriteriaType, order: LocationSortOrderType)
+    init(criterion: LocationSortCriteriaType?, order: LocationSortOrderType?)
     {
         _criterion = criterion
         _order = order
@@ -150,7 +150,7 @@ struct SearchLocationConstraints : CustomStringConvertible
     
     var description: String { return "\(radiusDistance())\(dropOffTimeNeeded())\(resultsFilters())\(supportedRedirectToHoldServices())\(requiredLocationAttributes())\(requiredLocationCapabilities())\(shipmentDetail())\(resultsToSkip())\(resultsRequested())\(locationContentOptions())\(locationTypesToInclude())" }
     
-    init(radiusDistance: Distance, dropOffTimeNeeded: Date?, resultsFilters: LocationSearchFilterType, supportedRedirectsToHoldServices: SupportedRedirectToHoldServiceType, requiredLocationAttributes: LocationAttributesType, requiredLocationCapabilities: LocationCapabilityDetail, shipmentDetail: LocationSupportedShipmentDetail, resultsToSkip: UInt?, resultsRequested: UInt?, locationContentOptions: LocationContentOptionType, locationTypesToInclude: FedExLocationType)
+    init(radiusDistance: Distance?, dropOffTimeNeeded: Date?, resultsFilters: LocationSearchFilterType?, supportedRedirectsToHoldServices: SupportedRedirectToHoldServiceType?, requiredLocationAttributes: LocationAttributesType?, requiredLocationCapabilities: LocationCapabilityDetail?, shipmentDetail: LocationSupportedShipmentDetail?, resultsToSkip: UInt?, resultsRequested: UInt?, locationContentOptions: LocationContentOptionType?, locationTypesToInclude: FedExLocationType?)
     {
         _radiusDistance = radiusDistance
         _dropOffTimeNeeded = dropOffTimeNeeded
@@ -166,16 +166,16 @@ struct SearchLocationConstraints : CustomStringConvertible
     }
     
     func radiusDistance() -> String { return "<RadiusDistance>\(_radiusDistance!)</RadiusDistance>" }
-    func dropOffTimeNeeded() -> String { return "<DropOffTimeNeeded>\(_dropOffTimeNeeded!)</DropOffTimeNeeded>" }
-    func resultsFilters() -> String { return "<ResultsFilters>\(_resultsFilters!)</ResultsFilters>" }
-    func supportedRedirectToHoldServices() -> String { return "<SupportedRedirectToHoldServices>\(_supportedRedirectToHoldServices!)</SupportedRedirectToHoldServices>" }
-    func requiredLocationAttributes() -> String { return "<RequiredLocationAttributes>\(_requiredLocationAttributes!)</RequiredLocationAttributes>" }
-    func requiredLocationCapabilities() -> String { return "<RequiredLocationCapabilities>\(_requiredLocationCapabilities!)</RequiredLocationCapabilities>" }
-    func shipmentDetail() -> String { return "<ShipmentDetail>\(_shipmentDetail!)</ShipmentDetail>" }
+    func dropOffTimeNeeded() -> String { return (_dropOffTimeNeeded == nil ? "" : "<DropOffTimeNeeded>\(_dropOffTimeNeeded!)</DropOffTimeNeeded>") }
+    func resultsFilters() -> String { return (_resultsFilters == nil ? "" : "<ResultsFilters>\(_resultsFilters!)</ResultsFilters>") }
+    func supportedRedirectToHoldServices() -> String { return (_supportedRedirectToHoldServices == nil ? "" : "<SupportedRedirectToHoldServices>\(_supportedRedirectToHoldServices!)</SupportedRedirectToHoldServices>") }
+    func requiredLocationAttributes() -> String { return (_requiredLocationAttributes == nil ? "" : "<RequiredLocationAttributes>\(_requiredLocationAttributes!)</RequiredLocationAttributes>") }
+    func requiredLocationCapabilities() -> String { return (_requiredLocationCapabilities == nil ? "" : "<RequiredLocationCapabilities>\(_requiredLocationCapabilities!)</RequiredLocationCapabilities>") }
+    func shipmentDetail() -> String { return (_shipmentDetail == nil ? "" : "<ShipmentDetail>\(_shipmentDetail!)</ShipmentDetail>") }
     func resultsToSkip() -> String { return (_resultsToSkip == nil ? "" : "<ResultsToSkip>\(_resultsToSkip!)</ResultsToSkip>") }
 	func resultsRequested() -> String { return (_resultsRequested == nil ? "" : "<ResultsRequested>\(_resultsRequested!)</ResultsRequested>") }
-    func locationContentOptions() -> String { return "<LocationContentOptions>\(_locationContentOptions!)</LocationContentOptions>" }
-    func locationTypesToInclude() -> String { return "<LocationTypesToInclude>\(_locationTypesToInclude!)</LocationTypesToInclude>" }
+	func locationContentOptions() -> String { return (_locationContentOptions == nil ? "" : "<LocationContentOptions>\(_locationContentOptions!)</LocationContentOptions>") }
+    func locationTypesToInclude() -> String { return (_locationTypesToInclude == nil ? "" : "<LocationTypesToInclude>\(_locationTypesToInclude!)</LocationTypesToInclude>") }
 }
 
 struct LocationCapabilityDetail : CustomStringConvertible
@@ -188,7 +188,7 @@ struct LocationCapabilityDetail : CustomStringConvertible
     
     var description: String { return "\(carrierCode())\(serviceType())\(serviceCategory())\(transferOfPossessionType())\(daysOfWeek())"}
     
-    init(carrierCode: CarrierCodeType, serviceType: ServiceType, serviceCategory: ServiceCategoryType, transferOfPossessionType: LocationTransferOfPossessionType, daysOfWeek: DayOfWeekType)
+    init(carrierCode: CarrierCodeType?, serviceType: ServiceType?, serviceCategory: ServiceCategoryType?, transferOfPossessionType: LocationTransferOfPossessionType?, daysOfWeek: DayOfWeekType?)
     {
         _carrierCode = carrierCode
         _serviceType = serviceType
@@ -197,11 +197,11 @@ struct LocationCapabilityDetail : CustomStringConvertible
         _daysOfWeek = daysOfWeek
     }
     
-    func carrierCode() -> String { return "<CarrierCode>\(_carrierCode!)</CarrierCode>" }
-    func serviceType() -> String { return "<ServiceType>\(_serviceType!)</ServiceType>" }
-    func serviceCategory() -> String { return "<ServiceCategory>\(_serviceCategory!)</ServiceCategory>" }
-    func transferOfPossessionType() -> String { return "<TransferOfPossessionType>\(_transferOfPossessionType!)</TransferOfPossessionType>" }
-    func daysOfWeek() -> String { return "<DaysOfWeek>\(_daysOfWeek!)</DaysOfWeek>" }
+	func carrierCode() -> String { return (_carrierCode == nil ? "" : "<CarrierCode>\(_carrierCode!)</CarrierCode>") }
+    func serviceType() -> String { return (_serviceType == nil ? "" : "<ServiceType>\(_serviceType!)</ServiceType>") }
+    func serviceCategory() -> String { return (_serviceCategory == nil ? "" : "<ServiceCategory>\(_serviceCategory!)</ServiceCategory>") }
+    func transferOfPossessionType() -> String { return (_transferOfPossessionType == nil ? "" : "<TransferOfPossessionType>\(_transferOfPossessionType!)</TransferOfPossessionType>") }
+    func daysOfWeek() -> String { return (_daysOfWeek == nil ? "" : "<DaysOfWeek>\(_daysOfWeek!)</DaysOfWeek>") }
 }
 
 struct LocationSupportedShipmentDetail : CustomStringConvertible
@@ -223,7 +223,7 @@ struct LocationSupportedPackageDetail : CustomStringConvertible
     let _weight: Weight?
     let _dimensions: Dimensions?
     
-    var description: String { return "\(weight())(dimensions())"}
+    var description: String { return "\(weight())\(dimensions())"}
     
     init(weight: Weight, dimensions: Dimensions)
     {
@@ -233,4 +233,14 @@ struct LocationSupportedPackageDetail : CustomStringConvertible
     
     func weight() -> String { return "<Weight>\(_weight!)</Weight>" }
     func dimensions() -> String { return "<Dimensions>\(_dimensions!)</Dimensions>" }
+}
+
+func formatDateFromString(_ date: String) -> Date
+{
+	let dateFormatter = DateFormatter()
+	
+	dateFormatter.dateFormat = "MM-dd-yyyy" //Your date format
+	dateFormatter.dateStyle = .short
+	
+	return dateFormatter.date(from: date)!
 }
