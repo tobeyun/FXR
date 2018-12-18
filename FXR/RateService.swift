@@ -3173,16 +3173,21 @@ final class FreightServiceCenterDetail
 	}
 }
 
-final class Distance
+final class Distance : CustomStringConvertible
 {
 	fileprivate let _value: Decimal?
 	fileprivate let _units: DistanceUnits?
+	
+	var description: String { return "\(value())\(units())" }
 	
 	init(value: Decimal?, units: DistanceUnits?)
 	{
 		_value = value
 		_units = units
 	}
+	
+	func value() -> String { return (_value == nil ? "" : "<Value>\(_value!)</Value>") }
+	func units() -> String { return (_units == nil ? "" : "<Units>\(_units!)</Units>") }
 }
 
 struct Money : CustomStringConvertible
